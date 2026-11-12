@@ -436,7 +436,75 @@ const clientTools = {
     return JSON.stringify(res);
   },
   reset_what_if: async () => { logTool("reset_what_if"); return JSON.stringify(resetWhatIf()); },
+
+  // ---- inbox / workflow tools (call the dealt API with the user's session cookie) ----
+  check_inbox: async ({ days } = {}) => {
+    logTool("check_inbox");
+    await refreshIntegrations();
+    if (!integrations.outlook?.connected) {
+      addMessage("assistant", "", { html: `<div class="md"><p>Outlook is not connected yet.</p></div><div><button type="button" class="btn-glow" data-connect="outlook">Connect Outlook</button></div>` });
+      return JSON.stringify({ ok: false, error: "Outlook is not connected. A Connect Outlook button is now shown in the chat; ask the user to click it, or call connect_outlook if they agree." });
+    }
+    const d = Math.max(1, Math.min(90, Number(days) || 14));
+    try {
+      const r = await fetch(`${API}/outlook/deals?days=${d}`, { credentials: "include" });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(j.detail || `Outlook request failed (${r.status})`);
+      voiceEmails = j.emails || [];
+      addMessage("assistant", "", { html: `<div class="tool-trail"><span>Checked Outlook</span></div><div class="md"><p>${voiceEmails.length ? `${voiceEmails.length} likely deal email${voiceEmails.length > 1 ? "s" : ""} from the last ${d} days:` : `No deal emails in the last ${d} days.`}</p></div>${emailsHtml(voiceEmails)}` });
+      return JSON.stringify({
+        ok: true, days: d, count: voiceEmails.length,
+        emails: voiceEmails.map((e, i) => ({ number: i + 1, message_id: e.id, subject: e.subject, from: e.from, received: e.received, pdf_attachments: e.pdfs, deal_score: e.score, preview: (e.preview || "").slice(0, 160) })),
+      });
+    } catch (e) {
+      return JSON.stringify({ ok: false, error: e.message });
+    }
+  },
+  qualify_email: async ({ number, message_id } = {}) => {
+    const e = message_id ? voiceEmails.find((x) => x.id === message_id) : voiceEmails[(Number(number) || 0) - 1];
+    const id = message_id || e?.id;
+    if (!id) return JSON.stringify({ ok: false, error: "Unknown email. Call check_inbox first and pass the email number from its result." });
+    if (e && !e.pdfs?.length) return JSON.stringify({ ok: false, error: "This email has no PDF attachment, so there is no brochure to qualify." });
+    logTool(`qualify_email · ${e?.subject || id}`);
+    analyzeEmail(id, e?.subject || "email");   // runs in the background; the report opens and the agent is notified when ready
+    return JSON.stringify({ ok: true, status: "started", subject: e?.subject, note: "Qualification takes about a minute. Tell the user it is running; you will get a message when the report is loaded, then call get_deal_report." });
+  },
+  open_sample_report: async () => {
+    logTool("open_sample_report");
+    await loadSample();
+    return JSON.stringify({ ok: !!state.report, note: "The Stratford sample report (mock data) is now on screen. Call get_deal_report before talking about it." });
+  },
+  connect_outlook: async () => {
+    logTool("connect_outlook");
+    await refreshIntegrations();
+    if (integrations.outlook?.connected) return JSON.stringify({ ok: true, already_connected: true, account: integrations.outlook.account });
+    setTimeout(() => toggleIntegration("outlook"), 2500);   // give the agent time to say it before the page navigates to Microsoft
+    return JSON.stringify({ ok: true, note: "The Microsoft sign-in opens in about two seconds and ends this voice session. Tell the user to sign in and restart voice afterwards." });
+  },
+  ask_dealt: async ({ request } = {}) => {
+    const q = String(request || "").trim();
+    if (!q) return JSON.stringify({ ok: false, error: "Pass the user's request." });
+    logTool(`ask_dealt · ${q.slice(0, 60)}`);
+    try {
+      const r = await fetch(`${API}/chat`, { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ messages: [...chatLog.slice(-10), { role: "user", content: q }] }) });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(d.detail || `The dealt agent is unavailable (${r.status}).`);
+      const actions = d.actions || [];
+      const emails = actions.filter((a) => a.type === "emails").flatMap((a) => a.emails);
+      if (emails.length) voiceEmails = emails;
+      addMessage("assistant", "", { html: `<div class="tool-trail"><span>dealt agent</span></div><div class="md">${renderMarkdown(d.reply || "")}</div>${emailsHtml(emails)}` });
+      chatLog.push({ role: "user", content: q }, { role: "assistant", content: d.reply || "" });
+      for (const a of actions) {
+        if (a.type === "sample") loadSample();
+        if (a.type === "analyze" && a.job_id) trackJob(a.job_id, a.subject).catch((err) => showError("upload-error", err.message));
+      }
+      return JSON.stringify({ ok: true, answer: d.reply || "", emails: emails.map((e, i) => ({ number: i + 1, message_id: e.id, subject: e.subject, from: e.from, pdf_attachments: e.pdfs })) });
+    } catch (e) {
+      return JSON.stringify({ ok: false, error: e.message });
+    }
+  },
 };
+let voiceEmails = [];   // last inbox result, so the voice agent can say "the second one"
 
 function notifyAgent(text) {
   try { conversation?.sendContextualUpdate?.(text); } catch { /* not connected */ }
@@ -510,6 +578,10 @@ async function startVoice() {
       },
     });
     if (state.report) notifyAgent("A deal report is already loaded on screen. Call get_deal_report before answering.");
+    else notifyAgent("No deal report is loaded yet.");
+    notifyAgent(integrations.outlook?.connected
+      ? `Outlook is connected${integrations.outlook.account ? ` (${integrations.outlook.account})` : ""}. Use check_inbox for anything about emails or new deals.`
+      : "Outlook is not connected yet. If the user asks about emails, call check_inbox anyway; it shows a Connect button.");
   } catch (e) {
     conversation = null;
     endedUi();
