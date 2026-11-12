@@ -40,7 +40,7 @@ def _rates_from_comps():
     return out, comps
 
 
-def analyze(paths, comment="", step=print):
+def analyze(paths, comment="", step=print, exit_yield=None, exit_yield_ref=None):
     """Run the full deal qualification on brochure PDFs. Returns {'assets': [...]}."""
     assets = []
     try:
@@ -64,14 +64,16 @@ def analyze(paths, comment="", step=print):
             comp_ref = " ; ".join(f"{c['operator']} {c['property_name']} {c['url']}" for c in comps)
             rooms = [{"type": k, "beds": round(beds * s), "weekly_rate": mr[k][0], "weeks": mr[k][1]} for k, s in ROOM_MIX.items()]
             step("Market yield from MSCI")
-            exit_y = MSCI_EXIT_YIELD["value"]
+            exit_y = exit_yield or MSCI_EXIT_YIELD["value"]
+            exit_fig = fig("exit_yield", "Exit yield (MSCI, live via MCP)", exit_yield, "%", source="msci", ref=exit_yield_ref) if exit_yield else MSCI_EXIT_YIELD
             step("NOI build-up")
             noi = model.build_noi(rooms)
             step("OPEX benchmark (Cortile)")
+            opex_err = None
             try:
                 opex_bm = cortile.compare(noi["opex"], beds, city)
-            except Exception:
-                opex_bm = []
+            except Exception as e:
+                opex_bm, opex_err = [], f"{type(e).__name__}: {e}"
             step("Returns")
             build_cost = beds * COST_PER_BED
             asking = None
@@ -80,7 +82,7 @@ def analyze(paths, comment="", step=print):
                 asking = uses._money(ask_txt)
             land = asking or 0.0
             ret = model.compute_returns(noi["noi"], build_cost + land, exit_y)
-            ret["figures"][3] = MSCI_EXIT_YIELD
+            ret["figures"][3] = exit_fig
             step("Max land bid at 12% IRR")
             max_bid = model.residual_land_value(noi["noi"], build_cost, exit_y, 0.12)
             step("Sensitivity")
@@ -116,7 +118,7 @@ def analyze(paths, comment="", step=print):
                                 "weekly_rate": fig(f"{r['type']}_rate", f"{r['type']} rate", r["weekly_rate"], "GBP/week",
                                                    source=rates[r["type"]][1] or "assumption",
                                                    ref=(f"median of nearby comps around {uni['name'] if uni else 'the asset'}: " + comp_ref) if rates[r["type"]][1] else None)} for r in rooms],
-                "comps": comps, "target_university": uni, "location": location, "appraisal": appraisal, "geo": geo, "noi": noi["figures"], "opex_benchmark": opex_bm,
+                "comps": comps, "target_university": uni, "location": location, "appraisal": appraisal, "geo": geo, "noi": noi["figures"], "opex_benchmark": opex_bm, "opex_benchmark_error": opex_err,
                 "assumptions": [fig("cost_per_bed", "Build cost per bed", COST_PER_BED, "GBP", "assumption"),
                                 fig("room_mix", "Room mix", ROOM_MIX, None, "assumption"), fig("occupancy", "Occupancy", 0.97, "%", "assumption"),
                                 fig("opex_pct", "OPEX ratio", 0.35, "% of gross", "assumption")],

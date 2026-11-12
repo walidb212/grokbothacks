@@ -7,7 +7,7 @@ from engine.model import fig
 from engine.v7 import _env
 
 API = "https://hackathon.cortile.com/v1"
-CACHE = pathlib.Path(__file__).resolve().parents[1] / "data" / "cortile_cache.json"
+CACHE = (pathlib.Path("/app/cache") if pathlib.Path("/app/cache").exists() else pathlib.Path(__file__).resolve().parents[1] / "data") / "cortile_cache.json"
 
 
 def _all(path, h):

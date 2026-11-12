@@ -9,12 +9,14 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 
 
 @mcp.tool()
-def analyze_deal(path: str, comment: str = "") -> dict:
+def analyze_deal(path: str, comment: str = "", exit_yield: float = 0, exit_yield_ref: str = "") -> dict:
     """Full deal qualification of a sale brochure PDF: V7 extraction, PBSA comps around the university,
     city demand, MSCI exit yield, NOI, returns, max site bid, sensitivity, debt (SONIA), alternative uses, verdict.
-    Every figure carries its source (brochure page, web URL, MSCI series, Cortile, or 'assumption')."""
+    Every figure carries its source (brochure page, web URL, MSCI series, Cortile, or 'assumption').
+    Tip: first get the market cap rate with the MSCI MCP (get_rca_trendtracker / get_rca_peerfinder) and pass it
+    as exit_yield (fraction, e.g. 0.055) with exit_yield_ref describing the MSCI series or deals used."""
     from engine.pipeline import analyze
-    return analyze([path], comment, step=lambda s: None)
+    return analyze([path], comment, step=lambda s: None, exit_yield=exit_yield or None, exit_yield_ref=exit_yield_ref or None)
 
 
 @mcp.tool()

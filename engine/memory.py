@@ -5,9 +5,19 @@ import asyncio, json, os
 from engine.v7 import _env
 
 
+def _cloud():
+    e = _env()
+    if e.get("COGNEE_API_KEY") and e.get("COGNEE_API_URL"):
+        h = {"X-Api-Key": e["COGNEE_API_KEY"]}
+        if e.get("COGNEE_TENANT_ID"):
+            h["X-Tenant-Id"] = e["COGNEE_TENANT_ID"]
+        return e["COGNEE_API_URL"].rstrip("/") + "/api/v1", h
+    return None
+
+
 def _ready():
     e = _env()
-    return bool(e.get("LLM_API_KEY"))
+    return bool(_cloud() or e.get("LLM_API_KEY"))
 
 
 def _deal_text(asset):
@@ -34,14 +44,33 @@ async def _ask(question):
 
 
 def remember_report(report):
-    """Add every asset of an analysis report to the deal memory. Best effort."""
+    """Add every asset of an analysis report to the deal memory (cognee cloud if configured, else local)."""
+    import requests
+    texts = [_deal_text(a) for a in report.get("assets", [])]
+    c = _cloud()
+    if c:
+        base, h = c
+        for t in texts:
+            requests.post(f"{base}/add", headers=h, data={"datasetName": "deal_flow", "raw_data": t}, timeout=60).raise_for_status()
+        requests.post(f"{base}/cognify", headers={**h, "Content-Type": "application/json"},
+                      json={"datasets": ["deal_flow"]}, timeout=300).raise_for_status()
+        return True
     if not _ready():
         return False
-    asyncio.run(_remember([_deal_text(a) for a in report.get("assets", [])]))
+    asyncio.run(_remember(texts))
     return True
 
 
 def ask(question):
+    import requests
+    c = _cloud()
+    if c:
+        base, h = c
+        r = requests.post(f"{base}/search", headers={**h, "Content-Type": "application/json"},
+                          json={"query": question, "search_type": "GRAPH_COMPLETION"}, timeout=120)
+        r.raise_for_status()
+        res = r.json()
+        return res if isinstance(res, list) else [res]
     if not _ready():
         return ["Deal memory not configured (LLM_API_KEY missing in .env)."]
     return asyncio.run(_ask(question))
