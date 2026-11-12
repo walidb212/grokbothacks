@@ -1,0 +1,130 @@
+﻿city,students_hesa,russell_group_share,halls_studentcrowd,students_per_hall,private,part_nominated,fully_nominated,university_run,hall_type_unknown,nominated_share_of_typed,avg_rating_weighted,median_price_from_pw,median_studio_pw_scraped,n_operators,top_operators
+London,420480,0.36,443,949,115,33,21,0,274,0.32,3.93,257.0,471.0,82,"unite (33), brunel_university_london (30), university_college_london_ucl (25), iq (22), queen_mary_university_of_london_qmul (21)"
+Glasgow,106320,0.36,73,1456,38,4,1,0,30,0.12,4.31,175.0,255.0,29,"prestige (9), university_of_glasgow (9), student_roost (6), unite (6), hello_student (5)"
+Birmingham,103760,0.39,92,1128,35,13,2,1,41,0.29,4.17,180.0,259.0,37,"university_of_birmingham (17), unite (9), prestige (6), mezzino (4), hello_student (4)"
+Manchester,99255,0.47,98,1013,17,11,8,0,62,0.53,3.78,207.0,359.0,32,"the_university_of_manchester (12), unite (10), manchester_metropolitan_university (10), iq (9), my_apartments (8)"
+Leeds,74330,0.47,126,590,45,10,4,0,67,0.24,4.23,182.0,265.0,35,"ypp (32), unipol_housing (13), university_of_leeds (13), prestige (9), unite (8)"
+Nottingham,71895,0.51,144,499,34,20,3,28,59,0.27,4.07,155.0,199.0,49,"university_of_nottingham (16), nottingham_trent_university_ntu (13), the_student_lodge (10), fhp_student_living (10), student_roost (5)"
+Edinburgh,69255,0.56,96,721,45,4,1,0,46,0.1,4.17,229.0,355.0,22,"university_of_edinburgh (36), prestige (10), unite (9), homes_for_students (4), yugo (4)"
+Bristol,68965,0.47,108,639,27,8,9,0,64,0.39,3.92,233.0,360.0,27,"university_of_bristol (21), unite (15), urban_creation (10), rengen_lettings (10), uwe_bristol (7)"
+Cardiff,64605,0.49,45,1436,14,9,2,0,20,0.44,4.02,167.0,205.0,14,"cardiff_university (16), unite (7), hello_student (4), prestige (3), yugo (3)"
+Liverpool,63335,0.49,118,537,24,19,2,0,73,0.47,4.13,145.0,228.0,44,"liverpool_hope_university (13), unite (9), x1 (8), university_of_liverpool (7), hello_student (6)"
+Belfast,60485,0.41,27,2240,11,3,0,0,13,0.21,4.28,163.0,210.0,9,"queen_s_university_belfast_qub (10), student_roost (5), prestige (3), fresh (3), mezzino (2)"
+Sheffield,59045,0.48,110,537,35,12,2,21,40,0.2,4.27,134.0,175.0,34,"university_of_sheffield (27), student_roost (8), west_one_lettings (7), flow_student (6), iq (6)"
+Coventry,57385,0.49,67,856,39,0,0,0,28,0.0,3.99,137.0,250.0,25,"university_of_warwick (15), mezzino (6), flow_student (4), coventry_university (4), student_castle (3)"
+Cambridge,57170,0.39,50,1143,4,1,0,0,45,0.2,3.63,173.0,309.0,13,"university_of_cambridge (31), anglia_ruskin_university_aru (5), yugo (2), kensington_student_services (2), prestige (2)"
+Newcastle,56915,0.48,72,790,23,9,1,0,39,0.3,4.03,165.0,228.5,30,"newcastle_university (11), unite (8), student_cribs (7), abodus (4), northumbria_university (4)"
+Canterbury,54455,0.0,29,1878,7,1,0,0,21,0.12,3.86,175.0,209.5,11,"university_of_kent (10), canterbury_christ_church_university (8), homes_for_students (3), now_students (1), mezzino (1)"
+Oxford,52320,0.5,81,646,8,2,1,0,70,0.27,3.9,204.0,360.0,17,"university_of_oxford (52), oxford_brookes_university (9), a2dominion (3), unite (3), host (2)"
+Bath,49500,0.0,44,1125,6,2,2,0,34,0.4,3.84,205.5,330.0,11,"university_of_bath (30), bath_spa_university (3), unite (2), hello_student (2), fresh (1)"
+Leicester,42145,0.0,120,351,30,5,0,0,85,0.14,4.09,139.0,181.0,41,"university_of_leicester (19), westmanor_student_living (17), zone_students (9), student_roost (7), homes_for_students (5)"
+Brighton,34695,0.0,29,1196,16,0,2,0,11,0.11,3.91,211.0,285.0,13,"university_of_sussex (7), homes_for_students (3), prestige (3), iq (3), university_of_brighton (3)"
+York,34495,0.65,49,704,11,4,0,0,34,0.27,3.86,206.0,279.0,19,"university_of_york (13), york_st_john_university (11), hello_student (3), ypp (3), university_centre_askham_bryan (3)"
+Swansea,34430,0.0,14,2459,5,2,0,2,5,0.22,4.31,120.0,185.0,10,"swansea_university (3), fresh (2), student_cribs (2), prestige (1), student_roost (1)"
+Southampton,34300,0.75,39,879,25,1,0,0,13,0.04,4.28,204.5,301.25,21,"homes_for_students (6), university_of_southampton (6), solent_university_southampton (4), unilife (3), hello_student (2)"
+Exeter,33105,1.0,56,591,22,3,0,0,31,0.12,4.09,210.0,260.0,18,"university_of_exeter (23), prestige (4), collegiate (4), hello_student (4), homes_for_students (3)"
+Stoke-On-Trent,30765,0.0,11,2797,5,0,0,0,6,0.0,3.91,135.0,165.0,8,"crm (3), urban_student_life (2), homes_for_students (1), university_of_staffordshire (1), fresh (1)"
+Aberdeen,28770,0.0,39,738,22,0,0,0,17,0.0,4.3,134.0,215.0,13,"university_of_aberdeen (11), mezzino (6), every_student (4), homes_for_students (3), robert_gordon_university (3)"
+Salford,26030,0.0,13,2002,4,1,1,0,7,0.33,4.09,174.0,249.5,8,"x1 (4), clv (2), university_quarter (2), true (1), sanctuary (1)"
+Portsmouth,24015,0.0,22,1092,7,4,2,0,9,0.46,3.82,184.5,238.0,9,"university_of_portsmouth (6), unite (5), collegiate (4), portsmouth_student_accommodations (2), hello_student (1)"
+Preston,23865,0.0,44,542,9,0,0,0,35,0.0,4.15,114.5,189.0,14,"myerscough_college (16), university_of_lancashire (6), university_quarter (5), flow_student (4), urban_student_life (2)"
+Wolverhampton,23665,0.0,6,3944,4,0,0,0,2,0.0,4.1,106.5,,6,"universal_student_living (1), host (1), iq (1), student_clubhouse (1), university_of_wolverhampton (1)"
+Bournemouth,22710,0.0,26,873,5,3,5,0,13,0.62,4.07,175.0,257.0,17,"clv (4), yugo (3), now_students (2), asn_capital_student_living (2), arts_university_bournemouth_aub (2)"
+Lincoln,21920,0.0,23,953,8,0,0,0,15,0.0,4.01,137.0,194.0,13,"university_of_lincoln (5), bishop_grosseteste_university_bgu (3), student_castle (2), iq (2), mezzino (2)"
+Middlesbrough,21570,0.0,15,1438,1,0,0,0,14,0.0,3.43,125.0,,7,"teesside_university (6), atha_students (4), xenia_students (1), university_quarter (1), barrygreen (1)"
+Reading,21370,0.0,26,822,7,0,0,17,2,0.0,3.85,217.0,318.0,8,"university_of_reading (17), homes_for_students (3), student_castle (1), prestige (1), aparto (1)"
+Durham,21150,1.0,36,588,13,1,2,0,20,0.19,4.2,234.0,305.0,11,"durham_university (17), cabana_student_living (5), prestige (3), unite (3), mezzino (2)"
+Norwich,19710,0.0,38,519,3,1,1,0,33,0.4,3.77,178.0,237.0,15,"university_of_east_anglia (16), university_of_east_anglia_uea (8), norwich_university_of_the_arts (2), collegiate (1), student_castle (1)"
+Plymouth,19555,0.0,39,501,7,6,0,0,26,0.46,4.08,139.0,219.0,16,"plymouth_marjon_university (8), university_of_plymouth (6), student_castle (5), homes_for_students (3), yugo (3)"
+Loughborough,18955,0.0,34,558,6,0,3,0,25,0.33,3.89,167.0,219.0,12,"loughborough_university (16), student_beehive (5), unite (4), mys_living (1), homes_for_students (1)"
+Kingston,18815,0.0,0,,0,0,0,0,0,,,,359.0,0,
+Lancaster,18620,0.0,28,665,13,0,0,0,15,0.0,3.93,148.0,190.0,11,"lancaster_university (10), homes_for_students (4), hello_student (3), prestige (2), host (2)"
+Dundee,18425,0.0,21,877,7,3,6,0,5,0.56,3.83,177.0,235.0,9,"sanctuary (8), mezzino (4), prestige (3), hub_students (1), mansion_student (1)"
+Guildford,17295,0.0,16,1081,5,0,0,0,11,0.0,4.12,208.0,317.5,6,"university_of_surrey (10), homes_for_students (2), mys_living (1), unilife (1), prestige (1)"
+Huddersfield,16360,0.0,17,962,7,0,0,0,10,0.0,4.05,110.0,182.0,10,"iq (3), sasco_student_living (3), hello_student (2), student_castle (2), canalside_47a (2)"
+Hull,14715,0.0,7,2102,0,0,0,0,7,,3.53,104.5,,5,"university_of_hull (3), pacific_court_student_accommodation (1), university_quarter (1), gather_students (1), ashcourt_student_living (1)"
+Chester,13520,0.0,28,483,1,4,0,0,23,0.8,4.41,149.0,253.0,8,"university_of_chester (17), collegiate (2), student_roost (2), studentfm (2), crm (2)"
+Bangor,9935,0.0,32,310,3,0,0,0,29,0.0,3.83,170.0,216.5,4,"bangor_university (24), bangor_student (4), universal_student_living (3), iq (1)"
+Wrexham,8560,0.0,2,4280,0,1,0,0,1,1.0,3.81,131.5,,2,"student_roost (1), wrexham_university (1)"
+Aberystwyth,0,,9,,0,0,0,0,9,,3.55,146.0,,3,"aberystwyth_university (7), student_castle (1), codi_group (1)"
+Ambleside And Grasmere,0,,5,,0,0,0,0,5,,3.32,108.0,,1,university_of_cumbria (5)
+Antrim,0,,7,,0,0,0,0,7,,,88.0,,1,college_of_agriculture_food_and_rural_enterprise (7)
+Ascot,0,,4,,0,0,0,0,4,,,144.0,,1,imperial_college_london (4)
+Athlone,0,,5,,0,0,0,0,5,,,,,5,"buckley_apartments_athlone (1), cro_ige_student_accommodation (1), glen_abhainn (1), heatherview_court (1), student_accommodation_athlone (1)"
+Ayr North,0,,2,,0,0,0,0,2,,,151.0,,2,"university_of_the_west_of_scotland_uws (1), craigie_student_campus (1)"
+Bedford,0,,6,,0,1,0,0,5,1.0,4.12,202.0,,3,"cranfield_university (4), homes_for_students (1), bedford_college_group (1)"
+Bishop Burton,0,,1,,0,0,0,0,1,,,179.0,,1,university_centre_bishop_burton (1)
+Bognor Regis,0,,4,,0,0,0,0,4,,,199.5,,1,university_of_chichester (4)
+Bolton,0,,4,,0,0,0,0,4,,3.83,113.5,,3,"primo_property_management (2), propeller (1), mccomb_bolton (1)"
+Bradford,0,,8,,2,1,0,0,5,0.33,3.76,85.5,,6,"university_quarter (2), crm (2), homes_for_students (1), sanctuary (1), flow_student (1)"
+Bridgwater,0,,2,,0,0,0,0,2,,,137.0,,1,university_centre_somerset_bridgwater_and_taunton_college (2)
+Buckingham,0,,12,,0,0,0,0,12,,,145.0,,1,university_of_buckingham (12)
+Burnley,0,,1,,0,0,0,0,1,,,142.0,,1,university_of_lancashire (1)
+Carlisle,0,,6,,0,0,0,0,6,,3.2,128.0,,5,"university_of_cumbria (2), host (1), u_student (1), unest (1), grad_house (1)"
+Carlow,0,,2,,0,0,0,0,2,,,,,2,"carraig_abhainn (1), arinaga (1)"
+Carmarthen,0,,1,,0,0,0,0,1,,,107.0,,1,university_of_wales_trinity_saint_david_uwtsd (1)
+Chelmsford,0,,3,,0,0,0,0,3,,2.96,175.0,,2,"rivermead_islands (2), anglia_ruskin_university_aru (1)"
+Cheltenham,0,,5,,1,0,0,0,4,0.0,3.73,165.0,,3,"university_of_gloucestershire (3), collegiate (1), homes_for_students (1)"
+Chichester,0,,20,,0,0,0,0,20,,3.68,201.0,,2,"university_of_chichester (16), west_dean_college (4)"
+Cirencester,0,,8,,0,0,0,0,8,,,219.0,,1,royal_agricultural_university (8)
+Colchester,0,,17,,5,0,0,6,6,0.0,4.04,165.0,215.0,7,"university_of_essex (8), millenium_investments (3), yugo (2), student_castle (1), mys_living (1)"
+Coleraine,0,,4,,0,0,0,0,4,,,120.5,,1,ulster_university (4)
+Cork,0,,38,,8,0,0,0,30,0.0,4.41,,,17,"university_college_cork (7), yugo (4), brookfield_village (4), fresh (3), college_accommodation_cork (3)"
+Derby,0,,14,,2,0,0,7,5,0.0,4.21,155.0,,7,"university_of_derby (7), homes_for_students (2), staton_young_northgate_limited (1), collegiate (1), six_degrees (1)"
+Donegal,0,,3,,0,0,0,0,3,,,,,2,"cassidy (2), ballyraine_campus (1)"
+Dornoch,0,,1,,0,0,0,0,1,,,167.0,,1,university_of_the_highlands_and_islands_uhi (1)
+Dublin,0,,75,,16,5,0,0,54,0.24,3.94,,,23,"university_college_dublin (13), yugo (8), trinity_college_dublin (7), dublin_city_university (7), mezzino (6)"
+Dumfries And Galloway,0,,2,,0,0,0,0,2,,,175.0,,1,university_of_glasgow (2)
+Dundalk,0,,3,,0,0,0,0,3,,,,,2,"dng_duffy_property_management (2), macfar_property_management (1)"
+Falmouth,0,,8,,1,3,1,0,3,0.8,4.0,182.5,267.5,5,"yugo (2), hello_student (2), bread_and_butter_collective (2), mezzino (1), sanctuary (1)"
+Forres,0,,1,,0,0,0,0,1,,,154.0,,1,glasgow_school_of_art (1)
+Fort William,0,,1,,0,0,0,0,1,,,167.0,,1,university_of_the_highlands_and_islands_uhi (1)
+Galashiels And District,0,,1,,0,0,0,0,1,,,159.0,,1,heriot_watt_university (1)
+Galway,0,,16,,4,0,0,0,12,0.0,4.02,,,13,"university_of_galway (3), mezzino (2), here_students (1), canvas (1), dunaras (1)"
+Gillingham,0,,9,,0,1,0,0,8,1.0,3.67,173.0,,4,"medway_school_of_pharmacy (5), kent_student_accommodation (2), unite (1), crm (1)"
+Gloucester,0,,6,,0,1,0,0,5,1.0,4.08,178.0,,4,"hartpury_university (3), collegiate (1), university_of_gloucestershire (1), aspire_students (1)"
+Grimsby,0,,2,,0,0,0,0,2,,,92.5,,1,university_centre_grimsby (2)
+Hartlepool,0,,3,,0,0,0,0,3,,,129.0,,2,"the_thirteen_group (2), mchale_property (1)"
+Hatfield,0,,4,,0,1,0,0,3,1.0,3.81,209.5,279.0,4,"uliving (1), yugo (1), university_of_hertfordshire (1), student_base (1)"
+Hereford,0,,2,,0,0,0,0,2,,,179.0,,2,"aspire_students (1), relo (1)"
+High Wycombe,0,,3,,0,0,0,0,3,,3.32,162.0,,1,buckinghamshire_new_university (3)
+Inverness,0,,2,,0,0,0,0,2,,,150.5,,2,"university_of_the_highlands_and_islands_uhi (1), scottish_association_for_marine_science (1)"
+Ipswich,0,,3,,0,1,0,0,2,1.0,3.48,140.0,,3,"collegiate (1), amigo_living (1), lea_property_solutions (1)"
+Keele,0,,11,,4,0,0,0,7,0.0,4.04,150.0,,4,"keele_university (5), urban_student_life (4), studentfm (1), amigo_living (1)"
+Limerick,0,,18,,0,0,0,0,18,,,,,8,"university_of_limerick (9), property_management_ireland (3), brookfield_hall (1), thomond_village (1), courtyard_student_village (1)"
+Londonderry,0,,4,,0,0,0,0,4,,,127.5,,1,ulster_university (4)
+Luton,0,,6,,0,1,0,0,5,1.0,3.96,133.0,,4,"collective_property_co (3), clv (1), studio_four (1), apex (1)"
+Maynooth,0,,7,,0,0,0,0,7,,,,,3,"maynooth_university (5), student_accommodation_maynooth (1), the_duke_maymooth (1)"
+Nantwich,0,,1,,0,0,0,0,1,,,156.0,,1,university_centre_reaseheath (1)
+Newport,0,,1,,0,1,0,0,0,1.0,4.03,140.0,,1,mezzino (1)
+Newport (Telford And Wrekin),0,,13,,0,0,0,0,13,,3.77,150.0,,1,harper_adams_university (13)
+Northampton,0,,15,,0,0,0,0,15,,3.45,160.0,,3,"university_of_northampton (9), white_browns (4), zone_students (2)"
+Ormskirk,0,,20,,0,0,0,0,20,,3.64,162.5,,4,"edge_hill_university (10), mccomb_students (8), bloom_properties (1), tiny_pig_student_lettings (1)"
+Paisley,0,,3,,1,0,0,0,2,0.0,3.32,99.0,,2,"university_of_the_west_of_scotland_uws (2), fresh (1)"
+Penryn,0,,3,,0,0,0,0,3,,3.58,198.0,,2,"falmouth_university (2), yugo (1)"
+Perth,0,,1,,0,0,0,0,1,,,151.0,,1,university_of_the_highlands_and_islands_uhi (1)
+Pontefract,0,,1,,0,0,0,0,1,,,,,1,linley_simpson (1)
+Pontypridd,0,,2,,0,0,0,0,2,,3.34,134.5,,1,university_of_south_wales_prifysgol_de_cymru (2)
+Poole,0,,1,,0,1,0,0,0,1.0,3.83,99.0,,1,student_roost (1)
+Royal Leamington Spa,0,,2,,1,0,0,0,1,0.0,4.33,153.5,,2,"mansion_student (1), sureway_property (1)"
+Salisbury,0,,1,,0,0,0,0,1,,,145.0,,1,wiltshire_college_and_university_centre (1)
+Shetland Central,0,,1,,0,0,0,0,1,,,,,1,university_of_the_highlands_and_islands_uhi (1)
+Sidcup,0,,1,,0,0,0,0,1,,,287.0,,1,rose_bruford_college (1)
+Sleat,0,,1,,0,0,0,0,1,,,138.0,,1,university_of_the_highlands_and_islands_uhi (1)
+Sligo,0,,7,,0,0,0,0,7,,,,,7,"ard_nua (1), m_c_property (1), clarion_village (1), st_angela_s_lakeside_aparthotel (1), lila_lake_isle_luxury_apartments (1)"
+South Shields,0,,1,,0,0,0,0,1,,,,,1,tyne_coast_college (1)
+St Andrews,0,,18,,3,0,0,0,15,0.0,3.81,244.0,,3,"university_of_st_andrews (15), student_space (2), hello_student (1)"
+Stafford,0,,3,,0,0,0,0,3,,,97.0,,3,"crm (1), carlton_suites (1), greenpad (1)"
+Stirling,0,,20,,3,0,0,0,17,0.0,3.99,136.0,,3,"university_of_stirling (16), mezzino (3), causeway_house_student_accommodation (1)"
+Stockton-On-Tees,0,,2,,0,0,0,0,2,,3.94,210.0,,1,qed_students (2)
+Sunderland,0,,15,,2,0,0,0,13,0.0,3.72,117.5,,8,"crm (4), university_of_sunderland (3), graysons_properties (3), flow_student (1), redwood_living (1)"
+Telford,0,,1,,0,0,0,0,1,,3.58,,,1,university_of_wolverhampton (1)
+Thurso,0,,1,,0,0,0,0,1,,,,,1,bayhead_bridge_centre (1)
+Trowbridge,0,,1,,0,0,0,0,1,,,182.0,,1,wiltshire_college_and_university_centre (1)
+Truro,0,,1,,0,0,0,0,1,,3.59,,,1,university_of_plymouth (1)
+Walsall,0,,1,,0,0,0,0,1,,,121.0,,1,university_of_wolverhampton (1)
+Waterford,0,,4,,0,0,0,0,4,,,,,3,"south_east_technological_university (2), manor_properties (1), riverwalk_waterford (1)"
+Westlakes,0,,1,,0,0,0,0,1,,,146.0,,1,university_of_lancashire (1)
+Winchester,0,,10,,4,0,0,0,6,0.0,3.87,166.0,,5,"university_of_winchester (5), collegiate (2), unilife (1), host (1), university_of_southampton (1)"
+Worcester,0,,11,,0,0,0,0,11,,3.4,195.0,,2,"university_of_worcester (9), living_worcester (2)"
+Writtle,0,,7,,0,0,0,0,7,,,135.0,,2,"writtle_college (4), writtle_university_college (3)"

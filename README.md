@@ -19,3 +19,6 @@ Sample response for UI work: `mock/report.json` (Stratford, values marked `assum
 
 ## Rules
 - Never commit `.env`, keys, or MSCI / Cortile data (`data/` is gitignored).
+
+## Scrapers and market data
+See `scrapers/README.md` (PBSA operator scrapers, HESA demand, city reports; CSVs in `data/`).

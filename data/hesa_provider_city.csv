@@ -1,0 +1,305 @@
+﻿ukprn,provider,students,city,match_method,russell_group
+10007773,The Open University,124580,,excluded_distance_or_multisite,0
+10007784,University College London,51315,London,cited_nearby,1
+10007798,The University of Manchester,46305,Manchester,cited_nearby,1
+10003645,King's College London,40870,London,cited_nearby,1
+10006840,The University of Birmingham,40025,Birmingham,cited_nearby,1
+10004180,The Manchester Metropolitan University,39395,Manchester,cited_nearby,0
+10007790,The University of Edinburgh,39015,Edinburgh,cited_nearby,1
+10007794,The University of Glasgow,38710,Glasgow,cited_nearby,1
+10001143,Canterbury Christ Church University,38385,Canterbury,manual,0
+10007154,University of Nottingham,36460,Nottingham,cited_nearby,1
+10007164,"University of the West of England, Bristol",36380,Bristol,name_contains_city,0
+10004797,The Nottingham Trent University,35435,Nottingham,cited_nearby,0
+10007795,The University of Leeds,34580,Leeds,cited_nearby,1
+10000291,Anglia Ruskin University,34370,Cambridge,cited_nearby,0
+10007147,University of Hertfordshire,33575,,,0
+10007792,The University of Exeter,33105,Exeter,cited_nearby,1
+10007807,Ulster University,32915,Belfast,cited_nearby,0
+10005451,Arden University,32740,,excluded_distance_or_multisite,0
+10007786,The University of Bristol,32435,Bristol,cited_nearby,1
+10007140,Birmingham City University,31875,Birmingham,cited_nearby,0
+10007814,Cardiff University,31505,Cardiff,cited_nearby,1
+10031982,BPP University,31490,,excluded_distance_or_multisite,0
+10006842,The University of Liverpool,31050,Liverpool,cited_nearby,1
+10005790,Sheffield Hallam University,30765,Sheffield,cited_nearby,0
+10001282,University of Northumbria at Newcastle,29685,Newcastle,name_contains_city,0
+10001726,Coventry University,29505,Coventry,cited_nearby,0
+10007146,The University of Greenwich,29410,London,cited_nearby,0
+10000571,Bath Spa University,28970,Bath,cited_nearby,0
+10007157,The University of Sheffield,28280,Sheffield,cited_nearby,1
+10007163,The University of Warwick,27880,Coventry,cited_nearby,1
+10001478,"City St George's, University of London",27230,London,cited_nearby,0
+10007799,Newcastle University,27230,Newcastle,cited_nearby,1
+10007144,The University of East London,26755,London,cited_nearby,0
+10007774,The University of Oxford,26225,Oxford,cited_nearby,1
+10004930,Oxford Brookes University,26095,Oxford,cited_nearby,0
+10007156,The University of Salford,26030,Salford,cited_nearby,0
+10007158,The University of Southampton,25785,Southampton,cited_nearby,1
+10003957,Liverpool John Moores University,25650,Liverpool,cited_nearby,0
+10005343,Queen's University Belfast,25080,Belfast,cited_nearby,1
+10007775,Queen Mary University of London,24640,London,cited_nearby,1
+10007155,The University of Portsmouth,24015,Portsmouth,cited_nearby,0
+10007141,University of Lancashire,23865,Preston,cited_nearby,0
+10007166,The University of Wolverhampton,23665,Wolverhampton,cited_nearby,0
+10001883,De Montfort University,23155,Leicester,cited_nearby,0
+10007162,"University of the Arts, London",22950,London,cited_nearby,0
+10007788,The University of Cambridge,22565,Cambridge,cited_nearby,1
+10003270,"Imperial College of Science, Technology and Medicine",22525,London,manual,1
+10007167,The University of York,22345,York,cited_nearby,1
+10003861,Leeds Beckett University,22290,Leeds,cited_nearby,0
+10007805,The University of Strathclyde,22225,Glasgow,cited_nearby,0
+10007762,Glasgow Caledonian University,22205,Glasgow,cited_nearby,0
+10007161,Teesside University,21570,Middlesbrough,manual,0
+10007802,The University of Reading,21370,Reading,cited_nearby,0
+10007143,University of Durham,21150,Durham,name_contains_city,1
+10007165,The University of Westminster,20940,London,cited_nearby,0
+10007793,University of South Wales,20790,Cardiff,cited_nearby,0
+10007850,The University of Bath,20530,Bath,cited_nearby,0
+10007159,The University of Sunderland,20280,,,0
+10039956,The University of Law,19730,,excluded_distance_or_multisite,0
+10007759,Aston University,19565,Birmingham,cited_nearby,0
+10007151,The University of Lincoln,19560,Lincoln,cited_nearby,0
+10007800,The University of the West of Scotland,19105,Glasgow,cited_nearby,0
+10007796,The University of Leicester,18990,Leicester,cited_nearby,0
+10007855,Swansea University,18985,Swansea,cited_nearby,0
+10004113,Loughborough University,18955,Loughborough,manual,0
+10007851,University of Derby,18895,,,0
+10003678,Kingston University,18815,Kingston,name_contains_city,0
+10007768,The University of Lancaster,18620,Lancaster,name_contains_city,0
+10000975,Buckinghamshire New University,18490,,,0
+10007801,University of Plymouth,17945,Plymouth,cited_nearby,0
+10006566,The University of West London,17690,London,cited_nearby,0
+10000886,The University of Brighton,17405,Brighton,cited_nearby,0
+10007806,The University of Sussex,17290,Brighton,cited_nearby,0
+10006299,University of Staffordshire,17085,Stoke-On-Trent,cited_nearby,0
+10007789,The University of East Anglia,16945,Norwich,cited_nearby,0
+10000824,Bournemouth University,16860,Bournemouth,cited_nearby,0
+10007160,The University of Surrey,16430,Guildford,cited_nearby,0
+10007148,The University of Huddersfield,16360,Huddersfield,cited_nearby,0
+10007150,The University of Kent,16070,Canterbury,manual,0
+10004078,London South Bank University,15760,London,cited_nearby,0
+10007858,University of Wales Trinity Saint David,15415,Swansea,cited_nearby,0
+10006427,University for the Creative Arts,15110,,,0
+10004351,Middlesex University,15020,London,manual,0
+10005500,Robert Gordon University,14840,Aberdeen,cited_nearby,0
+10007149,The University of Hull,14715,Hull,manual,0
+10007791,The University of Essex,14015,,,0
+10007783,The University of Aberdeen,13930,Aberdeen,cited_nearby,0
+10007772,Edinburgh Napier University,13805,Edinburgh,cited_nearby,0
+10003863,Leeds Trinity University,13715,Leeds,cited_nearby,0
+10007767,Keele University,13680,Stoke-On-Trent,cited_nearby,0
+10004048,London Metropolitan University,13665,London,cited_nearby,0
+10014001,University of Suffolk,13590,,,0
+10007848,University of Chester,13520,Chester,cited_nearby,0
+10007138,The University of Northampton,13505,,,0
+10007852,The University of Dundee,13435,Dundee,cited_nearby,0
+10007823,Edge Hill University,13330,,,0
+10005553,Royal Holloway and Bedford New College,13115,,,0
+10004063,London School of Economics and Political Science,12950,London,cited_nearby,1
+10000961,Brunel University London,12705,London,name_contains_city,0
+10006841,University of Greater Manchester,12570,Manchester,name_contains_city,0
+10007854,Cardiff Metropolitan University,12265,Cardiff,cited_nearby,0
+10007713,York St John University,12150,York,cited_nearby,0
+10007776,Roehampton University,11945,London,manual,0
+10007804,The University of Stirling,11750,,,0
+10007803,The University of St. Andrews,11645,,,0
+10007785,The University of Bradford,10770,,,0
+10007857,Bangor University,9935,Bangor,cited_nearby,0
+10007764,Heriot-Watt University,9845,Edinburgh,cited_nearby,0
+10008455,Regent College London,9140,London,name_contains_city,0
+10007842,University of Cumbria,9065,,,0
+10007152,University of Bedfordshire,9000,,,0
+10007856,Aberystwyth University,8970,,,0
+10007139,University of Worcester,8755,,,0
+10005389,Ravensbourne University London,8685,London,cited_nearby,0
+10007114,University of the Highlands and Islands,8685,,,0
+10055902,Multiverse,8565,,,0
+10007833,Wrexham University,8560,Wrexham,name_contains_city,0
+10006022,Southampton Solent University,8515,Southampton,name_contains_city,0
+10008640,Falmouth University,8185,,,0
+10007145,University of Gloucestershire,8135,,,0
+10002718,Goldsmiths College,7910,,,0
+10007760,Birkbeck College,7720,,,0
+10003614,The University of Winchester,6840,,,0
+10000712,University College Birmingham,6760,Birmingham,cited_nearby,0
+10005337,"Queen Margaret University, Edinburgh",6590,Edinburgh,cited_nearby,0
+10037544,BIMM University,6435,,,0
+10007780,SOAS University of London,6400,London,cited_nearby,0
+10007137,The University of Chichester,6375,,,0
+10007843,"St Mary's University, Twickenham",5965,,,0
+10007832,Birmingham Newman University,5500,Birmingham,cited_nearby,0
+10003956,Liverpool Hope University,5330,Liverpool,cited_nearby,0
+10040812,Harper Adams University,5285,,,0
+10007822,Cranfield University,5000,,,0
+10007849,Abertay University,4990,Dundee,cited_nearby,0
+10037449,University of St Mark and St John,4850,,,0
+10000385,The Arts University Bournemouth,3740,Bournemouth,cited_nearby,0
+10008173,University of the Built Environment,3580,,,0
+10007787,The University of Buckingham,3455,,,0
+10007797,University of London (Institutes and activities),3280,London,cited_nearby,0
+10002681,Glasgow School of Art,2845,Glasgow,cited_nearby,0
+10004775,Norwich University of the Arts,2765,Norwich,cited_nearby,0
+10086591,Regent's University London Limited,2625,London,name_contains_city,0
+10007779,The Royal Veterinary College,2575,London,cited_nearby,0
+10007777,Royal College of Art,2555,,,0
+10080811,Hartpury University,2550,,,0
+10007811,Lincoln Bishop University,2360,Lincoln,cited_nearby,0
+10007769,London Business School,2275,London,cited_nearby,0
+10035638,Institute of Contemporary Music Performance,2250,,,0
+10003854,Leeds Arts University,2175,Leeds,cited_nearby,0
+10003239,ICON College of Technology and Management,2160,,,0
+10000163,Health Sciences University,2110,Bournemouth,cited_nearby,0
+10008098,Study Group,1945,,,0
+10030129,Nelson College London Ltd,1875,London,name_contains_city,0
+10042500,Global Banking School Limited,1850,,,0
+10005700,SRUC,1820,,,0
+10021682,Kaplan Open Learning (Essex) Limited,1805,,,0
+10003212,Hult International Business School Ltd,1730,,,0
+10005127,Arts University Plymouth,1610,Plymouth,cited_nearby,0
+10031239,LMA,1490,,,0
+10008010,Stranmillis University College,1430,Belfast,cited_nearby,0
+10030391,London Churchill College Ltd,1425,London,name_contains_city,0
+10009527,Istituto Marangoni Limited,1355,,,0
+10008017,Trinity Laban Conservatoire of Music and Dance,1315,London,cited_nearby,0
+10034449,Leeds Conservatoire,1300,Leeds,cited_nearby,0
+10005561,Royal Conservatoire of Scotland,1230,Glasgow,cited_nearby,0
+10005470,"Richmond, The American International University in London",1165,London,name_contains_city,0
+10003945,The Liverpool Institute for Performing Arts,1095,Liverpool,cited_nearby,0
+10023777,Mont Rose College of Management and Sciences Limited,1075,,,0
+10048199,Northeastern University London,1060,London,name_contains_city,0
+10008026,St Mary's University College,1060,Belfast,cited_nearby,0
+10007825,Guildhall School of Music and Drama,1050,London,cited_nearby,0
+10004061,Bloomsbury Institute,1035,,,0
+10007816,The Royal Central School of Speech and Drama,1015,London,cited_nearby,0
+10020381,Tavistock and Portman NHS Foundation Trust,1005,,,0
+10007778,Royal College of Music,995,London,cited_nearby,0
+10041898,Apex College,985,,,0
+10022285,London School of Management Education,960,London,name_contains_city,0
+10007771,London School of Hygiene and Tropical Medicine,945,London,name_contains_city,0
+10007837,Royal Northern College of Music,935,Manchester,cited_nearby,0
+10005545,Royal Agricultural University,925,,,0
+10002313,ESCP Europe Business School,890,,,0
+10082570,Kaplan International Colleges U.K. Limited,885,,,0
+10008071,AA School of Architecture,880,,,0
+10005523,Rose Bruford College of Theatre and Performance,870,,,0
+10067853,ACM Guildford Limited,865,Guildford,name_contains_city,0
+10042570,Escape Studios,860,,,0
+10019178,Point Blank Music School,855,London,cited_nearby,0
+10082828,College of Legal Practice Limited,835,,,0
+10090839,National Institute of Teaching,835,,,0
+10007820,Grŵp Llandrillo Menai,825,,,0
+10023871,Results Consortium Limited,795,,,0
+10007835,Royal Academy of Music,775,London,cited_nearby,0
+10015506,The London College,725,London,name_contains_city,0
+10089591,Walbrook Institute London Limited,715,London,name_contains_city,0
+10007761,Courtauld Institute of Art,630,London,cited_nearby,0
+10057213,CEG UFP Limited,615,,,0
+10004511,The National Film and Television School,585,,,0
+10004320,The Metanoia Institute,545,,,0
+10008899,The Ashridge (Bonar Law Memorial) Trust,535,,,0
+10004450,Mountview Academy of Theatre Arts,535,,,0
+10026921,Christ the Redeemer College,505,,,0
+10086359,Caspian School of Academics,500,,,0
+10003758,LAMDA Limited,490,,,0
+10081618,The Council of the Inns of Court,475,,,0
+10057622,The School of Information Risk Management,440,,,0
+10045476,Met Film School Limited,435,,,0
+10010213,The City College,420,,,0
+10022087,Futureworks,415,,,0
+10021550,Centre for Alternative Technology,410,,,0
+10015688,David Game College Ltd,400,,,0
+10068157,University Centre Peterborough,395,,,0
+10003324,The Institute of Cancer Research,370,,,0
+10066502,The College of Health Ltd,365,,,0
+10000381,Arts Educational Schools,340,,,0
+10003798,Le Cordon Bleu Limited,340,,,0
+10030776,St Mellitus College,325,,,0
+10008397,Norland College,320,,,0
+10013220,Institute of Art - London Limited,315,London,name_contains_city,0
+10039082,City and Guilds of London Art School,305,London,name_contains_city,0
+10004079,London Studio Centre,305,London,name_contains_city,0
+10004036,London Film School Limited,300,London,name_contains_city,0
+10019368,London College of Business Studies,280,London,name_contains_city,0
+10020038,Commonwealth College of Excellence,280,,,0
+10022047,Empire College London Limited,270,London,name_contains_city,0
+10008816,Northern School of Contemporary Dance,270,Leeds,cited_nearby,0
+10032282,The Queen's Foundation for Ecumenical Theological Education,265,,,0
+10023458,The Sherwood Psychotherapy Training Institute Limited,265,,,0
+10004075,London School of Theology,260,London,name_contains_city,0
+10007361,Waverley Abbey College,260,,,0
+10032288,West Dean College,255,,,0
+10004028,"The Place, London Contemporary Dance School (LCDS)",235,London,name_contains_city,0
+10003958,Liverpool School of Tropical Medicine,210,Liverpool,cited_nearby,0
+10090767,St Padarn's Institute,210,,,0
+10005544,Royal Academy of Dance,200,,,0
+10024024,Central Film School,195,,,0
+10009292,Royal Academy of Dramatic Art,195,,,0
+10036456,Academy of Live Technology Ltd,185,,,0
+10067355,Dyson Technical Training Limited,180,,,0
+10023454,Moorlands College,175,,,0
+10066143,Paris Dauphine International,175,,,0
+10032036,Amity University [IN] London,170,London,name_contains_city,0
+10042737,UK Business College Ltd,170,,,0
+10021100,Regents Theological College,165,,,0
+10083403,The Engineering and Design Institute London,165,London,name_contains_city,0
+10030497,Anglo Skills College,160,,,0
+10013109,London Bridge Business Academy,160,London,name_contains_city,0
+10032277,The Minster Centre,160,,,0
+10005378,Rambert School,160,,,0
+10025197,University Centre Quayside Limited,155,,,0
+10088214,S P Jain London School of Management Limited,155,London,name_contains_city,0
+10001546,The College of Integrated Chinese Medicine,150,,,0
+10004035,The Film Education Training Trust Limited,150,,,0
+10004740,Northern College of Acupuncture,145,,,0
+10082743,ThinkSpace Education Limited,145,,,0
+10007912,Cliff College,135,,,0
+10067623,The London Interdisciplinary School Ltd,135,London,name_contains_city,0
+10004538,Nazarene Theological College,135,,,0
+10004747,St Hild College,135,,,0
+10001264,Central School of Ballet,130,London,cited_nearby,0
+10032295,Emmanuel Theological College,130,,,0
+10062810,The London School of Architecture,125,London,name_contains_city,0
+10032072,The Cambridge Theological Federation,120,Cambridge,name_contains_city,0
+10032594,London School of Academics Ltd,120,London,name_contains_city,0
+10010308,Cambridge Arts and Sciences Limited,115,Cambridge,name_contains_city,0
+10023452,The Markfield Institute of Higher Education,115,,,0
+10082728,INTO University Partnerships Limited,110,,,0
+10023453,Matrix College of Counselling and Psychotherapy Ltd,110,,,0
+10067406,New Model Institute for Technology and Engineering (NMITE),110,,,0
+10009614,Grŵp NPTC Group,110,,,0
+10023464,Trinity College Bristol,105,Bristol,name_contains_city,0
+10049370,MLA College,105,,,0
+10020416,Missio Dei,100,,,0
+10023456,Newbold College,100,,,0
+10067601,JSA Education Group Ltd.,95,,,0
+10001386,Chicken Shed Theatre Company,90,,,0
+10023442,The College of Osteopaths,85,,,0
+10022944,Stratford College London (SCL),85,London,name_contains_city,0
+10067388,The Institute of Ismaili Studies,75,,,0
+10029682,The Islamic College,75,,,0
+10009612,Luther King House Educational Trust,75,,,0
+10008912,Coleg Gwent,70,,,0
+10001444,National Centre for Circus Arts,70,,,0
+10003746,Laine Theatre Arts,65,,,0
+10092025,ACMET London College,50,London,name_contains_city,0
+10027603,International College of Musical Theatre,50,,,0
+10042679,International Business College Manchester Limited,50,Manchester,name_contains_city,0
+10062833,Raindance Educational Services Limited,50,,,0
+10000894,Bristol Baptist College,45,Bristol,name_contains_city,0
+10034450,Cardiff and Vale College,45,Cardiff,name_contains_city,0
+10000216,All Nations Christian College Limited,45,,,0
+10083464,Peking University HSBC Business School UK Campus,45,,,0
+10007810,Birmingham Christian College,35,Birmingham,name_contains_city,0
+10041295,Coleg Cambria,35,,,0
+10091065,Collective Acting Studio,35,,,0
+10021256,William Booth College,35,,,0
+10034324,Court Theatre Training Company Ltd,30,,,0
+10030408,Gower College Swansea,30,Swansea,name_contains_city,0
+10029147,London School of Jewish Studies,30,London,name_contains_city,0
+10065543,London Brookes College,30,London,name_contains_city,0
+10003284,Inchbald School of Design Limited,25,,,0
+10083476,The King's Foundation,25,,,0
+10020118,Higher Rhythm Limited,5,,,0
+10029843,Waltham International College Limited,5,,,0
+10008362,London School of Science and Technology Limited,0,London,name_contains_city,0
