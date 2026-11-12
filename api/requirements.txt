@@ -6,3 +6,4 @@ osmnx==2.0.0
 pystac-client==0.8.5
 python-multipart==0.0.20
 requests==2.32.3
+mcp==1.27.0

@@ -8,6 +8,7 @@ run_pipeline() walks through the steps and returns mock/report.json, flagged "mo
 Replace run_pipeline() with the real agent; keep the response shape.
 """
 import asyncio
+import contextlib
 import json
 import os
 import uuid
@@ -19,6 +20,7 @@ from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
 from integrations import build_router
+from mcp_app import mcp
 
 BASE = Path(__file__).parent
 UPLOADS = Path(os.getenv("UPLOAD_DIR", BASE / "cache" / "uploads"))
@@ -37,7 +39,16 @@ STEPS = [
     "Verdict",
 ]
 
-app = FastAPI(title="dealt")
+mcp_http = mcp.streamable_http_app()  # route /mcp, served at https://demo3.ai-vance.de/api/mcp behind Caddy
+
+
+@contextlib.asynccontextmanager
+async def lifespan(_app):
+    async with mcp.session_manager.run():
+        yield
+
+
+app = FastAPI(title="dealt", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[o.strip() for o in os.getenv("CORS_ORIGINS", "http://localhost:3000").split(",") if o.strip()],
@@ -164,3 +175,4 @@ def what_if(payload: dict):
 
 
 app.include_router(build_router(start_job))
+app.router.routes.extend(mcp_http.routes)  # MCP for Claude / Grok / ChatGPT (see mcp_app.py)
