@@ -42,6 +42,14 @@ def _load():
 
 
 def benchmark(city="London"):
+    # Cortile's API sits behind a Cloudflare challenge that blocks datacenter IPs: the server can use a
+    # pre-computed aggregate (medians only, no raw rows) passed via env CORTILE_BENCHMARK_JSON.
+    pre = _env().get("CORTILE_BENCHMARK_JSON")
+    if pre:
+        try:
+            return json.loads(pre)
+        except Exception:
+            pass
     d = _load()
     if not d:
         return None
