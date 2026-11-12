@@ -14,7 +14,7 @@ Until the real pipeline is wired in, the API returns `mock/report.json` with `"m
 ```bash
 cd ~/grokbothacks && pwd     # must print /Users/cyruslang/grokbothacks
 ssh root@46.224.24.118 "mkdir -p /opt/demo3/app"
-rsync -avz --exclude node_modules --exclude .next --exclude .env --exclude .git --exclude __pycache__ ./ root@46.224.24.118:/opt/demo3/app/
+rsync -avz --chown=demo3:demo3 --exclude node_modules --exclude .next --exclude .env --exclude .git --exclude __pycache__ ./ root@46.224.24.118:/opt/demo3/app/
 ```
 
 ## 2. Build and start (server)
@@ -53,7 +53,7 @@ Open https://demo3.ai-vance.de: the Stratford sample loads automatically. Voice 
 
 ```bash
 # Mac
-cd ~/grokbothacks && rsync -avz --exclude node_modules --exclude .next --exclude .env --exclude .git --exclude __pycache__ ./ root@46.224.24.118:/opt/demo3/app/
+cd ~/grokbothacks && rsync -avz --chown=demo3:demo3 --exclude node_modules --exclude .next --exclude .env --exclude .git --exclude __pycache__ ./ root@46.224.24.118:/opt/demo3/app/
 # Server
 cd /opt/demo3/app && docker compose up -d --build
 ```
