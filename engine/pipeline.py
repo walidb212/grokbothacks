@@ -1,6 +1,6 @@
 """Real deal qualification pipeline: V7 extraction -> comps -> MSCI exit yield -> NOI -> returns -> verdict -> memory."""
 import json, pathlib, re, statistics
-from engine import memory, model, v7
+from engine import market, memory, model, v7
 from engine.model import fig
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -49,9 +49,15 @@ def analyze(paths, comment="", step=print):
             facts = ext["facts"]
             step("Location & demographics")
             beds, beds_fact = _beds(facts)
+            addr = next((f["value"] for f in facts if f["metric"] == "address"), "")
+            geo = market.geocode(addr)
+            city = "London" if not geo or geo.get("region") == "London" else (geo.get("district") or "London")
+            location = market.demand(city)
             step("Room-rate comps")
-            rates, comps = _rates_from_comps()
-            rooms = [{"type": k, "beds": round(beds * s), "weekly_rate": rates[k][0], "weeks": 51} for k, s in ROOM_MIX.items()]
+            comps = market.comps(geo["lat"], geo["lng"]) if geo else []
+            mr = market.rates_from_comps(comps, DEFAULT_RATES)
+            rates = {k: (v[0], "web" if v[2] else None) for k, v in mr.items()}
+            rooms = [{"type": k, "beds": round(beds * s), "weekly_rate": mr[k][0], "weeks": mr[k][1]} for k, s in ROOM_MIX.items()]
             step("Market yield from MSCI")
             exit_y = MSCI_EXIT_YIELD["value"]
             step("NOI build-up")
@@ -67,7 +73,7 @@ def analyze(paths, comment="", step=print):
                 "room_types": [{"type": r["type"], "beds": r["beds"], "weeks": r["weeks"],
                                 "weekly_rate": fig(f"{r['type']}_rate", f"{r['type']} rate", r["weekly_rate"], "GBP/week",
                                                    source=rates[r["type"]][1] or "assumption")} for r in rooms],
-                "comps": comps, "noi": noi["figures"],
+                "comps": comps, "location": location, "geo": geo, "noi": noi["figures"],
                 "assumptions": [fig("cost_per_bed", "Build cost per bed", COST_PER_BED, "GBP"),
                                 fig("room_mix", "Room mix", ROOM_MIX, None), fig("occupancy", "Occupancy", 0.97, "%"),
                                 fig("opex_pct", "OPEX ratio", 0.35, "% of gross")],
