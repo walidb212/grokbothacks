@@ -28,6 +28,21 @@ def _deal_text(asset):
             src = f.get("source", {})
             lines.append(f"{f.get('label') or f['metric']}: {f.get('value')} {f.get('unit') or ''} "
                          f"[source: {src.get('type')} {src.get('ref') or ''} {src.get('page') or ''}]".strip())
+    ap = asset.get("appraisal") or {}
+    for key in ("max_land_bid", "land_used"):
+        f = ap.get(key)
+        if f:
+            lines.append(f"{f['label']}: {f['value']} {f.get('unit') or ''}")
+    for f in ap.get("debt", []):
+        lines.append(f"{f['label']}: {f['value']} {f.get('unit') or ''}")
+    alt = ap.get("alternatives") or {}
+    if alt:
+        lines.append(f"Recommended use: {alt.get('recommended')} ({alt.get('metric')})")
+    uni = asset.get("target_university")
+    if uni:
+        lines.append(f"Serves university: {uni['name']} ({uni['distance_km']} km)")
+    for c in asset.get("comps", []):
+        lines.append(f"Comp: {c['operator']} {c['property_name']} {c['distance_km']} km, rooms {c['rooms']} [{c['url']}]")
     return "\n".join(lines)
 
 
