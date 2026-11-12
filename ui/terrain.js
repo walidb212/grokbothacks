@@ -1,6 +1,6 @@
 // Dot terrain background: a perspective field of dots that drifts like slow
 // swell and lifts (tinted amber) under the pointer. Same style as the
-// ai-vance.de footer, recoloured for the white theme.
+// ai-vance.de footer, light dots on the black theme.
 (function () {
   "use strict";
   const canvas = document.getElementById("terrain");
@@ -9,8 +9,8 @@
 
   const ROWS = 34;          // depth rows
   const RADIUS = 150;       // pointer influence radius (px)
-  const INK = [17, 18, 22];       // --ink
-  const AMBER = [201, 119, 31];   // --amber
+  const INK = [237, 237, 235];    // dot colour
+  const AMBER = [240, 167, 92];   // hover tint
   const reduced = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   let w = 0, h = 0, cols = 0, trail = null;
@@ -43,7 +43,7 @@
       const baseY = top + span * depth;
       const spread = 0.52 + 1.06 * depth;            // rows widen toward the viewer
       const size = 0.45 + depth * 1.35;
-      const alpha = 0.05 + depth * 0.3;
+      const alpha = 0.07 + depth * 0.4;
       for (let col = 0; col < cols; col++) {
         const u = col / (cols - 1) - 0.5;
         const x = w * 0.5 + u * w * spread;
@@ -69,7 +69,7 @@
             + Math.round(INK[1] + (AMBER[1] - INK[1]) * k) + ","
             + Math.round(INK[2] + (AMBER[2] - INK[2]) * k) + "," + a.toFixed(3) + ")";
         } else {
-          ctx.fillStyle = "rgba(17,18,22," + a.toFixed(3) + ")";
+          ctx.fillStyle = "rgba(237,237,235," + a.toFixed(3) + ")";
         }
         if (r < 1.2) ctx.fillRect(x - r, y - r, r * 2, r * 2);
         else { ctx.beginPath(); ctx.arc(x, y, r, 0, 6.2832); ctx.fill(); }
