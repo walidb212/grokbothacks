@@ -22,7 +22,7 @@ AMENITY_FLAGS = {
     "games_room": r"games|pool table|gaming",
     "social_space": r"common room|lounge|social|communal",
     "outdoor_space": r"courtyard|terrace|garden|roof",
-    "bills_included": r"bills.{0,15}includ|all.?inclusive|inclusive of bills|utilit|electric.*water",
+    "bills_included": r"bills.{0,15}includ|all.?inclusive|inclusive of bills|utilit|electric.*water|water.*electric",
     "wifi": r"wi.?fi|broadband|internet",
 }
 
