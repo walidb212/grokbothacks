@@ -1,7 +1,7 @@
 """Deal memory with cognee: every analysed deal goes into a knowledge graph
 (asset, location, tenants, verdict, returns) so we can ask questions across the whole deal flow.
-Needs in .env: LLM_API_KEY=... (cognee uses it for cognify + embeddings)."""
-import asyncio, json, os
+Uses cognee cloud: COGNEE_API_KEY, COGNEE_API_URL, COGNEE_TENANT_ID in .env."""
+import json
 from engine.v7 import _env
 
 
@@ -16,8 +16,7 @@ def _cloud():
 
 
 def _ready():
-    e = _env()
-    return bool(_cloud() or e.get("LLM_API_KEY"))
+    return bool(_cloud())
 
 
 def _deal_text(asset):
@@ -46,16 +45,6 @@ def _deal_text(asset):
     return "\n".join(lines)
 
 
-async def _remember(texts):
-    import cognee
-    await cognee.add(texts, dataset_name="deal_flow")
-    await cognee.cognify(datasets=["deal_flow"])
-
-
-async def _ask(question):
-    import cognee
-    res = await cognee.search(query_text=question)
-    return [str(r) for r in res]
 
 
 def remember_report(report):
@@ -71,10 +60,7 @@ def remember_report(report):
         requests.post(f"{base}/cognify", headers={**h, "Content-Type": "application/json"},
                       json={"datasets": ["deal_flow"]}, timeout=300).raise_for_status()
         return True
-    if not _ready():
-        return False
-    asyncio.run(_remember(texts))
-    return True
+    return False
 
 
 def ask(question):
@@ -92,6 +78,4 @@ def ask(question):
         for item in (res if isinstance(res, list) else [res]):
             out += item.get("search_result", []) if isinstance(item, dict) else [str(item)]
         return out
-    if not _ready():
-        return ["Deal memory not configured (LLM_API_KEY missing in .env)."]
-    return asyncio.run(_ask(question))
+    return ["Deal memory not configured (COGNEE_API_KEY / COGNEE_API_URL missing)."]

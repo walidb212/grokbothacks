@@ -95,9 +95,11 @@ mcp = FastMCP(
 
 
 @mcp.tool()
-async def qualify_brochure(pdf_url: str, comment: str = "") -> dict:
+async def qualify_brochure(pdf_url: str, comment: str = "", exit_yield: float = 0, exit_yield_ref: str = "") -> dict:
     """Qualify a deal from a sale brochure PDF URL (e.g. an email attachment link): V7 extraction, comps, MSCI exit yield,
-    NOI, returns, GO / NO-GO. Returns a job_id; call get_report(job_id) after ~60 seconds."""
+    NOI, returns, GO / NO-GO. Returns a job_id; call get_report(job_id) after ~60 seconds.
+    If you have the MSCI MCP connected, first get the market cap rate (get_rca_trendtracker / get_rca_peerfinder)
+    and pass it as exit_yield (fraction, e.g. 0.055) with exit_yield_ref naming the MSCI series or deals."""
     if "start_job" not in HOOKS:
         return {"error": "The pipeline is only available on the hosted server."}
     async with httpx.AsyncClient(timeout=60, follow_redirects=True) as c:
@@ -105,7 +107,8 @@ async def qualify_brochure(pdf_url: str, comment: str = "") -> dict:
     if r.status_code != 200 or not r.content.startswith(b"%PDF"):
         return {"error": f"Could not download a PDF from {pdf_url} ({r.status_code})"}
     name = pathlib.Path(httpx.URL(pdf_url).path).name or "brochure.pdf"
-    job_id = await HOOKS["start_job"]([(name if name.lower().endswith(".pdf") else name + ".pdf", r.content)], comment)
+    opts = {"exit_yield": exit_yield, "exit_yield_ref": exit_yield_ref or None} if exit_yield else None
+    job_id = await HOOKS["start_job"]([(name if name.lower().endswith(".pdf") else name + ".pdf", r.content)], comment, opts)
     return {"job_id": job_id, "status": "running", "report_url": report_url(job_id), "next": "Call get_report(job_id) in about a minute."}
 
 
