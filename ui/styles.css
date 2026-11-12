@@ -401,9 +401,15 @@ body.report-open { overflow: hidden; }
   .composer textarea { font-size: 16px; }
   .email { grid-template-columns: minmax(0, 1fr); }
   .email button { grid-column: 1; grid-row: auto; justify-self: start; margin-top: 6px; }
-  .topbar .brand { font-size: 0; gap: 0; }
-  .topbar .brand-mark { font-size: 15px; }
+
+
 }
 /* the composer is its own stacking context (backdrop-filter); keep its menu above the chips */
 .composer { z-index: 3; }
 .quick { position: relative; z-index: 1; }
+
+/* dealt wordmark: Instrument Sans Bold, evidence-amber dot in the bowl of the "d" */
+.wordmark { position: relative; display: inline-block; font-family: var(--sans); font-weight: 700; letter-spacing: -0.015em; line-height: 1; color: #f0eff5; font-size: 26px; }
+.wm-dot { position: absolute; left: var(--dot-x, .30em); top: var(--dot-y, .612em); width: .115em; height: .115em; border-radius: 50%; background: var(--amber); transform: translate(-50%, -50%); }
+.brand .wordmark { font-size: 26px; }
+.wordmark-hero { font-size: clamp(56px, 8vw, 92px); margin-bottom: -4px; }

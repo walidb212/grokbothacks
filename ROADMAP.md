@@ -1,4 +1,4 @@
-# Deal Qualification Agent: roadmap
+# dealt: roadmap
 
 From brochure to investment committee: drop a sale brochure, get a traced GO / NO-GO with returns, comps and the plan to run the asset.
 
