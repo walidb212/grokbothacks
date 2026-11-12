@@ -44,7 +44,7 @@ DR_ISSUER = os.getenv("DEALROOM_OAUTH_ISSUER", "https://mcp.dealroom.co")
 DR_SCOPES = "openid read:current_user offline_access"
 
 XAI_BASE = os.getenv("XAI_API_BASE", "https://api.x.ai/v1")
-XAI_MODEL = os.getenv("XAI_MODEL", "grok-4")
+XAI_MODEL = os.getenv("XAI_MODEL", "grok-4.7")
 
 StartJob = Callable[[List[Tuple[str, bytes]], str], Awaitable[str]]
 
