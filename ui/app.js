@@ -550,7 +550,7 @@ function ask(text) {
 
 // ---------- chat shell ----------
 const chatLog = [];          // [{role, content}] sent to /api/chat
-let integrations = { outlook: {}, dealroom: {}, llm: {} };
+let integrations = { outlook: {}, gmail: {}, dealroom: {}, llm: {} };
 let busy = false;
 
 // Small, safe markdown: escape first, then add a few inline/block rules.
@@ -698,14 +698,19 @@ async function refreshIntegrations() {
   $("outlook-badge").textContent = o.connected ? "Connected" : "Connect";
   $("outlook-badge").classList.toggle("on", !!o.connected);
   $("outlook-state").textContent = o.connected ? (o.account || "Inbox connected") : (o.configured === false ? "Needs Azure app keys on the server" : "Read new deal emails");
+  const g = integrations.gmail || {};
+  $("gmail-badge").textContent = g.connected ? "Connected" : "Connect";
+  $("gmail-badge").classList.toggle("on", !!g.connected);
+  $("gmail-state").textContent = g.connected ? (g.account || "Inbox connected") : "Read new deal emails";
   $("dealroom-badge").textContent = dr.connected ? "Connected" : "Connect";
   $("dealroom-badge").classList.toggle("on", !!dr.connected);
   $("dealroom-state").textContent = dr.connected ? "Dealroom MCP connected" : "Investors, companies, transactions";
-  $("sources").innerHTML = [o.connected && "Outlook", dr.connected && "Dealroom"].filter(Boolean).map((n) => `<span>${n}</span>`).join("");
+  $("sources").innerHTML = [o.connected && "Outlook", g.connected && "Gmail", dr.connected && "Dealroom"].filter(Boolean).map((n) => `<span>${n}</span>`).join("");
 }
 
 async function toggleIntegration(name) {
   const info = integrations[name] || {};
+  if (name === "gmail" && !info.configured && !info.connected) return toast("Gmail connector is not deployed on the server yet. Use Outlook for the demo.", true);
   if (info.connected) {
     if (!confirm(`Disconnect ${name === "outlook" ? "Outlook" : "Dealroom"}?`)) return;
     await fetch(`${API}/integrations/${name}/disconnect`, { method: "POST", credentials: "include" }).catch(() => {});
@@ -730,7 +735,8 @@ function initChat() {
   $("composer").addEventListener("submit", (e) => { e.preventDefault(); const v = prompt.value; prompt.value = ""; autosize(); sendPrompt(v); });
 
   $("plus-btn").addEventListener("click", (e) => { e.stopPropagation(); setMenu($("plus-menu").hidden); });
-  $("announce").addEventListener("click", (e) => { e.stopPropagation(); setMenu(true); });
+  $("announce").addEventListener("click", () => openAi());
+  $("open-ai").addEventListener("click", () => openAi());
   document.addEventListener("click", (e) => { if (!e.target.closest(".plus-wrap")) setMenu(false); });
   document.addEventListener("keydown", (e) => {
     if (e.key !== "Escape") return;
@@ -741,7 +747,8 @@ function initChat() {
     setMenu(false);
     if (name === "upload") $("file-input").click();
     else if (name === "sample") { addMessage("user", "Open the Stratford sample"); loadSample(); }
-    else if (name === "outlook" || name === "dealroom") toggleIntegration(name);
+    else if (name === "ai") openAi();
+    else if (name === "outlook" || name === "gmail" || name === "dealroom") toggleIntegration(name);
   };
   document.querySelectorAll("[data-act]").forEach((b) => b.addEventListener("click", () => act(b.dataset.act)));
   document.querySelectorAll(".quick-chip[data-prompt]").forEach((b) => b.addEventListener("click", () => sendPrompt(b.dataset.prompt)));
@@ -777,6 +784,80 @@ function initChat() {
   if (params.get("sample") === "1") loadSample();
   prompt.focus();
 }
+
+// ---------- connect dealt (MCP) to Claude / Grok / ChatGPT ----------
+const MCP_URL = params.get("mcp") || `${location.origin}/mcp`;
+const MCP_TOOLS = [
+  ["extract_brochure", "Facts from a sale brochure PDF, each with its page"],
+  ["get_room_comps", "PBSA comps near a postcode: room type, weekly rate, weeks, operator"],
+  ["build_noi", "NOI build-up: gross rent × occupancy − OPEX"],
+  ["compute_returns", "IRR, equity multiple, entry vs exit yield (MSCI)"],
+  ["deal_verdict", "GO / NO-GO with reasons"],
+  ["ask_deal_memory", "Ask across every deal analysed so far (cognee)"],
+];
+const AI_GUIDES = {
+  claude: {
+    name: "Claude",
+    steps: [
+      "Open <strong>claude.ai</strong> → <strong>Settings</strong> → <strong>Connectors</strong>.",
+      "Click <strong>Add custom connector</strong>, name it <code>dealt</code> and paste the server URL.",
+      "In a chat, enable <strong>dealt</strong> from the tools menu, then ask: <em>“Qualify the Stratford brochure”</em>.",
+    ],
+    snippetLabel: "Claude Code",
+    snippet: () => `claude mcp add --transport http dealt ${MCP_URL}`,
+  },
+  grok: {
+    name: "Grok",
+    steps: [
+      "In <strong>Grok Bot</strong> (or its Cursor), open the MCP settings and add a remote server with the URL above.",
+      "From code, pass dealt to Grok as a remote MCP tool in the xAI API (snippet below).",
+      "Ask: <em>“Check my inbox for new deals and give me a GO / NO-GO”</em>.",
+    ],
+    snippetLabel: "xAI API",
+    snippet: () => `"tools": [{ "type": "mcp", "server_label": "dealt", "server_url": "${MCP_URL}" }]`,
+  },
+  chatgpt: {
+    name: "ChatGPT",
+    steps: [
+      "Open <strong>ChatGPT</strong> → <strong>Settings</strong> → <strong>Apps &amp; Connectors</strong> → <strong>Advanced</strong>, turn on <strong>Developer mode</strong>.",
+      "Click <strong>Create</strong>, name it <code>dealt</code>, paste the server URL, authentication <strong>None</strong>.",
+      "In a chat, pick <strong>dealt</strong> under <strong>+</strong> → <strong>More</strong>, then ask about a deal.",
+    ],
+    snippetLabel: "OpenAI API",
+    snippet: () => `"tools": [{ "type": "mcp", "server_label": "dealt", "server_url": "${MCP_URL}", "require_approval": "never" }]`,
+  },
+};
+
+function renderAi(key) {
+  const g = AI_GUIDES[key];
+  document.querySelectorAll(".ai-tabs [data-ai]").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.ai === key)));
+  $("ai-body").innerHTML = `
+    <div class="ai-field">
+      <p class="mono-label">Server URL</p>
+      <div class="copy-row"><code>${esc(MCP_URL)}</code><button type="button" class="pill" data-copy="${esc(MCP_URL)}">Copy</button></div>
+    </div>
+    <div class="ai-field">
+      <p class="mono-label">How to connect ${esc(g.name)}</p>
+      <ol class="ai-steps">${g.steps.map((t) => `<li>${t}</li>`).join("")}</ol>
+    </div>
+    <div class="ai-field">
+      <p class="mono-label">${esc(g.snippetLabel)}</p>
+      <div class="copy-row"><code>${esc(g.snippet())}</code><button type="button" class="pill" data-copy="${esc(g.snippet())}">Copy</button></div>
+    </div>
+    <div class="ai-field">
+      <p class="mono-label">Tools exposed</p>
+      <ul class="ai-tools">${MCP_TOOLS.map(([n, d]) => `<li><code>${n}</code><span>${d}</span></li>`).join("")}</ul>
+    </div>`;
+}
+function openAi(key = "claude") { setMenu(false); renderAi(key); $("ai-modal").showModal(); }
+$("ai-close").addEventListener("click", () => $("ai-modal").close());
+$("ai-modal").addEventListener("click", (e) => {
+  if (e.target === $("ai-modal")) return $("ai-modal").close();
+  const tab = e.target.closest("[data-ai]");
+  if (tab) return renderAi(tab.dataset.ai);
+  const copy = e.target.closest("[data-copy]");
+  if (copy) navigator.clipboard?.writeText(copy.dataset.copy).then(() => { copy.textContent = "Copied"; setTimeout(() => (copy.textContent = "Copy"), 1400); });
+});
 
 // ---------- wire up ----------
 $("voice-toggle").addEventListener("click", () => (conversation ? stopVoice() : startVoice()));
