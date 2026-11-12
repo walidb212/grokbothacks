@@ -120,10 +120,11 @@ def list_properties() -> dict[str, dict]:
                 "lng": float(g["longitude"]) if g.get("longitude") else None,
                 "phone": clean(a.get("telephone")),
             }
-    # sitemap: every property exposing a /rooms page
+    # sitemap: every property site (/<city>/<slug>/...); ones without room cards
+    # (e.g. co-living sites) simply yield 0 rows
     sm = get(f"{BASE}/sitemap.xml") or ""
     for loc in re.findall(r"<loc>([^<]+)</loc>", sm):
-        if loc.rstrip("/").endswith("/rooms"):
+        if re.search(r"/(rooms|amenities|mapsanddirections)/?$", loc) or re.fullmatch(r"https://www\.thisisfresh\.com/[^/]+/[^/]+/", loc):
             base = property_base(loc)
             if base and base not in props:
                 props[base] = {}

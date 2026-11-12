@@ -307,7 +307,8 @@ def scrape(limit: int | None, years: list[str], include_non_uk: bool) -> list[Ro
                     for t in terms:
                         inst = (t.get("instalments") or [])
                         annual = next((i for i in inst if (i.get("name") or "").lower() == "annual"), inst[0] if inst else {})
-                        amt1 = next((a for a in annual.get("amounts") or [] if a.get("students") == 1), None)
+                        amts = sorted(annual.get("amounts") or [], key=lambda a: a.get("students") or 99)
+                        amt1 = next((a for a in amts if a.get("students") == 1), amts[0] if amts else None)
                         price = money(amt1.get("weeklyPrice")) if amt1 else None
                         wk = re.search(r"(\d+)\s*week", t.get("name") or "", re.I)
                         rows.append(Room(
@@ -316,6 +317,7 @@ def scrape(limit: int | None, years: list[str], include_non_uk: bool) -> list[Ro
                                    "end_date": t.get("endDate"), "term_premium_pct": t.get("premium"),
                                    "instalment_options": {i.get("name"): money(next((a.get("weeklyPrice") for a in i.get("amounts") or [] if a.get("students") == 1), None)) for i in inst},
                                    "two_students_weekly": money(next((a.get("weeklyPrice") for a in annual.get("amounts") or [] if a.get("students") == 2), None)),
+                                   "price_students": amt1.get("students") if amt1 else None,
                                    "promotion_pct": booking.get("promotionPercentage")}))
                         prop_rows += 1
             done += 1

@@ -63,7 +63,8 @@ OPERATOR_MAP = [
     (r"kexgill", "kexgill"),
     (r"uliving", "uliving"),
     (r"study inn", "study_inn"),
-    (r"collective", "the_collective"),
+    (r"^the collective", "the_collective"),
+    (r"cloud student homes", "crm"),  # CRM Students' consumer brand
     (r"canvas", "canvas"),
     (r"student cribs|^cribs", "student_cribs"),
     (r"\bcityblock\b", "cityblock"),
@@ -175,6 +176,8 @@ def get(url: str, headers: dict | None = None, retries: int = 3):
             last = r
             if r.status_code in (403, 404, 410):
                 return r
+            if r.status_code == 429:
+                time.sleep(15 * (i + 1))
         except Exception as e:  # network hiccup
             last = e
         time.sleep(1.5 * (i + 1))
@@ -268,13 +271,21 @@ def parse_hall(url: str, html: str) -> PropertyReview:
         if m:
             p.review_count = int(m.group(1))
 
-    # provider + hall type from data-track JSON
-    provs = re.findall(r"&quot;provider&quot;:&quot;(.*?)&quot;", html)
-    provs = [htmllib.unescape(x) for x in provs if x]
+    # provider + hall type from data-track JSON. Pages also carry sponsored promos for OTHER halls
+    # (e.g. "Canvas" adverts) whose data-track has a subject_name: only trust the profile's own entries.
+    tracks = []
+    for raw in re.findall(r'data-track="(\{[^"]*\})"', html):
+        try:
+            tracks.append(json.loads(htmllib.unescape(raw)))
+        except Exception:
+            pass
+    own = [t for t in tracks if t.get("location") == "profile" and t.get("position") == "nav"]
+    own += [t for t in tracks if t.get("subject_name") and t.get("subject_name") == p.property_name]
+    provs = [t.get("provider") for t in own if t.get("provider")]
     if provs:
         p.provider = max(set(provs), key=provs.count)
     p.operator = operator_slug(p.provider)
-    hts = [x for x in re.findall(r"&quot;hall_type&quot;:&quot;(.*?)&quot;", html) if x]
+    hts = [t.get("hall_type") for t in own if t.get("hall_type")]
     if hts:
         p.hall_type = max(set(hts), key=hts.count)
 
@@ -468,6 +479,7 @@ def main():
     reviews: list[ReviewText] = []
     lock = threading.Lock()
     fails = 0
+    failed: list[str] = []
 
     def work(u):
         r = get(u)
@@ -491,11 +503,23 @@ def main():
             with lock:
                 if p is None:
                     fails += 1
+                    failed.append(futs[f])
                 else:
                     props.append(p)
                     reviews.extend(revs)
             if i % 100 == 0:
                 print(f"  {i}/{len(halls)} done, {fails} failed, {time.time() - t0:.0f}s")
+
+    if failed:
+        print(f"[studentcrowd] retrying {len(failed)} failed URLs sequentially")
+        time.sleep(20)
+        for u in list(failed):
+            p, revs = work(u)
+            if p is not None:
+                props.append(p)
+                reviews.extend(revs)
+                failed.remove(u)
+        fails = len(failed)
 
     if a.only_reviewed:
         props = [p for p in props if p.review_count]

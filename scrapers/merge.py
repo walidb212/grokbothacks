@@ -29,6 +29,22 @@ def dedupe_crm_yugo(rows):
     return out
 
 
+def infer_studio_buildings(rows):
+    """'other' rows (e.g. Limelight 'Silver Club') in buildings where every categorized room is a studio -> studio."""
+    cats = defaultdict(set)
+    for r in rows:
+        if r["room_category"] != "other":
+            cats[(r["operator"], *_pkey(r))].add(r["room_category"])
+    n = 0
+    for r in rows:
+        if r["room_category"] == "other" and cats.get((r["operator"], *_pkey(r))) == {"studio"}:
+            r["room_category"] = "studio"
+            r.setdefault("extra", {})["category_inferred"] = "all-studio building"
+            n += 1
+    print(f"inferred studio category for {n} 'other' rows")
+    return rows
+
+
 def main():
     rows = []
     for p in sorted(DATA_DIR.glob("*.json")):
@@ -38,7 +54,7 @@ def main():
     if not rows:
         print("no data")
         return
-    rows = dedupe_crm_yugo(rows)
+    rows = infer_studio_buildings(dedupe_crm_yugo(rows))
     write_competitors(rows)
     keys = list(rows[0].keys())
     with (DATA_DIR / "all_rooms.csv").open("w", newline="", encoding="utf-8") as f:
