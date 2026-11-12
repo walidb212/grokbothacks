@@ -91,21 +91,25 @@ def analysis(job_id: str):
 
 
 async def run_pipeline(job_id: str):
-    """Placeholder pipeline: replace with the real agent calls, one per step."""
+    """Real pipeline (engine/pipeline.py). Falls back to the mock report if it fails."""
     job = JOBS[job_id]
+    paths = [str(UPLOADS / job_id / name) for name in job["files"]]
     try:
-        for step in STEPS:
-            job["steps"].append(step)
-            await asyncio.sleep(0.6)
+        from engine.pipeline import analyze
+        report = await asyncio.to_thread(analyze, paths, job.get("comment") or "", job["steps"].append)
+        report["mock"] = False
+        report["input_files"] = job["files"]
+        job["report"] = report
+        job["status"] = "done"
+    except Exception as exc:  # fall back to the mock so the demo never breaks
+        job["steps"].append(f"Real pipeline failed ({exc}); showing sample report")
         mock = json.loads(MOCK_REPORT.read_text())
         report = mock["report"]
         report["mock"] = True
         report["input_files"] = job["files"]
+        report["pipeline_error"] = str(exc)
         job["report"] = report
         job["status"] = "done"
-    except Exception as exc:  # surface errors to the UI instead of hanging
-        job["status"] = "error"
-        job["report"] = {"error": str(exc)}
 
 
 # ---------- ElevenLabs voice: short-lived credentials for the browser ----------
