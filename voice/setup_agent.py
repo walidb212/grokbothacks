@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Create (or update) the ElevenLabs voice analyst for the Deal Qualification Agent.
+"""Create (or update) the ElevenLabs voice analyst for dealt.
 
 Usage (from the repo root, needs ELEVENLABS_API_KEY in .env or the environment):
     python3 voice/setup_agent.py --dry-run          # print what would be sent

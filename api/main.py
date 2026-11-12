@@ -1,4 +1,4 @@
-"""Deal Qualification Agent API (contract from README.md).
+"""dealt API (contract from README.md).
 
 POST /analyze             multipart: files[] (PDF), comment -> {"job_id": "..."}
 GET  /analysis/{job_id}   -> {"status": "running|done|error", "steps": [...], "report": {...}}
@@ -37,7 +37,7 @@ STEPS = [
     "Verdict",
 ]
 
-app = FastAPI(title="Deal Qualification Agent")
+app = FastAPI(title="dealt")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[o.strip() for o in os.getenv("CORS_ORIGINS", "http://localhost:3000").split(",") if o.strip()],

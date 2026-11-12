@@ -231,7 +231,7 @@ async def _dr_client_id() -> str:
         return reg["client_id"]
     meta = await _dr_metadata()
     body = {
-        "client_name": "Deal Qualification Agent",
+        "client_name": "dealt",
         "redirect_uris": [_callback("dealroom")],
         "grant_types": ["authorization_code", "refresh_token"],
         "response_types": ["code"],
@@ -326,7 +326,7 @@ class MCPClient:
 
     async def __aenter__(self):
         self._c = httpx.AsyncClient(timeout=90)
-        await self._post(self._c, "initialize", {"protocolVersion": "2025-06-18", "capabilities": {}, "clientInfo": {"name": "deal-qualification-agent", "version": "1.0"}})
+        await self._post(self._c, "initialize", {"protocolVersion": "2025-06-18", "capabilities": {}, "clientInfo": {"name": "dealt", "version": "1.0"}})
         await self._post(self._c, "notifications/initialized", notify=True)
         return self
 
@@ -357,7 +357,7 @@ async def dealroom_tools(sid: str) -> List[dict]:
 
 
 # ---------------------------------------------------------------- chat agent (Grok)
-SYSTEM = """You are the Deal Qualification Agent for commercial real estate investors.
+SYSTEM = """You are dealt, a deal qualification agent for commercial real estate investors.
 You help the user triage inbound deals (sale brochures, investment memoranda, teasers) and qualify them into a traced GO / NO-GO.
 Tools:
 - check_inbox: scan the user's connected Outlook inbox for new real estate deal emails.

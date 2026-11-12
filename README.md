@@ -1,4 +1,4 @@
-# Deal Qualification Agent
+# dealt
 
 Drop a sale brochure, get a traced GO / NO-GO: returns, location, room-type comps, NOI build-up. Every figure links back to its source (brochure page, MSCI deal, web page).
 

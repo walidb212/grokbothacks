@@ -1,4 +1,4 @@
-// Deal Qualification Agent UI + ElevenLabs voice analyst.
+// dealt UI + ElevenLabs voice analyst.
 // No build step: vanilla ES modules, ElevenLabs client vendored in ./vendor.
 import { Conversation } from "./vendor/elevenlabs-client.js";
 
