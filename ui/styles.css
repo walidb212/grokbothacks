@@ -685,3 +685,10 @@ body.chatting .composer-wrap { padding-top: 18px; background: linear-gradient(to
 .vorb[data-state="speaking"] .vorb-label { color: var(--amber); }
 .vorb .vorb-sub { color: var(--muted); }
 .vorb .vorb-end { color: var(--ink); border-color: var(--line-strong); background: #fff; }
+
+/* Dot terrain background (ai-vance footer style), behind everything */
+.terrain { position: fixed; left: 0; right: 0; bottom: 0; width: 100%; height: 40vh; min-height: 220px; z-index: 0; pointer-events: none;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 35%); mask-image: linear-gradient(to bottom, transparent, #000 35%);
+  transition: opacity .4s ease; }
+body.chatting .terrain { opacity: .45; }
+@media (max-width: 640px) { .terrain { height: 32vh; } }
