@@ -61,7 +61,7 @@ app.add_middleware(
 JOBS: dict = {}  # in-memory; fine for a one-night demo with one API container
 
 
-async def start_job(files, comment=None) -> str:
+async def start_job(files, comment=None, opts=None) -> str:
     """Save (name, bytes) pairs and start the pipeline. Used by uploads and by Outlook emails."""
     job_id = uuid.uuid4().hex[:12]
     job_dir = UPLOADS / job_id
@@ -71,7 +71,7 @@ async def start_job(files, comment=None) -> str:
         name = Path(name or "upload.pdf").name
         (job_dir / name).write_bytes(data)
         saved.append(name)
-    JOBS[job_id] = {"status": "running", "steps": [], "report": None, "files": saved, "comment": comment}
+    JOBS[job_id] = {"status": "running", "steps": [], "report": None, "files": saved, "comment": comment, "opts": opts or {}}
     asyncio.get_running_loop().create_task(run_pipeline(job_id))
     return job_id
 
@@ -110,7 +110,7 @@ async def run_pipeline(job_id: str):
     paths = [str(UPLOADS / job_id / name) for name in job["files"]]
     try:
         from engine.pipeline import analyze
-        report = await asyncio.to_thread(analyze, paths, job.get("comment") or "", job["steps"].append)
+        report = await asyncio.to_thread(analyze, paths, job.get("comment") or "", job["steps"].append, **job.get("opts", {}))
         report["mock"] = False
         report["input_files"] = job["files"]
         job["report"] = report
