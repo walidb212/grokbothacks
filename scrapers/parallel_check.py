@@ -71,8 +71,11 @@ def row_key(r: dict) -> str:
 
 
 def run_task(client: httpx.Client, r: dict, processor: str) -> dict:
-    body = {"input": task_input(r), "processor": processor,
-            "task_spec": {"output_schema": {"type": "json", "json_schema": OUTPUT_SCHEMA}}}
+    return run_task_body(client, {"input": task_input(r), "processor": processor,
+                                  "task_spec": {"output_schema": {"type": "json", "json_schema": OUTPUT_SCHEMA}}})
+
+
+def run_task_body(client: httpx.Client, body: dict) -> dict:
     run = client.post(API, json=body).raise_for_status().json()
     for _ in range(30):  # result endpoint blocks up to `timeout` seconds per call
         res = client.get(f"{API}/{run['run_id']}/result", params={"timeout": 120}, timeout=150)
