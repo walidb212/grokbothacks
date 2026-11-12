@@ -133,7 +133,7 @@ function memoHtml(a) {
       `The scheme returns an unlevered IRR of `, c("irr"), ` and a `, c("equity_multiple"), ` equity multiple. `) +
       s(`Yield on cost of `, c("entry_yield") ?? c("yield_on_cost"), ` beats the market exit yield of `, c("exit_yield"), c("yield_delta") ? s(` by `, c("yield_delta")) : "", `.`),
     s(`The site is `, c("station_distance"), ` from Stratford station, with `, c("population_10min"), ` people within a 10-minute drive, growing `, c("population_growth"), `. `) +
-      s(`London has `, c("students"), ` students, `, c("russell_group_share"), ` of them at Russell Group universities, for only `, c("pbsa_beds"), ` purpose-built beds: `, c("students_per_bed", `${fmtNum(spb ?? 0, 1)} students per bed`), `.`),
+      s(`London has `, c("students", fmtNum(state.figures.get("students")?.fig.value ?? 0)), ` students, `, c("russell_group_share"), ` of them at Russell Group universities, for only `, c("pbsa_beds"), ` in purpose-built halls: `, c("students_per_bed", `${fmtNum(spb ?? 0, 1)} students per bed`), `.`),
     comps.length ? s(`Rents come from the ${comps.length} nearest operator buildings, all within ${fmtNum(far, 1)} km. `,
       `They put studios at `, c("studio_rate"), ` and en-suites at `, c("ensuite_rate"), `. `) +
       (nearFig ? s(`The closest, ${esc(near.property_name)} (${esc(OPERATORS[near.operator] || near.operator)}, ${fmtDist(near.distance_km)} away), lets at `, c(nearFig), `.`) : "") : "",
@@ -886,12 +886,21 @@ function initChat() {
     else if (error) toast({ outlook_not_configured: "Outlook isn't set up on the server yet (Azure app keys missing).", outlook_auth_failed: "Outlook sign-in was cancelled or failed.", gmail_not_configured: "Gmail isn't set up on the server yet (Google OAuth client missing).", gmail_auth_failed: "Gmail sign-in was cancelled or failed.", dealroom_auth_failed: "Dealroom sign-in was cancelled or failed.", dealroom_host_not_allowed: "Dealroom hasn't approved this domain for MCP sign-in yet. We've asked them to allowlist it.", dealroom_unavailable: "Dealroom is unreachable right now. Try again in a minute." }[error] || "Sign-in failed.", true);
   });
   if (params.get("sample") === "1") loadSample();
+  const shared = params.get("report");  // link handed out by the MCP server (Claude / Grok / ChatGPT)
+  const focusHash = () => {  // ?report=…#irr opens the source popover of that figure
+    const el = location.hash && document.querySelector(`#report [data-metric="${CSS.escape(decodeURIComponent(location.hash.slice(1)))}"]`);
+    if (el) { el.scrollIntoView({ block: "center" }); setTimeout(() => el.click(), 350); }
+  };
+  if (shared === "demo-stratford") loadSample().then(openReport).then(focusHash);
+  else if (shared) trackJob(shared, "the shared deal").then(openReport).then(focusHash).catch(() => toast("This report link has expired.", true));
   prompt.focus();
 }
 
 // ---------- connect dealt (MCP) to Claude / Grok / ChatGPT ----------
 const MCP_URL = params.get("mcp") || new URL(`${API}/mcp`, location.href).href;
 const MCP_TOOLS = [
+  ["qualify_brochure", "Qualify a deal from a brochure PDF link: GO / NO-GO"],
+  ["get_report", "Memo where every number links to its source + link to this report"],
   ["get_room_comps", "5 nearest PBSA buildings: rate per room type, weeks, photo, page"],
   ["get_city_demand", "HESA students, Russell Group share, beds per student"],
   ["build_noi", "NOI build-up: gross rent × occupancy − OPEX"],

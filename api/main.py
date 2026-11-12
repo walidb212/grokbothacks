@@ -20,6 +20,7 @@ from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
 from integrations import build_router
+import mcp_app
 from mcp_app import mcp
 
 BASE = Path(__file__).parent
@@ -92,6 +93,8 @@ async def analyze(
 @app.get("/analysis/{job_id}")
 def analysis(job_id: str):
     job = JOBS.get(job_id)
+    if job is None and (UPLOADS / Path(job_id).name / "report.json").exists():
+        return {"job_id": job_id, "status": "done", "steps": [], "report": json.loads((UPLOADS / Path(job_id).name / "report.json").read_text(encoding="utf-8"))}
     if job is None and job_id == "demo-stratford":
         data = json.loads(MOCK_REPORT.read_text())
         data.setdefault("report", {})["mock"] = data.get("mock", True)
@@ -112,6 +115,7 @@ async def run_pipeline(job_id: str):
         report["input_files"] = job["files"]
         job["report"] = report
         job["status"] = "done"
+        (UPLOADS / job_id / "report.json").write_text(json.dumps(report, default=str), encoding="utf-8")
     except Exception as exc:  # fall back to the mock so the demo never breaks
         job["steps"].append(f"Real pipeline failed ({exc}); showing sample report")
         mock = json.loads(MOCK_REPORT.read_text())
@@ -175,4 +179,6 @@ def what_if(payload: dict):
 
 
 app.include_router(build_router(start_job))
-app.router.routes.extend(mcp_http.routes)  # MCP for Claude / Grok / ChatGPT (see mcp_app.py)
+app.router.routes.extend(mcp_http.routes)
+mcp_app.HOOKS.update(start_job=start_job, job=lambda job_id: JOBS.get(job_id) or (
+    {"status": "done", **analysis(job_id)} if (UPLOADS / Path(job_id).name / "report.json").exists() or job_id == "demo-stratford" else None))  # MCP for Claude / Grok / ChatGPT (see mcp_app.py)
