@@ -5,6 +5,7 @@ import statistics
 from collections import defaultdict
 
 from scrapers.common import DATA_DIR
+from scrapers.normalize import write as write_competitors
 
 SKIP = {"all_rooms", "studentcrowd_properties", "studentcrowd_reviews", "studio_benchmark"}
 
@@ -38,6 +39,7 @@ def main():
         print("no data")
         return
     rows = dedupe_crm_yugo(rows)
+    write_competitors(rows)
     keys = list(rows[0].keys())
     with (DATA_DIR / "all_rooms.csv").open("w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=keys, extrasaction="ignore")
