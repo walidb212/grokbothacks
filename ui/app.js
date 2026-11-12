@@ -60,8 +60,7 @@ function sourceText(src) {
   return `${type}${ref}${page}`;
 }
 const statusTag = (s) => s === "green" ? `<span class="tag verified">Verified</span>`
-  : s === "red" ? `<span class="tag contradicted">Contradicted</span>`
-  : s === "amber" ? `<span class="tag">To check</span>` : `<span class="tag">Not checked</span>`;
+  : s === "red" ? `<span class="tag contradicted">Contradicted</span>` : "";
 
 // ---------- figures registry ----------
 function collectFigures(asset) {
@@ -155,7 +154,7 @@ function compsHtml(a) {
     return `<article class="comp">
       <a class="comp-img" href="${esc(c.url)}" target="_blank" rel="noopener">${img ? `<img src="${esc(img)}" alt="${esc(c.property_name)}" loading="lazy" onerror="this.remove()">` : ""}<span class="comp-dist">${fmtDist(c.distance_km)}</span></a>
       <div class="comp-body">
-        <div class="comp-op"><img src="${favicon(c.url)}" alt="" width="14" height="14">${esc(op)}</div>
+        <div class="comp-op">${opBadge(c.operator)}${esc(op)}</div>
         <h3>${esc(c.property_name)}</h3>
         <p class="comp-meta">${esc([c.postcode, c.academic_year].filter(Boolean).join(" · "))}</p>
         <ul class="comp-rooms">${figs.map((f) => `<li><span>${esc(ROOM_LABELS[f.room.cat] || f.room.cat)}</span>${cite(f.metric, `£${fmtNum(f.value)}/wk`)}<small>${esc([f.room.weeks && `${f.room.weeks} wks`, f.room.size_sqm && `${f.room.size_sqm} m²`].filter(Boolean).join(" · "))}</small></li>`).join("")}</ul>
@@ -166,7 +165,9 @@ function compsHtml(a) {
 
 // ---------- source popover ----------
 const hostOf = (u) => { try { return new URL(u).hostname.replace(/^www\./, ""); } catch { return null; } };
-const favicon = (u) => `https://www.google.com/s2/favicons?domain=${encodeURIComponent(hostOf(u) || "example.com")}&sz=64`;
+const OP_COLORS = { unite: "#0e2a47", iq: "#00a19a", fresh: "#e5007e", prestige: "#5b2333", student_roost: "#f05a28", yugo: "#1d1d1b", vita: "#c8102e", crm: "#2b2b8f" };
+const badge = (text, color = "#111216") => `<span class="sb" style="background:${color};color:#fff;border-color:${color}">${esc(text)}</span>`;
+const opBadge = (op) => badge((OPERATORS[op] || op || "?").replace(/[^A-Za-z]/g, "")[0].toUpperCase(), OP_COLORS[op]);
 function sourceBrand(src) {
   const t = src?.type || "assumption", ref = String(src?.ref || "");
   if (t === "brochure") return { name: "Sale brochure", logo: `<span class="sb sb-pdf">PDF</span>`, detail: `${ref}${src.page ? ` · page ${src.page}` : ""}` };
@@ -174,9 +175,10 @@ function sourceBrand(src) {
   if (t === "cortile") return { name: "Cortile", logo: `<span class="sb sb-cortile">C</span>`, detail: ref };
   if (t === "model") return { name: "Calculated by dealt", logo: `<img src="brand/dealt-icon.svg" alt="">`, detail: ref };
   if (t === "assumption") return { name: "Assumption", logo: `<span class="sb sb-a">A</span>`, detail: "No source yet. To verify before an offer." };
-  if (/^HESA$/i.test(ref)) return { name: "HESA", logo: `<img src="${favicon("https://www.hesa.ac.uk")}" alt="">`, detail: "Higher Education Student Statistics 2024/25", url: "https://www.hesa.ac.uk/data-and-analysis/students" };
+  if (/^HESA$/i.test(ref)) return { name: "HESA", logo: badge("HE", "#5b2c83"), detail: "Higher Education Student Statistics 2024/25", url: "https://www.hesa.ac.uk/data-and-analysis/students" };
   const host = hostOf(ref);
-  if (host) return { name: src.operator || host, logo: `<img src="${favicon(ref)}" alt="">`, detail: host, url: ref };
+  const op = Object.keys(OPERATORS).find((k) => OPERATORS[k] === src.operator);
+  if (host) return { name: src.operator || host, logo: op ? opBadge(op) : /\.pdf($|\?)/i.test(ref) ? `<span class="sb sb-pdf">PDF</span>` : badge(host[0].toUpperCase(), "#3a3b42"), detail: host, url: ref };
   return { name: "Nearby comps", logo: `<span class="sb sb-web">W</span>`, detail: ref };
 }
 function showCite(el, metric) {
@@ -710,18 +712,40 @@ function reportReady() {
   const name = assets.length > 1 ? `${assets.length} assets` : (a.name || "Deal");
   const reasons = (a.verdict?.reasons || []).slice(0, 3).map((r) => `<li>${esc(r)}</li>`).join("");
   state.stepsEl = null;
-  addMessage("assistant", "", { html: `
+  const val = (m) => { const f = (a.returns || []).find((x) => x.metric === m); return f ? formatValue(f) : null; };
+  const kpis = [["IRR", val("irr")], ["Equity multiple", val("equity_multiple")], ["Yield on cost", val("entry_yield") ?? val("yield_on_cost")], ["Exit yield", val("exit_yield")]].filter(([, v]) => v);
+  const photos = (a.comps || []).filter((c) => c?.image).slice(0, 5);
+  state.reportMsg = addMessage("assistant", "", { html: `
     <div class="report-card">
-      <div><p class="mono-label">${esc(name)}${state.report?.mock ? " · mock data" : ""}</p><div class="rc-verdict" data-d="${esc(d)}">${esc(d)}</div></div>
-      <button type="button" class="btn-glow" data-open-report>Open traced report</button>
-    </div>${reasons ? `<div class="md"><ul>${reasons}</ul></div>` : ""}` });
+      <div class="rc-head"><span class="rc-verdict" data-d="${esc(d)}">${esc(d)}</span><div><strong>${esc(name)}</strong><small>${esc(a.address || "")}</small></div></div>
+      ${kpis.length ? `<div class="rc-kpis">${kpis.map(([k, v]) => `<div><small>${k}</small><b>${esc(v)}</b></div>`).join("")}</div>` : ""}
+      ${reasons ? `<ul class="rc-reasons">${reasons}</ul>` : ""}
+      ${photos.length ? `<div class="rc-photos">${photos.map((c) => `<img src="${esc(encodeURI(decodeURI(c.image)))}" alt="${esc(c.property_name)}" title="${esc(c.property_name)}" loading="lazy" onerror="this.remove()">`).join("")}<span>${photos.length} comps nearby</span></div>` : ""}
+      <button type="button" class="btn-glow" data-open-report>View full report</button>
+    </div>
+    <div class="inline-report" hidden></div>` });
   chatLog.push({ role: "assistant", content: `Report ready for ${name}: ${d}. Reasons: ${(a.verdict?.reasons || []).join("; ")}` });
   $("open-report").hidden = false;
-  openReport();
 }
 
-function openReport() { if (!state.report) return; $("workspace").hidden = false; document.body.classList.add("report-open"); $("workspace").scrollTop = 0; }
-function closeReport() { $("workspace").hidden = true; document.body.classList.remove("report-open"); }
+// The report opens inside the chat message, the conversation continues below it.
+function openReport(msg = state.reportMsg) {
+  if (!state.report || !msg) return;
+  state.reportMsg = msg;
+  document.querySelectorAll(".inline-report").forEach((b) => { if (!msg.contains(b)) { b.hidden = true; b.closest(".msg")?.querySelector("[data-open-report]")?.replaceChildren("View full report"); } });
+  const box = msg.querySelector(".inline-report");
+  box.appendChild($("report"));
+  box.hidden = false;
+  msg.querySelector("[data-open-report]").textContent = "Hide report";
+  msg.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+function closeReport(msg = state.reportMsg) {
+  const box = msg?.querySelector(".inline-report");
+  if (!box) return;
+  box.hidden = true;
+  msg.querySelector("[data-open-report]").textContent = "View full report";
+  hideCite();
+}
 
 function toast(msg, err = false) {
   const t = $("toast");
@@ -845,7 +869,7 @@ function initChat() {
   document.addEventListener("click", (e) => { if (!e.target.closest(".plus-wrap")) setMenu(false); });
   document.addEventListener("keydown", (e) => {
     if (e.key !== "Escape") return;
-    if (!$("plus-menu").hidden) { setMenu(false); $("plus-btn").focus(); } else if (!$("workspace").hidden) closeReport();
+    if (!$("plus-menu").hidden) { setMenu(false); $("plus-btn").focus(); }
   });
 
   const act = (name) => {
@@ -862,7 +886,7 @@ function initChat() {
     const t = e.target.closest("button");
     if (!t) return;
     if (t.dataset.analyze) analyzeEmail(t.dataset.analyze, t.dataset.subject, t);
-    else if ("openReport" in t.dataset) openReport();
+    else if ("openReport" in t.dataset) { const m = t.closest(".msg"); m.querySelector(".inline-report").hidden ? openReport(m) : closeReport(m); }
     else if (t.dataset.connect) toggleIntegration(t.dataset.connect);
   });
 
@@ -873,10 +897,9 @@ function initChat() {
   comp.addEventListener("drop", (e) => e.dataTransfer?.files?.length && analyse(e.dataTransfer.files));
 
   $("mic-btn").addEventListener("click", () => (conversation ? stopVoice() : startVoice()));
-  $("open-report").addEventListener("click", openReport);
-  $("close-report").addEventListener("click", closeReport);
+  $("open-report").addEventListener("click", () => openReport());
   $("new-chat").addEventListener("click", () => location.assign(location.pathname));
-  $("home-btn").addEventListener("click", () => { closeReport(); window.scrollTo({ top: 0, behavior: "smooth" }); });
+  $("home-btn").addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
 
   // Returning from an OAuth sign-in
   const connected = params.get("connected"), error = params.get("error");
@@ -892,8 +915,8 @@ function initChat() {
     const el = location.hash && document.querySelector(`#report [data-metric="${CSS.escape(decodeURIComponent(location.hash.slice(1)))}"]`);
     if (el) { el.scrollIntoView({ block: "center" }); setTimeout(() => el.click(), 350); }
   };
-  if (shared === "demo-stratford") loadSample().then(openReport).then(focusHash);
-  else if (shared) trackJob(shared, "the shared deal").then(openReport).then(focusHash).catch(() => toast("This report link has expired.", true));
+  if (shared === "demo-stratford") loadSample().then(() => openReport()).then(focusHash);
+  else if (shared) trackJob(shared, "the shared deal").then(() => openReport()).then(focusHash).catch(() => toast("This report link has expired.", true));
   prompt.focus();
 }
 

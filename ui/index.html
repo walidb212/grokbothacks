@@ -18,7 +18,7 @@
     <div class="topbar-inner">
       <button class="brand" id="home-btn" type="button" aria-label="dealt home"><span class="wordmark" aria-hidden="true">dealt<i class="wm-dot"></i></span></button>
       <div class="topbar-actions">
-        <button class="pill" id="open-report" type="button" hidden>Open report</button>
+        <button class="pill" id="open-report" type="button" hidden>Report</button>
         <button class="pill pill-ai" id="open-ai" type="button" aria-haspopup="dialog">
           <span class="logo-stack" aria-hidden="true"><img src="brand/claude.svg" alt=""><img src="brand/grok.svg" alt=""><img src="brand/openai.svg" alt=""></span>
           Connect to AI
@@ -140,10 +140,10 @@
     <div class="ai-body" id="ai-body"></div>
   </dialog>
 
-  <!-- Report workspace: opens over the chat when a deal report is ready -->
+  <!-- The report renders here, then moves into its chat message (see openReport). The side column is kept hidden
+       because the voice analyst code still writes to it. -->
   <section class="workspace" id="workspace" aria-label="Deal report" hidden>
     <div class="workspace-bar">
-      <button class="pill" id="close-report" type="button">← Back to chat</button>
       <span class="mono-label">No number without a source</span>
     </div>
     <div class="layout">

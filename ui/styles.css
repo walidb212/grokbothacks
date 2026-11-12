@@ -569,3 +569,30 @@ body.chatting .topbar { border-bottom-color: var(--line); }
 
 .connect-row { display: flex; gap: 8px; flex-wrap: wrap; }
 .mail-src { vertical-align: -2px; margin-right: 8px; }
+
+/* Report inside the chat */
+.workspace { display: none !important; }
+.report-card { display: flex; flex-direction: column; align-items: stretch; gap: 14px; padding: 18px; border: 1px solid var(--line); border-radius: 16px; background: #fff; box-shadow: var(--glow); }
+.report-card .btn-glow { align-self: flex-start; }
+.rc-head { display: flex; align-items: center; gap: 14px; }
+.rc-head strong { display: block; font-size: 16.5px; letter-spacing: -0.02em; }
+.rc-head small { color: var(--muted); font-size: 13px; }
+.report-card .rc-verdict { font-size: 30px; font-weight: 700; letter-spacing: -0.04em; padding: 2px 12px; border-radius: 10px; background: #effaf3; }
+.report-card .rc-verdict[data-d="NO-GO"] { background: var(--red-surface); }
+.rc-kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.rc-kpis div { padding: 10px 12px; border-radius: 10px; background: #fafafa; display: flex; flex-direction: column; }
+.rc-kpis small { color: var(--muted); font-size: 12px; }
+.rc-kpis b { font-size: 18px; font-variant-numeric: tabular-nums; }
+.rc-reasons { margin: 0; padding-left: 18px; color: var(--muted); font-size: 14px; }
+.rc-photos { display: flex; align-items: center; }
+.rc-photos img { width: 44px; height: 44px; object-fit: cover; border-radius: 50%; border: 2px solid #fff; margin-left: -10px; box-shadow: 0 1px 3px rgba(17,18,22,.15); }
+.rc-photos img:first-child { margin-left: 0; }
+.rc-photos span { margin-left: 10px; font-size: 13px; color: var(--muted); }
+.inline-report { margin-top: 6px; }
+.inline-report .asset { display: flex; flex-direction: column; gap: 16px; }
+.inline-report .card { box-shadow: none; }
+.inline-report .verdict { display: none; }  /* the chat card above already shows the verdict */
+.comp-op .sb { width: 18px; height: 18px; border-radius: 5px; font-size: 8.5px; border: 0; }
+@media (max-width: 640px) { .rc-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+body.chatting .composer-wrap { padding-top: 18px; background: linear-gradient(to bottom, rgba(255,255,255,0), #fff 18px); bottom: 0; padding-bottom: 16px; }
+.comp-op .sb { font-size: 10px; }
