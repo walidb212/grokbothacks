@@ -9,6 +9,8 @@
   "dealt · Campus served · University of East London (Stratford) (0.57 km)",
   "Scrapers · PBSA competition around the campus · 5 buildings (Fresh, Prestige, Unite)",
   "HESA · Student demand in London · 4.28 students per PBSA bed",
+  "Parallel · Searching the web · tenant news and PBSA pipeline near Newham",
+  "Parallel · 3 sourced results",
   "dealt · Exit yield · 6.5% (assumption, MSCI not configured)",
   "Cortile · OPEX benchmark · London building costs per unit",
   "dealt · NOI £9.9m · PBSA misses 12% IRR even with a free site",
@@ -44,12 +46,60 @@
        "ref": "SONIA (BoE, proxy for the swap rate) + 2.75% margin assumption",
        "page": null
       }
+     },
+     {
+      "metric": "ltc",
+      "label": "Loan to cost",
+      "value": 0.55,
+      "unit": "%",
+      "status": null,
+      "source": {
+       "type": "assumption",
+       "ref": null,
+       "page": null
+      }
+     },
+     {
+      "metric": "arrangement_fee",
+      "label": "Arrangement fee",
+      "value": 0.01,
+      "unit": "% of loan",
+      "status": null,
+      "source": {
+       "type": "assumption",
+       "ref": null,
+       "page": null
+      }
+     },
+     {
+      "metric": "levered_irr",
+      "label": "Levered IRR (before site cost)",
+      "value": 0.1565,
+      "unit": "%",
+      "status": null,
+      "source": {
+       "type": "model",
+       "ref": null,
+       "page": null
+      }
+     },
+     {
+      "metric": "levered_em",
+      "label": "Levered equity multiple",
+      "value": 1.54,
+      "unit": "x",
+      "status": null,
+      "source": {
+       "type": "model",
+       "ref": null,
+       "page": null
+      }
      }
     ],
     "verdict": {
      "decision": "GO (other use)",
      "reasons": [
-      "PBSA does not reach a 12% IRR even with a free site; Existing (refurbish and re-let) supports a site bid up to £13.0m",
+      "PBSA does not reach a 12% IRR even with a free site; Existing (refurbish and re-let) supports a site bid up to £19.1m",
       "Yield on cost 7.6% vs market exit yield 6.5% (assumption)",
       "Best use of the site: Existing (refurbish and re-let)"
      ]
@@ -114,6 +164,66 @@
        "ref": "Yield on cost − market exit yield | No asking price: site cost excluded; see max site bid.",
        "page": null
       }
+     },
+     {
+      "metric": "max_land_bid",
+      "label": "Max site bid at 12% IRR",
+      "value": 0,
+      "unit": "GBP",
+      "status": null,
+      "source": {
+       "type": "model",
+       "ref": "Residual land value: site price that leaves a 12% unlevered IRR",
+       "page": null
+      }
+     },
+     {
+      "metric": "bid_pbsa",
+      "label": "Max site bid: PBSA",
+      "value": 0,
+      "unit": "GBP",
+      "status": null,
+      "source": {
+       "type": "model",
+       "ref": "rents from PBSA comps around the university x room mix, 35% OPEX, build + fees + contingency",
+       "page": null
+      }
+     },
+     {
+      "metric": "bid_btr",
+      "label": "Max site bid: BTR",
+      "value": 0,
+      "unit": "GBP",
+      "status": null,
+      "source": {
+       "type": "model",
+       "ref": "325 units x £2,300/month, 95% occ, 25% OPEX, £300k/unit + 17% fees and contingency (assumptions)",
+       "page": null
+      }
+     },
+     {
+      "metric": "bid_existing",
+      "label": "Max site bid: Existing (refurbish and re-let)",
+      "value": 19142666,
+      "unit": "GBP",
+      "status": null,
+      "source": {
+       "type": "model",
+       "ref": "brochure ERVs £1.40m, £0.90m less 10% costs, refurb £100/sq ft (assumption)",
+       "page": null
+      }
+     },
+     {
+      "metric": "total_dev_cost",
+      "label": "Total development cost (excl. site)",
+      "value": 131040000,
+      "unit": "GBP",
+      "status": null,
+      "source": {
+       "type": "model",
+       "ref": null,
+       "page": null
+      }
      }
     ],
     "facts": [
@@ -130,7 +240,7 @@
        "pages": [
         1
        ],
-       "v7_entity": "01a1d1ea-1ce3-7da8-8b9b-760374741243",
+       "v7_entity": "01a1d1fa-7c79-72db-a971-a0a97d449793",
        "raw": null
       }
      },
@@ -145,7 +255,7 @@
        "ref": "78102Broadway7SalwayPlaceBrochureFinal.pdf",
        "page": null,
        "pages": [],
-       "v7_entity": "01a1d1ea-1ce3-7da8-8b9b-760374741243",
+       "v7_entity": "01a1d1fa-7c79-72db-a971-a0a97d449793",
        "raw": null
       }
      },
@@ -162,7 +272,7 @@
        "pages": [
         1
        ],
-       "v7_entity": "01a1d1ea-1ce3-7da8-8b9b-760374741243",
+       "v7_entity": "01a1d1fa-7c79-72db-a971-a0a97d449793",
        "raw": null
       }
      },
@@ -179,14 +289,14 @@
        "pages": [
         2
        ],
-       "v7_entity": "01a1d1ea-1ce3-7da8-8b9b-760374741243",
+       "v7_entity": "01a1d1fa-7c79-72db-a971-a0a97d449793",
        "raw": null
       }
      },
      {
       "metric": "erv",
       "label": "Erv",
-      "value": "£1.4 million per annum",
+      "value": "£1.4 million per annum; £900k per annum",
       "unit": null,
       "status": null,
       "source": {
@@ -196,14 +306,32 @@
        "pages": [
         2
        ],
-       "v7_entity": "01a1d1ea-1ce3-7da8-8b9b-760374741243",
+       "v7_entity": "01a1d1fa-7c79-72db-a971-a0a97d449793",
        "raw": null
       }
      },
      {
       "metric": "erv_breakdown",
       "label": "Erv breakdown",
-      "value": "78-102 Broadway: £122,500 per annum (p.a.)\n78-102 Broadway: approximately £1.4 million per annum (p.a.)\n7 Salway Place: £900k per annum (p.a.)\nRetail Unit 2 (78-102 Broadway): £122,500 per annum (p.a.)",
+      "value": "78-102 Broadway: £122,500 per annum\n78-102 Broadway: approximately £1.4 million per annum\n7 Salway Place: £900k per annum\nRetail Unit 2, 78-102 Broadway: £122,500 per annum",
+      "unit": null,
+      "status": null,
+      "source": {
+       "type": "brochure",
+       "ref": "78102Broadway7SalwayPlaceBrochureFinal.pdf",
+       "page": 2,
+       "pages": [
+        2,
+        10
+       ],
+       "v7_entity": "01a1d1fa-7c79-72db-a971-a0a97d449793",
+       "raw": null
+      }
+     },
+     {
+      "metric": "gia_sqft",
+      "label": "Gia sqft",
+      "value": "not stated",
       "unit": null,
       "status": null,
       "source": {
@@ -211,24 +339,7 @@
        "ref": "78102Broadway7SalwayPlaceBrochureFinal.pdf",
        "page": null,
        "pages": [],
-       "v7_entity": "01a1d1ea-1ce3-7da8-8b9b-760374741243",
-       "raw": null
-      }
-     },
-     {
-      "metric": "gia_sqft",
-      "label": "Gia sqft",
-      "value": "161,826 sq ft",
-      "unit": null,
-      "status": null,
-      "source": {
-       "type": "brochure",
-       "ref": "78102Broadway7SalwayPlaceBrochureFinal.pdf",
-       "page": 2,
-       "pages": [
-        2
-       ],
-       "v7_entity": "01a1d1ea-1ce3-7da8-8b9b-760374741243",
+       "v7_entity": "01a1d1fa-7c79-72db-a971-a0a97d449793",
        "raw": null
       }
      },
@@ -243,7 +354,7 @@
        "ref": "78102Broadway7SalwayPlaceBrochureFinal.pdf",
        "page": null,
        "pages": [],
-       "v7_entity": "01a1d1ea-1ce3-7da8-8b9b-760374741243",
+       "v7_entity": "01a1d1fa-7c79-72db-a971-a0a97d449793",
        "raw": null
       }
      },
@@ -260,7 +371,7 @@
        "pages": [
         10
        ],
-       "v7_entity": "01a1d1ea-1ce3-7da8-8b9b-760374741243",
+       "v7_entity": "01a1d1fa-7c79-72db-a971-a0a97d449793",
        "raw": null
       }
      },
@@ -277,7 +388,7 @@
        "pages": [
         10
        ],
-       "v7_entity": "01a1d1ea-1ce3-7da8-8b9b-760374741243",
+       "v7_entity": "01a1d1fa-7c79-72db-a971-a0a97d449793",
        "raw": null
       }
      },
@@ -294,7 +405,7 @@
        "pages": [
         20
        ],
-       "v7_entity": "01a1d1ea-1ce3-7da8-8b9b-760374741243",
+       "v7_entity": "01a1d1fa-7c79-72db-a971-a0a97d449793",
        "raw": null
       }
      }
@@ -587,9 +698,82 @@
        "ref": "https://docs.planning.org.uk/20250808/54/T0B5KCKB0C900/udwll7wfm6lxlq5m.pdf",
        "page": null
       }
+     },
+     {
+      "metric": "tenant_news_poundstretch",
+      "label": "Tenant news: Poundstretcher Limited",
+      "value": "Poundstretcher Faces Supplier Pressure as Poundland Insolvency Threatens Sector - Bloomberg",
+      "unit": null,
+      "status": "amber",
+      "source": {
+       "type": "web",
+       "ref": "https://www.bloomberg.com/news/articles/2026-11-09/poundstretcher-squeezed-by-suppliers-as-poundland-insolvency-looms",
+       "page": null
+      }
+     },
+     {
+      "metric": "pipeline_news",
+      "label": "PBSA pipeline nearby",
+      "value": "Plans submitted for 749 student homes in Stratford | Newham Recorder",
+      "unit": null,
+      "status": null,
+      "source": {
+       "type": "web",
+       "ref": "https://www.newhamrecorder.co.uk/news/26581918.plans-submitted-749-student-homes-stratford",
+       "page": null
+      }
+     },
+     {
+      "metric": "pipeline_news",
+      "label": "PBSA pipeline nearby",
+      "value": "Newham (Stratford) Student Accommodation Report H1 2026",
+      "unit": null,
+      "status": null,
+      "source": {
+       "type": "web",
+       "ref": "https://studentaccommodationfinance.co.uk/reports/newham/h1-2026/",
+       "page": null
+      }
      }
     ],
-    "web_checks": [],
+    "web_checks": [
+     {
+      "metric": "tenant_news_poundstretch",
+      "label": "Tenant news: Poundstretcher Limited",
+      "value": "Poundstretcher Faces Supplier Pressure as Poundland Insolvency Threatens Sector - Bloomberg",
+      "unit": null,
+      "status": "amber",
+      "source": {
+       "type": "web",
+       "ref": "https://www.bloomberg.com/news/articles/2026-11-09/poundstretcher-squeezed-by-suppliers-as-poundland-insolvency-looms",
+       "page": null
+      }
+     },
+     {
+      "metric": "pipeline_news",
+      "label": "PBSA pipeline nearby",
+      "value": "Plans submitted for 749 student homes in Stratford | Newham Recorder",
+      "unit": null,
+      "status": null,
+      "source": {
+       "type": "web",
+       "ref": "https://www.newhamrecorder.co.uk/news/26581918.plans-submitted-749-student-homes-stratford",
+       "page": null
+      }
+     },
+     {
+      "metric": "pipeline_news",
+      "label": "PBSA pipeline nearby",
+      "value": "Newham (Stratford) Student Accommodation Report H1 2026",
+      "unit": null,
+      "status": null,
+      "source": {
+       "type": "web",
+       "ref": "https://studentaccommodationfinance.co.uk/reports/newham/h1-2026/",
+       "page": null
+      }
+     }
+    ],
     "appraisal": {
      "max_land_bid": {
       "metric": "max_land_bid",
@@ -823,10 +1007,10 @@
        {
         "use": "Existing (refurbish and re-let)",
         "noi": 2070000.0,
-        "cost": 16182600.0,
+        "cost": 10000000,
         "basis": "brochure ERVs £1.40m, £0.90m less 10% costs, refurb £100/sq ft (assumption)",
-        "max_land_bid": 12960066.07591122,
-        "yield_on_cost": 0.1279151681435616
+        "max_land_bid": 19142666.07591122,
+        "yield_on_cost": 0.207
        }
       ],
       "recommended": "Existing (refurbish and re-let)",
@@ -859,7 +1043,7 @@
        {
         "metric": "bid_existing",
         "label": "Max site bid: Existing (refurbish and re-let)",
-        "value": 12960066,
+        "value": 19142666,
         "unit": "GBP",
         "status": null,
         "source": {

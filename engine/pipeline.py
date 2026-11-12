@@ -142,13 +142,16 @@ def analyze(paths, comment="", step=print, exit_yield=None, exit_yield_ref=None)
                      fig("levered_em", "Levered equity multiple", round(lev["equity_multiple"], 2), "x", "model")],
             "alternatives": alt}
         assets.append({
-            "name": get("address") or pathlib.Path(path).stem, "address": get("address"), "rates": appraisal["debt"][:2], "verdict": ver, "returns": ret["figures"], "facts": facts,
+            "name": get("address") or pathlib.Path(path).stem, "address": get("address"), "rates": appraisal["debt"], "verdict": ver,
+            # shown in the report: headline returns + the decision numbers (site bid per use, total cost)
+            "returns": ret["figures"] + [appraisal["max_land_bid"]] + alt["figures"] + [appraisal["costs"][-1]],
+            "facts": facts,
             "room_types": [{"type": r["type"], "beds": r["beds"], "weeks": r["weeks"],
                             "weekly_rate": fig(f"{r['type']}_rate", f"{r['type']} rate", r["weekly_rate"], "GBP/week",
                                                source="web" if mr[r["type"]][2] else "assumption",
                                                ref=(f"{mr[r['type']][2]} around {uni['name'] if uni else 'the asset'}: {comp_ref}")
                                                if mr[r["type"]][2] else "No comps found: default rate")} for r in rooms],
-            "comps": comps, "target_university": uni, "location": location, "web_checks": web_checks, "appraisal": appraisal,
+            "comps": comps, "target_university": uni, "location": location + web_checks, "web_checks": web_checks, "appraisal": appraisal,
             "geo": geo, "noi": noi["figures"], "opex_benchmark": opex_bm, "opex_benchmark_error": opex_err,
             "assumptions": [fig("cost_per_bed", "Hard build cost per bed", COST_PER_BED, "GBP", "assumption"),
                             fig("room_mix", "Room mix", ROOM_MIX, None, "assumption"),
