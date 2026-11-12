@@ -19,6 +19,7 @@ import asyncio
 import base64
 import hashlib
 import json
+import logging
 import os
 import re
 import secrets
@@ -31,6 +32,8 @@ from urllib.parse import urlencode
 import httpx
 from fastapi import APIRouter, HTTPException, Request, Response
 from fastapi.responses import RedirectResponse
+
+log = logging.getLogger("dealt.integrations")
 
 PUBLIC_BASE = os.getenv("PUBLIC_BASE_URL", "https://demo3.ai-vance.de").rstrip("/")
 API_PREFIX = os.getenv("PUBLIC_API_PREFIX", "/api")  # Caddy strips /api before it reaches us
@@ -176,17 +179,32 @@ async def outlook_deals(sid: str, days: int = 14, limit: int = 12) -> List[dict]
     params = {
         "$filter": f"receivedDateTime ge {since}",
         "$orderby": "receivedDateTime desc",
-        "$top": "60",
+        "$top": "50",
         "$select": "id,subject,from,receivedDateTime,bodyPreview,hasAttachments,webLink",
-        "$expand": "attachments($select=name,contentType,size)",
     }
-    async with httpx.AsyncClient(timeout=20) as c:
-        r = await c.get(f"{GRAPH}/me/mailFolders/inbox/messages", params=params, headers={"Authorization": f"Bearer {token}"})
-    if r.status_code != 200:
-        raise HTTPException(502, f"Outlook request failed ({r.status_code})")
+    headers = {"Authorization": f"Bearer {token}"}
+    async with httpx.AsyncClient(timeout=httpx.Timeout(30, connect=10)) as c:
+        try:
+            r = await c.get(f"{GRAPH}/me/mailFolders/inbox/messages", params=params, headers=headers)
+        except httpx.HTTPError:
+            raise HTTPException(504, "Outlook did not respond in time, try again")
+        if r.status_code != 200:
+            raise HTTPException(502, f"Outlook request failed ({r.status_code})")
+        messages = r.json().get("value", [])
+        # Attachment names only (no content), fetched in parallel for mails that have any.
+        sem = asyncio.Semaphore(8)
+
+        async def att_names(mid: str) -> List[str]:
+            async with sem:
+                try:
+                    a = await c.get(f"{GRAPH}/me/messages/{mid}/attachments", params={"$select": "name"}, headers=headers, timeout=15)
+                    return [x.get("name", "") for x in a.json().get("value", [])] if a.status_code == 200 else []
+                except httpx.HTTPError:
+                    return []
+
+        att = await asyncio.gather(*[att_names(m["id"]) if m.get("hasAttachments") else asyncio.sleep(0, result=[]) for m in messages])
     out = []
-    for m in r.json().get("value", []):
-        names = [a.get("name", "") for a in m.get("attachments", []) or []]
+    for m, names in zip(messages, att):
         sender = (m.get("from") or {}).get("emailAddress", {})
         score, reasons = score_deal_email(m.get("subject") or "", m.get("bodyPreview") or "", f"{sender.get('name', '')} {sender.get('address', '')}", names)
         if score < 25:
@@ -461,7 +479,7 @@ Tools:
 - check_inbox: scan the user's connected Outlook inbox for new real estate deal emails.
 - analyze_email: run the full qualification pipeline on the PDF brochure(s) attached to one email. The report opens on screen.
 - load_sample_report: open the 78-102 Broadway, Stratford sample report.
-- dealroom__*: Dealroom.co data (companies, investors, transactions, fundings). Use it to look up buyers, investors, operators, tenants and comparable transactions.
+- dealroom__*: Dealroom.co data (companies, investors, transactions, fundings). Only available when Dealroom is listed under connected sources; otherwise never mention Dealroom.
 Rules: never invent figures. Every number you state must come from a tool result; say where it came from. If a source is not connected, tell the user to connect it with the + button.
 Be concise. Use short markdown: bullet lists, **bold** for the key verdict or number."""
 
@@ -650,6 +668,9 @@ def build_router(start_job: StartJob) -> APIRouter:
                 return f"Unknown tool {name}"
             except HTTPException as e:
                 return f"Tool error: {e.detail}"
+            except Exception as e:  # never let a slow or broken source crash the chat
+                log.exception("tool %s failed", name)
+                return f"Tool error: {type(e).__name__}, the source did not respond. Tell the user and suggest trying again."
 
         if not os.getenv("XAI_API_KEY"):
             return await _fallback_chat(msgs[-1]["content"], sess, run_tool, actions)
