@@ -50,8 +50,9 @@ def remember_report(report):
     c = _cloud()
     if c:
         base, h = c
-        for t in texts:
-            requests.post(f"{base}/add", headers=h, data={"datasetName": "deal_flow", "raw_data": t}, timeout=60).raise_for_status()
+        for i, t in enumerate(texts):
+            requests.post(f"{base}/add", headers=h, data={"datasetName": "deal_flow"},
+                          files={"data": (f"deal_{i}.txt", t.encode("utf-8"), "text/plain")}, timeout=60).raise_for_status()
         requests.post(f"{base}/cognify", headers={**h, "Content-Type": "application/json"},
                       json={"datasets": ["deal_flow"]}, timeout=300).raise_for_status()
         return True
@@ -67,10 +68,15 @@ def ask(question):
     if c:
         base, h = c
         r = requests.post(f"{base}/search", headers={**h, "Content-Type": "application/json"},
-                          json={"query": question, "search_type": "GRAPH_COMPLETION"}, timeout=120)
+                          json={"query": question, "search_type": "GRAPH_COMPLETION", "datasets": ["deal_flow"]}, timeout=120)
+        if r.status_code == 404:
+            return ["Deal memory is still being built (cognify runs in the background). Try again in a minute."]
         r.raise_for_status()
         res = r.json()
-        return res if isinstance(res, list) else [res]
+        out = []
+        for item in (res if isinstance(res, list) else [res]):
+            out += item.get("search_result", []) if isinstance(item, dict) else [str(item)]
+        return out
     if not _ready():
         return ["Deal memory not configured (LLM_API_KEY missing in .env)."]
     return asyncio.run(_ask(question))
