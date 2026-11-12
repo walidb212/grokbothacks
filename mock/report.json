@@ -1,0 +1,286 @@
+{
+  "mock": true,
+  "job_id": "demo-stratford",
+  "status": "done",
+  "steps": [
+    "Extracting brochure",
+    "Location & demographics",
+    "Room-rate comps",
+    "Market yields (MSCI)",
+    "Rates (SONIA)",
+    "NOI build-up",
+    "Returns",
+    "Verdict"
+  ],
+  "report": {
+    "assets": [
+      {
+        "name": "78-102 Broadway & 7 Salway Place",
+        "address": "Stratford, London E15 1NG",
+        "verdict": {
+          "decision": "GO",
+          "reasons": [
+            "Yield on cost above London PBSA exit yield",
+            "Strong university demand (UEL, UCL East)",
+            "Assumptions to confirm: build cost, room mix"
+          ]
+        },
+        "returns": [
+          {
+            "metric": "irr",
+            "label": "IRR (unlevered)",
+            "value": 0.1414,
+            "unit": "%",
+            "status": null,
+            "source": {
+              "type": "assumption",
+              "ref": null,
+              "page": null
+            }
+          },
+          {
+            "metric": "equity_multiple",
+            "label": "Equity multiple",
+            "value": 1.4863,
+            "unit": "x",
+            "status": null,
+            "source": {
+              "type": "assumption",
+              "ref": null,
+              "page": null
+            }
+          },
+          {
+            "metric": "yield_on_cost",
+            "label": "Yield on cost",
+            "value": 0.0668,
+            "unit": "%",
+            "status": "green",
+            "source": {
+              "type": "assumption",
+              "ref": null,
+              "page": null
+            }
+          },
+          {
+            "metric": "exit_yield",
+            "label": "Exit yield",
+            "value": 0.0525,
+            "unit": "%",
+            "status": null,
+            "source": {
+              "type": "assumption",
+              "ref": null,
+              "page": null
+            }
+          }
+        ],
+        "facts": [
+          {
+            "metric": "site_area",
+            "label": "Site area",
+            "value": 1.56,
+            "unit": "acres",
+            "status": null,
+            "source": {
+              "type": "brochure",
+              "ref": "78102Broadway7SalwayPlaceBrochureFinal.pdf",
+              "page": 2
+            }
+          },
+          {
+            "metric": "gia",
+            "label": "GIA",
+            "value": 161826,
+            "unit": "sqft",
+            "status": null,
+            "source": {
+              "type": "brochure",
+              "ref": "78102Broadway7SalwayPlaceBrochureFinal.pdf",
+              "page": 2
+            }
+          },
+          {
+            "metric": "passing_rent",
+            "label": "Current income",
+            "value": 122500,
+            "unit": "GBP/yr",
+            "status": null,
+            "source": {
+              "type": "brochure",
+              "ref": "78102Broadway7SalwayPlaceBrochureFinal.pdf",
+              "page": 2
+            }
+          },
+          {
+            "metric": "erv_broadway",
+            "label": "ERV if fully let (Broadway)",
+            "value": 1400000,
+            "unit": "GBP/yr",
+            "status": null,
+            "source": {
+              "type": "brochure",
+              "ref": "78102Broadway7SalwayPlaceBrochureFinal.pdf",
+              "page": 2
+            }
+          },
+          {
+            "metric": "pbsa_capacity",
+            "label": "PBSA potential",
+            "value": 800,
+            "unit": "beds",
+            "status": null,
+            "source": {
+              "type": "brochure",
+              "ref": "78102Broadway7SalwayPlaceBrochureFinal.pdf",
+              "page": 2
+            }
+          },
+          {
+            "metric": "station_distance",
+            "label": "Stratford station",
+            "value": 400,
+            "unit": "m",
+            "status": null,
+            "source": {
+              "type": "brochure",
+              "ref": "78102Broadway7SalwayPlaceBrochureFinal.pdf",
+              "page": 2
+            }
+          }
+        ],
+        "location": [
+          {
+            "metric": "population_10min",
+            "label": "Population (10 min drive)",
+            "value": 375000,
+            "unit": "people",
+            "status": null,
+            "source": {
+              "type": "brochure",
+              "ref": "78102Broadway7SalwayPlaceBrochureFinal.pdf",
+              "page": 8
+            }
+          },
+          {
+            "metric": "population_growth",
+            "label": "Population growth",
+            "value": 0.068,
+            "unit": "%",
+            "status": null,
+            "source": {
+              "type": "brochure",
+              "ref": "78102Broadway7SalwayPlaceBrochureFinal.pdf",
+              "page": 8
+            }
+          },
+          {
+            "metric": "economically_active",
+            "label": "Economically active",
+            "value": 0.736,
+            "unit": "%",
+            "status": null,
+            "source": {
+              "type": "brochure",
+              "ref": "78102Broadway7SalwayPlaceBrochureFinal.pdf",
+              "page": 8
+            }
+          }
+        ],
+        "room_types": [
+          {
+            "type": "studio",
+            "beds": 240,
+            "weekly_rate": {
+              "metric": "studio_rate",
+              "label": "studio rate",
+              "value": 350,
+              "unit": "GBP/week",
+              "status": null,
+              "source": {
+                "type": "assumption",
+                "ref": null,
+                "page": null
+              }
+            },
+            "weeks": 51
+          },
+          {
+            "type": "ensuite",
+            "beds": 400,
+            "weekly_rate": {
+              "metric": "ensuite_rate",
+              "label": "ensuite rate",
+              "value": 280,
+              "unit": "GBP/week",
+              "status": null,
+              "source": {
+                "type": "assumption",
+                "ref": null,
+                "page": null
+              }
+            },
+            "weeks": 51
+          },
+          {
+            "type": "cluster",
+            "beds": 160,
+            "weekly_rate": {
+              "metric": "cluster_rate",
+              "label": "cluster rate",
+              "value": 230,
+              "unit": "GBP/week",
+              "status": null,
+              "source": {
+                "type": "assumption",
+                "ref": null,
+                "page": null
+              }
+            },
+            "weeks": 51
+          }
+        ],
+        "comps": [],
+        "noi": [
+          {
+            "metric": "gross_income",
+            "label": "Gross income",
+            "value": 11516616.0,
+            "unit": "GBP/yr",
+            "status": null,
+            "source": {
+              "type": "assumption",
+              "ref": null,
+              "page": null
+            }
+          },
+          {
+            "metric": "opex",
+            "label": "OPEX",
+            "value": 4030815.6,
+            "unit": "GBP/yr",
+            "status": null,
+            "source": {
+              "type": "assumption",
+              "ref": null,
+              "page": null
+            }
+          },
+          {
+            "metric": "noi",
+            "label": "NOI",
+            "value": 7485800.4,
+            "unit": "GBP/yr",
+            "status": null,
+            "source": {
+              "type": "assumption",
+              "ref": null,
+              "page": null
+            }
+          }
+        ],
+        "rates": []
+      }
+    ]
+  }
+}

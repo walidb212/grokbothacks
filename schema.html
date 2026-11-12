@@ -1,0 +1,71 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Brochure to Day 1</title>
+<style>
+body{margin:0;background:#0f1115;font-family:Inter,Segoe UI,Arial,sans-serif;display:flex;justify-content:center;padding:24px}
+svg text{fill:#e8eaf0;font-size:14px}
+.t{font-size:15px;font-weight:700}
+.s{font-size:12px;fill:#9aa3b2}
+.h{font-size:22px;font-weight:800}
+</style></head><body>
+<svg width="1180" height="620" viewBox="0 0 1180 620">
+  <defs>
+    <marker id="a" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6b7280"/></marker>
+  </defs>
+  <text x="20" y="34" class="h">From brochure to Day 1</text>
+  <text x="20" y="58" class="s">Drop a sale brochure. Get a traced GO / NO-GO, and if it's a GO, the plan to run the asset.</text>
+
+  <!-- 1 input -->
+  <rect x="20" y="110" width="170" height="90" rx="12" fill="#1b1f27" stroke="#3b82f6"/>
+  <text x="38" y="145" class="t">Sale brochure</text>
+  <text x="38" y="167" class="s">PDF (Savills, Acuitus...)</text>
+  <text x="38" y="185" class="s">185 real UK deals</text>
+
+  <!-- 2 extraction -->
+  <rect x="240" y="110" width="200" height="90" rx="12" fill="#1b1f27" stroke="#8b5cf6"/>
+  <text x="258" y="145" class="t">1. Extract claims</text>
+  <text x="258" y="167" class="s">V7 Go + Grok Bot agent</text>
+  <text x="258" y="185" class="s">price, yield, rents, tenants, page ref</text>
+
+  <!-- 3 verify -->
+  <rect x="490" y="80" width="250" height="150" rx="12" fill="#1b1f27" stroke="#f59e0b"/>
+  <text x="508" y="112" class="t">2. Verify every claim</text>
+  <text x="508" y="140" class="s">Recompute the maths (NIY, rent total)</text>
+  <text x="508" y="163" class="s">MSCI RCA comparable deals (cap rates)</text>
+  <text x="508" y="186" class="s">Parallel: tenant news, with sources</text>
+  <text x="508" y="209" class="s">Companies House: tenant filings</text>
+
+  <!-- 4 verdict -->
+  <rect x="790" y="110" width="200" height="90" rx="12" fill="#1b1f27" stroke="#22c55e"/>
+  <text x="808" y="145" class="t">3. GO / NO-GO</text>
+  <text x="808" y="167" class="s">each claim green / amber / red</text>
+  <text x="808" y="185" class="s">click = source page or deal</text>
+
+  <!-- 5 day 1 -->
+  <rect x="740" y="300" width="300" height="160" rx="12" fill="#1b1f27" stroke="#14b8a6"/>
+  <text x="758" y="332" class="t">4. Day-1 operating plan (if GO)</text>
+  <text x="758" y="360" class="s">OPEX benchmark vs similar buildings (Cortile)</text>
+  <text x="758" y="383" class="s">Lease calendar: expiries, breaks, reviews</text>
+  <text x="758" y="406" class="s">Compliance: EPC, fire, gas safety</text>
+  <text x="758" y="429" class="s">Student blocks: occupancy per academic year</text>
+
+  <!-- memory -->
+  <rect x="300" y="320" width="340" height="110" rx="12" fill="#1b1f27" stroke="#6b7280" stroke-dasharray="6 5"/>
+  <text x="318" y="352" class="t">Memory &amp; storage</text>
+  <text x="318" y="378" class="s">cognee: graph of assets, tenants, comps, verdicts</text>
+  <text x="318" y="401" class="s">Supabase: every figure stored with its source</text>
+
+  <!-- arrows -->
+  <line x1="190" y1="155" x2="236" y2="155" stroke="#6b7280" stroke-width="2" marker-end="url(#a)"/>
+  <line x1="440" y1="155" x2="486" y2="155" stroke="#6b7280" stroke-width="2" marker-end="url(#a)"/>
+  <line x1="740" y1="155" x2="786" y2="155" stroke="#6b7280" stroke-width="2" marker-end="url(#a)"/>
+  <line x1="890" y1="200" x2="890" y2="296" stroke="#6b7280" stroke-width="2" marker-end="url(#a)"/>
+  <text x="900" y="255" class="s">GO</text>
+  <line x1="615" y1="230" x2="560" y2="316" stroke="#6b7280" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#a)"/>
+  <line x1="740" y1="380" x2="644" y2="380" stroke="#6b7280" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#a)"/>
+
+  <!-- footer -->
+  <rect x="20" y="510" width="1140" height="70" rx="12" fill="#13161c" stroke="#2a2f3a"/>
+  <text x="40" y="540" class="t">Every number is traced: brochure page · MSCI deal · Cortile record · web source</text>
+  <text x="40" y="563" class="s">Built with Grok Bot + Cursor · V7 Go · MSCI RCA · Parallel · Cortile · cognee · Supabase</text>
+</svg>
+</body></html>

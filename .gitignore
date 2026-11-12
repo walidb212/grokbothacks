@@ -1,0 +1,12 @@
+# secrets
+.env
+.env.*
+*.env
+# partner data (MSCI, Cortile): never commit
+data/
+*.sqlite
+# deps / build
+node_modules/
+.next/
+__pycache__/
+.venv/
