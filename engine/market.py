@@ -79,10 +79,10 @@ def rates_from_comps(cs, defaults):
     for t, cats in CATS.items():
         for c in cats:
             vals = [(x["rooms"][c]["median_pw"], x["rooms"][c]["weeks"]) for x in cs if c in x["rooms"]]
-            if vals:
+            if len(vals) >= 2:  # one building is not market evidence
                 w = [v[1] for v in vals if v[1]]
                 res[t] = (statistics.median(v[0] for v in vals), int(statistics.median(w)) if w else 51,
-                          f"median of {len(vals)} nearby comps ({c})")
+                          f"median of {len(vals)} nearby comps ({c}" + (" used as proxy" if c != cats[0] else "") + ")")
                 break
         else:
             res[t] = (defaults[t], 51, None)

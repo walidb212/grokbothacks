@@ -10,6 +10,7 @@ Replace run_pipeline() with the real agent; keep the response shape.
 import asyncio
 import contextlib
 import json
+import re
 import os
 import uuid
 from pathlib import Path
@@ -88,6 +89,52 @@ async def analyze(
 ):
     job_id = await start_job([(f.filename, await f.read()) for f in files], comment)
     return {"job_id": job_id}
+
+
+@app.get("/files/{job_id}/{name}")
+def brochure_file(job_id: str, name: str):
+    """The uploaded brochure, shown inline so the UI can open it at the cited page (#page=N)."""
+    from fastapi.responses import FileResponse
+    safe = Path(name).name
+    candidates = [UPLOADS / Path(job_id).name / safe, BASE / "mock" / "brochures" / safe, BASE.parent / "mock" / "brochures" / safe]
+    for c in candidates:
+        if c.exists() and c.suffix.lower() == ".pdf":
+            return FileResponse(c, media_type="application/pdf", headers={"Content-Disposition": f'inline; filename="{safe}"'})
+    raise HTTPException(status_code=404, detail="Brochure not found")
+
+
+def _brochure_path(job_id: str, name: str):
+    safe = Path(name).name
+    for c in (UPLOADS / Path(job_id).name / safe, BASE / "mock" / "brochures" / safe, BASE.parent / "mock" / "brochures" / safe):
+        if c.exists() and c.suffix.lower() == ".pdf":
+            return c
+    return None
+
+
+@app.get("/pages/{job_id}/{name}/{page}.png")
+def brochure_page(job_id: str, name: str, page: int, q: str = ""):
+    """The cited brochure page as an image, with the extracted value highlighted (evidence view)."""
+    import fitz  # PyMuPDF
+    from fastapi.responses import Response
+    path = _brochure_path(job_id, name)
+    if not path:
+        raise HTTPException(status_code=404, detail="Brochure not found")
+    doc = fitz.open(path)
+    pg = doc[max(0, min(page - 1, len(doc) - 1))]
+    hits = 0
+    needles = [q.strip()] if q.strip() else []
+    if q:
+        needles += re.findall(r"£?\d[\d,\.]*\s*(?:million|m|k)?", q)[:3]
+        needles += [w for w in re.split(r"[;\n]", q) if 3 < len(w.strip()) < 40][:2]
+    for n in needles:
+        for r in pg.search_for(n.strip())[:6]:
+            annot = pg.add_highlight_annot(r)
+            annot.set_colors(stroke=(0.94, 0.65, 0.36)); annot.update()
+            hits += 1
+        if hits:
+            break
+    png = pg.get_pixmap(dpi=110).tobytes("png")
+    return Response(png, media_type="image/png", headers={"X-Highlights": str(hits), "Cache-Control": "no-store"})
 
 
 @app.get("/analysis/{job_id}")

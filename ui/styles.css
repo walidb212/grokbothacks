@@ -685,3 +685,39 @@ body.chatting .composer-wrap { padding-top: 18px; background: linear-gradient(to
 .vorb[data-state="speaking"] .vorb-label { color: var(--amber); }
 .vorb .vorb-sub { color: var(--muted); }
 .vorb .vorb-end { color: var(--ink); border-color: var(--line-strong); background: #fff; }
+
+
+/* live agent log: which tool is working */
+.steps.live-steps { display: flex; flex-direction: column; gap: 7px; }
+.steps li.tool-step { align-items: center; gap: 10px; animation: stepIn .35s ease both; }
+.steps li.tool-step::before { content: none; }
+.tb { font-family: var(--mono); font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; border: 1px solid rgba(255,255,255,.14); background: #1b1c24; color: #f1f1f5; white-space: nowrap; }
+.tb-v7-go { background: #2b1d5c; border-color: #6b4ff6; }
+.tb-msci-rca { background: #0b2d55; border-color: #2f7de1; }
+.tb-parallel { background: #2a2a2a; border-color: #bdbdbd; }
+.tb-hesa { background: #3a1f4d; border-color: #8e44ad; }
+.tb-scrapers { background: #3b2a12; border-color: #f0a75c; }
+.tb-cortile { background: #12352b; border-color: #2ecc8f; }
+.tb-bank-of-england { background: #3b1220; border-color: #c0392b; }
+.tb-cognee { background: #1d2f3b; border-color: #4fb3d9; }
+.tb-postcodes-io { background: #222831; border-color: #6c7a89; }
+.tb-dealt { background: #2a1d0e; border-color: #f0a75c; color: #f0a75c; }
+.steps li.tool-step .ta { color: var(--ink); }
+.steps li.tool-step .td { color: var(--muted); }
+.steps li.tool-step.active .ta { color: #f0a75c; }
+.dots i { display: inline-block; width: 5px; height: 5px; margin: 0 2px; border-radius: 50%; background: #f0a75c; animation: dot 1s infinite ease-in-out; }
+.dots i:nth-child(2) { animation-delay: .15s; } .dots i:nth-child(3) { animation-delay: .3s; }
+@keyframes dot { 0%, 80%, 100% { opacity: .2; transform: translateY(0); } 40% { opacity: 1; transform: translateY(-3px); } }
+@keyframes stepIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+/* brochure viewer */
+.cp-view { margin-top: 8px; width: 100%; text-align: left; font: inherit; font-size: 12.5px; color: #f0a75c; background: rgba(240,167,92,.08); border: 1px solid rgba(240,167,92,.35); border-radius: 8px; padding: 6px 10px; cursor: pointer; }
+.cp-view:hover { background: rgba(240,167,92,.16); }
+.pdf-modal { width: min(1100px, 94vw); height: 90vh; padding: 0; border: 1px solid rgba(255,255,255,.12); border-radius: 14px; background: #0d0e14; color: #f1f1f5; }
+.pdf-modal::backdrop { background: rgba(0,0,0,.6); }
+.pdf-head { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,.08); }
+.pdf-head strong { flex: 1; font-size: 13px; }
+.pdf-head button { background: none; border: 0; color: #f1f1f5; font-size: 22px; cursor: pointer; }
+.pdf-body { height: calc(100% - 46px); overflow: auto; background: #1a1b22; display: flex; justify-content: center; }
+.pdf-body img { max-width: 100%; height: auto; align-self: flex-start; box-shadow: 0 6px 30px rgba(0,0,0,.5); }
+.pdf-head a { color: #f0a75c; font-size: 12.5px; text-decoration: none; margin-right: 8px; }

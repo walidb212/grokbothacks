@@ -190,6 +190,7 @@ function showCite(el, metric) {
     <div class="cp-head">${b.logo}<div><strong>${esc(b.name)}</strong><small>${esc(b.detail || "")}</small></div></div>
     <div class="cp-fig"><span>${esc(f.label || f.metric)}</span><b>${esc(formatValue(f))}</b></div>
     ${f.source?.note ? `<p class="cp-note">${esc(f.source.note)}</p>` : ""}
+    ${f.source?.type === "brochure" && f.source?.ref ? `<button type="button" class="cp-view" data-pdf="${esc(f.source.ref)}" data-page="${esc(f.source.page || 1)}" data-q="${esc(String(f.value ?? "").slice(0, 120))}">View in brochure, page ${esc(f.source.page || 1)} →</button>` : ""}
     <div class="cp-foot">${statusTag(f.status)}${b.url ? `<a href="${esc(b.url)}" target="_blank" rel="noopener">Open source ↗</a>` : ""}</div>`;
   pop.hidden = false;
   const r = el.getBoundingClientRect(), w = pop.offsetWidth, h = pop.offsetHeight;
@@ -413,9 +414,24 @@ function runWhatIf(input = {}) {
 function resetWhatIf() { state.scenario = null; renderReport(); return { ok: true, message: "Back to the base case." }; }
 
 // ---------- data loading ----------
+// Steps arrive as "Tool · action · detail": show which tool is working (live agent log).
+const TOOL_SLUG = (t) => String(t || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+function stepRow(s, cls) {
+  const [tool, action, detail] = String(s).split(" · ");
+  if (!action) return `<li class="${cls}">${esc(s)}</li>`;
+  return `<li class="${cls} tool-step"><span class="tb tb-${TOOL_SLUG(tool)}">${esc(tool)}</span>`
+    + `<span class="ta">${esc(action)}</span>${detail ? `<span class="td">${esc(detail)}</span>` : ""}</li>`;
+}
 function renderSteps(done, all, running) {
   const el = state.stepsEl;
   if (!el) return;
+  const live = (done || []).some((s) => String(s).includes(" · "));
+  if (live) {
+    el.classList.add("live-steps");
+    el.innerHTML = done.map((s) => stepRow(s, "done")).join("")
+      + (running ? `<li class="active tool-step"><span class="tb tb-dealt">dealt</span><span class="ta">Working</span><span class="td dots"><i></i><i></i><i></i></span></li>` : "");
+    return;
+  }
   el.innerHTML = all.map((s, i) => {
     const cls = i < done.length ? "done" : (running && i === done.length ? "active" : "pending");
     return `<li class="${cls}">${esc(s)}</li>`;
@@ -800,7 +816,17 @@ function reportReady() {
   const reasons = (a.verdict?.reasons || []).slice(0, 3).map((r) => `<li>${esc(r)}</li>`).join("");
   state.stepsEl = null;
   const val = (m) => { const f = (a.returns || []).find((x) => x.metric === m); return f ? formatValue(f) : null; };
-  const kpis = [["IRR", val("irr")], ["Equity multiple", val("equity_multiple")], ["Yield on cost", val("entry_yield") ?? val("yield_on_cost")], ["Exit yield", val("exit_yield")]].filter(([, v]) => v);
+  // Lead with the decision number: the most we can pay for the site (best use), then returns before site cost.
+  const alt = a.appraisal?.alternatives;
+  const best = alt?.options?.length ? alt.options.reduce((x, y) => (y.max_land_bid > x.max_land_bid ? y : x)) : null;
+  const fmtM = (v) => `£${(v / 1e6).toFixed(1)}m`;
+  const preSite = (a.returns || []).some((x) => /before site cost/.test(x.label || ""));
+  const kpis = [
+    best ? [`Max site bid · ${best.use.split(" (")[0]}`, best.max_land_bid > 0 ? fmtM(best.max_land_bid) : "£0 (doesn't work)"] : null,
+    [preSite ? "IRR (pre-site)" : "IRR", val("irr")],
+    ["Yield on cost", val("entry_yield") ?? val("yield_on_cost")],
+    ["Exit yield", val("exit_yield")],
+  ].filter((k) => k && k[1]);
   const photos = (a.comps || []).filter((c) => c?.image).slice(0, 5);
   state.reportMsg = addMessage("assistant", "", { html: `
     <div class="report-card">
@@ -1101,3 +1127,28 @@ initChat();
 
 // Feature flag: Dealroom stays hidden until Dealroom allowlists demo3.ai-vance.de. Show with ?dealroom=1
 if (params.get("dealroom") === "1") document.querySelectorAll('[data-feature="dealroom"]').forEach((el) => { el.hidden = false; });
+
+
+// ---------- brochure viewer: open the PDF at the cited page, inside the app ----------
+function openBrochure(name, page, q) {
+  let dlg = document.getElementById("pdf-modal");
+  if (!dlg) {
+    dlg = document.createElement("dialog");
+    dlg.id = "pdf-modal";
+    dlg.className = "pdf-modal";
+    dlg.innerHTML = `<div class="pdf-head"><span class="sb sb-pdf">PDF</span><strong id="pdf-title"></strong><a id="pdf-full" target="_blank" rel="noopener">Open full PDF ↗</a><button type="button" id="pdf-close" aria-label="Close">×</button></div><div class="pdf-body"><img id="pdf-img" alt="Brochure page"></div>`;
+    document.body.appendChild(dlg);
+    dlg.querySelector("#pdf-close").addEventListener("click", () => dlg.close());
+    dlg.addEventListener("click", (e) => { if (e.target === dlg) dlg.close(); });
+  }
+  const job = encodeURIComponent(state.jobId || "demo-stratford"), file = encodeURIComponent(name);
+  dlg.querySelector("#pdf-title").textContent = `${name} · page ${page}`;
+  dlg.querySelector("#pdf-full").href = `${API}/files/${job}/${file}#page=${page}`;
+  dlg.querySelector("#pdf-img").src = `${API}/pages/${job}/${file}/${page}.png?q=${encodeURIComponent(q || "")}`;
+  hideCite();
+  dlg.showModal();
+}
+document.addEventListener("click", (e) => {
+  const b = e.target.closest(".cp-view");
+  if (b) { e.stopPropagation(); openBrochure(b.dataset.pdf, b.dataset.page, b.dataset.q); }
+});

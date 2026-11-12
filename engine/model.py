@@ -8,7 +8,8 @@ def fig(metric, label, value, unit, source="calc", ref=None, page=None, status=N
 
 
 DEFAULTS = {"weeks": 51, "occupancy": 0.97, "opex_pct": 0.35, "rent_growth": 0.03,
-            "build_years": 3, "hold_years_stabilised": 2, "acq_costs_pct": 0.068}
+            "build_years": 3, "hold_years_stabilised": 2, "acq_costs_pct": 0.068,
+            "leaseup": 0.90}  # first operating year at 90% of stabilised NOI
 
 
 def build_noi(rooms, a=None):
@@ -43,10 +44,7 @@ def compute_returns(noi, total_cost, exit_yield, a=None, entry_price=None):
         entry_yield = noi / cost
     else:  # development
         cost = total_cost
-        n = a["build_years"]
-        cf = [-cost / n] * n + [noi * (1 + g) ** i for i in range(a["hold_years_stabilised"] - 1)]
-        last = noi * (1 + g) ** (a["hold_years_stabilised"] - 1)
-        cf.append(last + last * (1 + g) / exit_yield)
+        cf = dev_cashflows(noi, cost, exit_yield, 0.0, a)
         entry_yield = noi / cost
     irr = _irr(cf)
     em = sum(c for c in cf if c > 0) / -sum(c for c in cf if c < 0)
@@ -80,9 +78,10 @@ def dev_cashflows(noi, build_cost, exit_yield, land=0.0, a=None):
     g, n = a["rent_growth"], a["build_years"]
     cf = [-build_cost / n] * n
     cf[0] -= land
-    cf += [noi * (1 + g) ** i for i in range(a["hold_years_stabilised"] - 1)]
-    last = noi * (1 + g) ** (a["hold_years_stabilised"] - 1)
-    cf.append(last + last * (1 + g) / exit_yield)
+    ops = [noi * (1 + g) ** i for i in range(a["hold_years_stabilised"])]
+    ops[0] *= a["leaseup"]  # lease-up: first year below stabilised occupancy
+    exit_value = noi * (1 + g) ** a["hold_years_stabilised"] / exit_yield  # sold on forward NOI
+    cf += ops[:-1] + [ops[-1] + exit_value]
     return cf
 
 
@@ -109,13 +108,14 @@ def sensitivity(noi, build_cost, exit_yield, land=0.0, a=None):
     return {"cost_x_rent": grid, "exit_yield": yields}
 
 
-def levered(noi, build_cost, exit_yield, land, rate, ltc=0.55, a=None):
-    """Interest-only debt = LTC x total cost, drawn with costs, repaid at sale. Returns levered IRR / multiple."""
+def levered(noi, build_cost, exit_yield, land, rate, ltc=0.55, a=None, fee_pct=0.01):
+    """Interest-only debt = LTC x total cost, drawn with costs, repaid at sale; arrangement fee on each draw.
+    Returns levered IRR / multiple."""
     cf = dev_cashflows(noi, build_cost, exit_yield, land, a)
     debt_cf, bal = [], 0.0
     for i, c in enumerate(cf):
         draw = -c * ltc if c < 0 else 0.0
-        interest = bal * rate
+        interest = bal * rate + draw * fee_pct
         bal += draw
         repay = bal if i == len(cf) - 1 else 0.0
         debt_cf.append(c + draw - interest - repay)

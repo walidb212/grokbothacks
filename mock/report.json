@@ -1,568 +1,991 @@
 {
-  "mock": true,
-  "job_id": "demo-stratford",
-  "status": "done",
-  "steps": [
-    "Extracting brochure",
-    "Location & demographics",
-    "Room-rate comps",
-    "Market yields (MSCI)",
-    "Rates (SONIA)",
-    "NOI build-up",
-    "Returns",
-    "Verdict"
-  ],
-  "report": {
-    "assets": [
-      {
-        "name": "78-102 Broadway & 7 Salway Place",
-        "address": "Stratford, London E15 1NG",
-        "verdict": {
-          "decision": "GO",
-          "reasons": [
-            "Entry yield above market exit yield",
-            "IRR clears 12% hurdle"
-          ]
-        },
-        "returns": [
-          {
-            "metric": "irr",
-            "label": "IRR (unlevered)",
-            "value": 0.2013,
-            "unit": "%",
-            "status": null,
-            "source": {
-              "type": "model",
-              "ref": "Cash flows: cost, NOI growing 3% a year, exit at the market yield",
-              "page": null
-            }
-          },
-          {
-            "metric": "equity_multiple",
-            "label": "Equity multiple",
-            "value": 1.74,
-            "unit": "x",
-            "status": null,
-            "source": {
-              "type": "model",
-              "ref": "Cash returned ÷ cash invested",
-              "page": null
-            }
-          },
-          {
-            "metric": "entry_yield",
-            "label": "Entry / yield on cost",
-            "value": 0.0893,
-            "unit": "%",
-            "status": null,
-            "source": {
-              "type": "model",
-              "ref": "NOI ÷ total cost",
-              "page": null
-            }
-          },
-          {
-            "metric": "exit_yield",
-            "label": "Exit yield (MSCI UK apartment cap rate, Q3 2026)",
-            "value": 0.061,
-            "unit": "%",
-            "status": null,
-            "source": {
-              "type": "msci",
-              "ref": "RCA TrendTracker CA2_UKCTRY_APT 2026-09-30",
-              "page": null
-            }
-          },
-          {
-            "metric": "yield_delta",
-            "label": "Entry minus exit yield",
-            "value": 0.0283,
-            "unit": "%",
-            "status": null,
-            "source": {
-              "type": "model",
-              "ref": "Yield on cost − market exit yield",
-              "page": null
-            }
-          }
-        ],
-        "facts": [
-          {
-            "metric": "site_area",
-            "label": "Site area",
-            "value": 1.56,
-            "unit": "acres",
-            "status": null,
-            "source": {
-              "type": "brochure",
-              "ref": "78102Broadway7SalwayPlaceBrochureFinal.pdf",
-              "page": 2
-            }
-          },
-          {
-            "metric": "gia",
-            "label": "GIA",
-            "value": 161826,
-            "unit": "sqft",
-            "status": null,
-            "source": {
-              "type": "brochure",
-              "ref": "78102Broadway7SalwayPlaceBrochureFinal.pdf",
-              "page": 2
-            }
-          },
-          {
-            "metric": "passing_rent",
-            "label": "Current income",
-            "value": 122500,
-            "unit": "GBP/yr",
-            "status": null,
-            "source": {
-              "type": "brochure",
-              "ref": "78102Broadway7SalwayPlaceBrochureFinal.pdf",
-              "page": 2
-            }
-          },
-          {
-            "metric": "erv_broadway",
-            "label": "ERV if fully let (Broadway)",
-            "value": 1400000,
-            "unit": "GBP/yr",
-            "status": null,
-            "source": {
-              "type": "brochure",
-              "ref": "78102Broadway7SalwayPlaceBrochureFinal.pdf",
-              "page": 2
-            }
-          },
-          {
-            "metric": "pbsa_capacity",
-            "label": "PBSA potential",
-            "value": 800,
-            "unit": "beds",
-            "status": null,
-            "source": {
-              "type": "brochure",
-              "ref": "78102Broadway7SalwayPlaceBrochureFinal.pdf",
-              "page": 2
-            }
-          },
-          {
-            "metric": "station_distance",
-            "label": "Stratford station",
-            "value": 400,
-            "unit": "m",
-            "status": null,
-            "source": {
-              "type": "brochure",
-              "ref": "78102Broadway7SalwayPlaceBrochureFinal.pdf",
-              "page": 2
-            }
-          }
-        ],
-        "location": [
-          {
-            "metric": "population_10min",
-            "label": "Population (10 min drive)",
-            "value": 375000,
-            "unit": "people",
-            "status": null,
-            "source": {
-              "type": "brochure",
-              "ref": "78102Broadway7SalwayPlaceBrochureFinal.pdf",
-              "page": 8
-            }
-          },
-          {
-            "metric": "population_growth",
-            "label": "Population growth",
-            "value": 0.068,
-            "unit": "%",
-            "status": null,
-            "source": {
-              "type": "brochure",
-              "ref": "78102Broadway7SalwayPlaceBrochureFinal.pdf",
-              "page": 8
-            }
-          },
-          {
-            "metric": "economically_active",
-            "label": "Economically active",
-            "value": 0.736,
-            "unit": "%",
-            "status": null,
-            "source": {
-              "type": "brochure",
-              "ref": "78102Broadway7SalwayPlaceBrochureFinal.pdf",
-              "page": 8
-            }
-          },
-          {
-            "metric": "students",
-            "label": "Students in London (HESA 2024/25)",
-            "value": 420480,
-            "unit": "students",
-            "status": null,
-            "source": {
-              "type": "web",
-              "ref": "HESA",
-              "page": null
-            }
-          },
-          {
-            "metric": "russell_group_share",
-            "label": "Russell Group share of students",
-            "value": 0.36,
-            "unit": "%",
-            "status": null,
-            "source": {
-              "type": "web",
-              "ref": "HESA",
-              "page": null
-            }
-          },
-          {
-            "metric": "russell_group_universities",
-            "label": "Russell Group universities",
-            "value": "Imperial College of Science, Technology and Medicine ; King's College London ; London School of Economics and Political Science ; Queen Mary University of London ; University College London",
-            "unit": null,
-            "status": null,
-            "source": {
-              "type": "web",
-              "ref": "HESA",
-              "page": null
-            }
-          },
-          {
-            "metric": "pbsa_beds",
-            "label": "PBSA beds in London",
-            "value": 98282.0,
-            "unit": "beds",
-            "status": null,
-            "source": {
-              "type": "web",
-              "ref": "https://docs.planning.org.uk/20250808/54/T0B5KCKB0C900/udwll7wfm6lxlq5m.pdf",
-              "page": null
-            }
-          },
-          {
-            "metric": "students_per_bed",
-            "label": "Students per PBSA bed",
-            "value": 4.28,
-            "unit": "ratio",
-            "status": "green",
-            "source": {
-              "type": "web",
-              "ref": "https://docs.planning.org.uk/20250808/54/T0B5KCKB0C900/udwll7wfm6lxlq5m.pdf",
-              "page": null
-            }
-          },
-          {
-            "metric": "pipeline_beds",
-            "label": "Pipeline beds",
-            "value": 35000.0,
-            "unit": "beds",
-            "status": null,
-            "source": {
-              "type": "web",
-              "ref": "https://docs.planning.org.uk/20250808/54/T0B5KCKB0C900/udwll7wfm6lxlq5m.pdf",
-              "page": null
-            }
-          }
-        ],
-        "room_types": [
-          {
-            "type": "studio",
-            "beds": 240,
-            "weeks": 51,
-            "weekly_rate": {
-              "metric": "studio_rate",
-              "label": "Studio rate",
-              "value": 489.0,
-              "unit": "GBP/week",
-              "status": null,
-              "source": {
-                "type": "web",
-                "ref": "median of 4 nearby comps (studio): Hawthorne House, Venti House, Stratford One, Wick Park, ARK Canning Town",
-                "page": null
-              }
-            }
-          },
-          {
-            "type": "ensuite",
-            "beds": 400,
-            "weeks": 47,
-            "weekly_rate": {
-              "metric": "ensuite_rate",
-              "label": "Ensuite rate",
-              "value": 370.0,
-              "unit": "GBP/week",
-              "status": null,
-              "source": {
-                "type": "web",
-                "ref": "median of 5 nearby comps (ensuite): Hawthorne House, Venti House, Stratford One, Wick Park, ARK Canning Town",
-                "page": null
-              }
-            }
-          },
-          {
-            "type": "cluster",
-            "beds": 160,
-            "weeks": 51,
-            "weekly_rate": {
-              "metric": "cluster_rate",
-              "label": "Cluster rate",
-              "value": 359.0,
-              "unit": "GBP/week",
-              "status": null,
-              "source": {
-                "type": "web",
-                "ref": "median of 1 nearby comps (non_ensuite): Hawthorne House, Venti House, Stratford One, Wick Park, ARK Canning Town",
-                "page": null
-              }
-            }
-          }
-        ],
-        "comps": [
-          {
-            "operator": "unite",
-            "property_name": "Hawthorne House",
-            "postcode": "E15 1LE",
-            "city": "London",
-            "address": "2 Farthingale Walk",
-            "distance_km": 0.34,
-            "academic_year": "2027/28",
-            "rooms": {
-              "studio": {
-                "median_pw": 471.0,
-                "min_pw": 471.0,
-                "max_pw": 471.0,
-                "weeks": 51,
-                "size_sqm": 21.5,
-                "n": 1
-              },
-              "ensuite": {
-                "median_pw": 384.0,
-                "min_pw": 372.0,
-                "max_pw": 387.0,
-                "weeks": 40,
-                "size_sqm": 13.9,
-                "n": 3
-              }
-            },
-            "url": "https://www.unitestudents.com/student-accommodation/london/hawthorne-house",
-            "image": "https://enterprise3.content.tenovos.io/1672221361473/ccd3835e-bb10-4f20-b812-87c41ff76a3f/54dce8c1-cc5a-46b0-9b6d-013505598967-1000x1000.png?token=eyJlbWFpbCI6Imx1Y2Eucm9zZXdlbGxAdW5pdGVzdHVkZW50cy5jb20iLCJleHBpcmVzIjoxODI0NjI2MTA5NjAwLCJ3bSI6MSwiY3VzdG9tZXJJZCI6IjE2NzIyMjEzNjE0NzMiLCJmaWxlSWQiOiJjY2QzODM1ZS1iYjEwLTRmMjAtYjgxMi04N2M0MWZmNzZhM2YiLCJzaWciOiJOTVdpVWhHdDV2MDc3WVhlUHM2QXBzcjNSVnF4YlpCRnYrK0RRQT09In0="
-          },
-          {
-            "operator": "fresh",
-            "property_name": "Venti House",
-            "postcode": "E15 1NZ",
-            "city": "London",
-            "address": "Venti House, 8 Grove Crescent Road",
-            "distance_km": 0.35,
-            "academic_year": "2026/27",
-            "rooms": {
-              "studio": {
-                "median_pw": 574.0,
-                "min_pw": 540.0,
-                "max_pw": 660.0,
-                "weeks": 51.0,
-                "size_sqm": 18.0,
-                "n": 12
-              },
-              "other": {
-                "median_pw": 199.0,
-                "min_pw": 199.0,
-                "max_pw": 199.0,
-                "weeks": 39,
-                "size_sqm": null,
-                "n": 1
-              },
-              "ensuite": {
-                "median_pw": 370.0,
-                "min_pw": 320.0,
-                "max_pw": 385.0,
-                "weeks": 51.0,
-                "size_sqm": 13.5,
-                "n": 4
-              }
-            },
-            "url": "https://www.thisisfresh.com/london/venti-house/",
-            "image": "https://resource.rentcafe.com/image/upload/q_auto,f_auto/s3uk/2/82438/venti house (9).png"
-          },
-          {
-            "operator": "unite",
-            "property_name": "Stratford One",
-            "postcode": "E20 1GS",
-            "city": "London",
-            "address": "1 International Way",
-            "distance_km": 0.99,
-            "academic_year": "2027/28",
-            "rooms": {
-              "studio": {
-                "median_pw": 507.0,
-                "min_pw": 504.0,
-                "max_pw": 512.0,
-                "weeks": 51,
-                "size_sqm": 23.8,
-                "n": 5
-              },
-              "ensuite": {
-                "median_pw": 327.0,
-                "min_pw": 312.0,
-                "max_pw": 337.0,
-                "weeks": 44,
-                "size_sqm": 12.0,
-                "n": 9
-              }
-            },
-            "url": "https://www.unitestudents.com/student-accommodation/london/stratford-one",
-            "image": "https://enterprise3.content.tenovos.io/1672221361473/8077151f-a976-4342-896e-8c41ef51151e/79f8dbe2-466b-4299-b554-9165c435a802-1000x1000.webp?token=eyJlbWFpbCI6ImNoYXJsZXMuc2FydGFpbkB1bml0ZXN0dWRlbnRzLmNvbSIsImV4cGlyZXMiOjE4MTQyNzQ3MjAwMDAsIndtIjowLCJjdXN0b21lcklkIjoiMTY3MjIyMTM2MTQ3MyIsImZpbGVJZCI6IjgwNzcxNTFmLWE5NzYtNDM0Mi04OTZlLThjNDFlZjUxMTUxZSIsInNpZyI6ImtQVzZnb0VlQTFVQitOY1FrNWtDS3QzR3ZRcWdSOVRBRGhJTVJBPT0ifQ=="
-          },
-          {
-            "operator": "prestige",
-            "property_name": "Wick Park",
-            "postcode": "E3 2EQ",
-            "city": "London",
-            "address": "1 Stour Road, E3 2EQ",
-            "distance_km": 1.77,
-            "academic_year": "2026/27",
-            "rooms": {
-              "non_ensuite": {
-                "median_pw": 359.0,
-                "min_pw": 345.0,
-                "max_pw": 389.0,
-                "weeks": 51,
-                "size_sqm": null,
-                "n": 3
-              },
-              "ensuite": {
-                "median_pw": 384.0,
-                "min_pw": 379.0,
-                "max_pw": 389.0,
-                "weeks": 47.5,
-                "size_sqm": null,
-                "n": 4
-              }
-            },
-            "url": "https://prestigestudentliving.com/student-accommodation/london/wick-park",
-            "image": "https://prestigestudentliving.com/cdn-cgi/image/format=auto,quality=75,width=800/https://api.prestigestudentliving.com/wp-content/uploads/2025/09/student-accommodation-london-wick-park-reception-2.png"
-          },
-          {
-            "operator": "prestige",
-            "property_name": "ARK Canning Town",
-            "postcode": "E16 1ZS",
-            "city": "London",
-            "address": "2 Hallsville Road, Canning Town, E16 1ZS",
-            "distance_km": 3.23,
-            "academic_year": "2026/27",
-            "rooms": {
-              "studio": {
-                "median_pw": 376.0,
-                "min_pw": 320.0,
-                "max_pw": 440.0,
-                "weeks": 51.0,
-                "size_sqm": 22.0,
-                "n": 12
-              },
-              "ensuite": {
-                "median_pw": 309.0,
-                "min_pw": 280.0,
-                "max_pw": 339.0,
-                "weeks": 51.0,
-                "size_sqm": 13.0,
-                "n": 8
-              }
-            },
-            "url": "https://prestigestudentliving.com/student-accommodation/london/ark-canning-town",
-            "image": "https://prestigestudentliving.com/cdn-cgi/image/format=auto,quality=75,width=800/https://api.prestigestudentliving.com/wp-content/uploads/2026/04/student-accommodation-london-canning-town-private-dining-area.jpg"
-          }
-        ],
-        "noi": [
-          {
-            "metric": "gross_income",
-            "label": "Gross income",
-            "value": 15394676,
-            "unit": "GBP/yr",
-            "status": null,
-            "source": {
-              "type": "model",
-              "ref": "Σ beds × weekly rate × weeks × 97% occupancy",
-              "page": null
-            }
-          },
-          {
-            "metric": "opex",
-            "label": "OPEX",
-            "value": 5388137,
-            "unit": "GBP/yr",
-            "status": null,
-            "source": {
-              "type": "model",
-              "ref": "35% of gross income",
-              "page": null
-            }
-          },
-          {
-            "metric": "noi",
-            "label": "NOI",
-            "value": 10006539,
-            "unit": "GBP/yr",
-            "status": null,
-            "source": {
-              "type": "model",
-              "ref": "Gross income − OPEX",
-              "page": null
-            }
-          }
-        ],
-        "rates": [],
-        "geo": {
-          "postcode": "E15 1NG",
-          "lat": 51.541846,
-          "lng": 0.002123,
-          "region": "London",
-          "district": "Newham"
-        },
-        "assumptions": [
-          {
-            "metric": "cost_per_bed",
-            "label": "Build cost per bed",
-            "value": 140000,
-            "unit": "GBP",
-            "status": null,
-            "source": {
-              "type": "assumption",
-              "ref": null,
-              "page": null
-            }
-          },
-          {
-            "metric": "occupancy",
-            "label": "Occupancy",
-            "value": 0.97,
-            "unit": "%",
-            "status": null,
-            "source": {
-              "type": "assumption",
-              "ref": null,
-              "page": null
-            }
-          },
-          {
-            "metric": "opex_pct",
-            "label": "OPEX ratio",
-            "value": 0.35,
-            "unit": "% of gross",
-            "status": null,
-            "source": {
-              "type": "assumption",
-              "ref": null,
-              "page": null
-            }
-          }
-        ]
+ "mock": true,
+ "job_id": "demo-stratford",
+ "status": "done",
+ "steps": [
+  "V7 Go · Reading the brochure · 78102Broadway7SalwayPlaceBrochureFinal.pdf",
+  "V7 Go · Extracted 11 facts · every value tied to its page",
+  "postcodes.io · Located the site · E15 1NG",
+  "dealt · Campus served · University of East London (Stratford) (0.57 km)",
+  "Scrapers · PBSA competition around the campus · 5 buildings (Fresh, Prestige, Unite)",
+  "HESA · Student demand in London · 4.28 students per PBSA bed",
+  "dealt · Exit yield · 6.5% (assumption, MSCI not configured)",
+  "Cortile · OPEX benchmark · London building costs per unit",
+  "dealt · NOI £9.9m · PBSA misses 12% IRR even with a free site",
+  "Bank of England · SONIA 3.98%",
+  "dealt · Compared PBSA, BTR and existing use · best: Existing (refurbish and re-let)"
+ ],
+ "report": {
+  "assets": [
+   {
+    "name": "78-102 Broadway & 7 Salway Place, Stratford, London, E15 1NG",
+    "address": "78-102 Broadway & 7 Salway Place, Stratford, London, E15 1NG",
+    "rates": [
+     {
+      "metric": "sonia",
+      "label": "SONIA (10 Nov 2026)",
+      "value": 0.03984,
+      "unit": "%",
+      "status": null,
+      "source": {
+       "type": "web",
+       "ref": "Bank of England IADB series IUDSOIA",
+       "page": null
       }
-    ]
-  }
+     },
+     {
+      "metric": "debt_rate",
+      "label": "Debt cost (SONIA + margin)",
+      "value": 0.0673,
+      "unit": "%",
+      "status": null,
+      "source": {
+       "type": "model",
+       "ref": "SONIA (BoE, proxy for the swap rate) + 2.75% margin assumption",
+       "page": null
+      }
+     }
+    ],
+    "verdict": {
+     "decision": "GO (other use)",
+     "reasons": [
+      "PBSA does not reach a 12% IRR even with a free site; Existing (refurbish and re-let) supports a site bid up to £13.0m",
+      "Yield on cost 7.6% vs market exit yield 6.5% (assumption)",
+      "Best use of the site: Existing (refurbish and re-let)"
+     ]
+    },
+    "returns": [
+     {
+      "metric": "irr",
+      "label": "IRR (unlevered) (before site cost)",
+      "value": 0.1142,
+      "unit": "%",
+      "status": null,
+      "source": {
+       "type": "model",
+       "ref": "Cash flows: cost, NOI growing 3% a year, exit at the market yield | No asking price: site cost excluded; see max site bid.",
+       "page": null
+      }
+     },
+     {
+      "metric": "equity_multiple",
+      "label": "Equity multiple (before site cost)",
+      "value": 1.38,
+      "unit": "x",
+      "status": null,
+      "source": {
+       "type": "model",
+       "ref": "Cash returned ÷ cash invested | No asking price: site cost excluded; see max site bid.",
+       "page": null
+      }
+     },
+     {
+      "metric": "entry_yield",
+      "label": "Entry / yield on cost (before site cost)",
+      "value": 0.0757,
+      "unit": "%",
+      "status": null,
+      "source": {
+       "type": "model",
+       "ref": "NOI ÷ total cost | No asking price: site cost excluded; see max site bid.",
+       "page": null
+      }
+     },
+     {
+      "metric": "exit_yield",
+      "label": "Exit yield (PBSA)",
+      "value": 0.065,
+      "unit": "%",
+      "status": null,
+      "source": {
+       "type": "assumption",
+       "ref": "MSCI value not configured",
+       "page": null
+      }
+     },
+     {
+      "metric": "yield_delta",
+      "label": "Entry minus exit yield (before site cost)",
+      "value": 0.0107,
+      "unit": "%",
+      "status": null,
+      "source": {
+       "type": "model",
+       "ref": "Yield on cost − market exit yield | No asking price: site cost excluded; see max site bid.",
+       "page": null
+      }
+     }
+    ],
+    "facts": [
+     {
+      "metric": "address",
+      "label": "Address",
+      "value": "78-102 Broadway & 7 Salway Place, Stratford, London, E15 1NG",
+      "unit": null,
+      "status": null,
+      "source": {
+       "type": "brochure",
+       "ref": "78102Broadway7SalwayPlaceBrochureFinal.pdf",
+       "page": 1,
+       "pages": [
+        1
+       ],
+       "v7_entity": "01a1d1ea-1ce3-7da8-8b9b-760374741243",
+       "raw": null
+      }
+     },
+     {
+      "metric": "asking_price",
+      "label": "Asking price",
+      "value": "not stated",
+      "unit": null,
+      "status": null,
+      "source": {
+       "type": "brochure",
+       "ref": "78102Broadway7SalwayPlaceBrochureFinal.pdf",
+       "page": null,
+       "pages": [],
+       "v7_entity": "01a1d1ea-1ce3-7da8-8b9b-760374741243",
+       "raw": null
+      }
+     },
+     {
+      "metric": "asset_type",
+      "label": "Asset type",
+      "value": "mixed use",
+      "unit": null,
+      "status": null,
+      "source": {
+       "type": "brochure",
+       "ref": "78102Broadway7SalwayPlaceBrochureFinal.pdf",
+       "page": 1,
+       "pages": [
+        1
+       ],
+       "v7_entity": "01a1d1ea-1ce3-7da8-8b9b-760374741243",
+       "raw": null
+      }
+     },
+     {
+      "metric": "beds",
+      "label": "Beds",
+      "value": "c.800-bed PBSA or c.325-units BTR",
+      "unit": null,
+      "status": null,
+      "source": {
+       "type": "brochure",
+       "ref": "78102Broadway7SalwayPlaceBrochureFinal.pdf",
+       "page": 2,
+       "pages": [
+        2
+       ],
+       "v7_entity": "01a1d1ea-1ce3-7da8-8b9b-760374741243",
+       "raw": null
+      }
+     },
+     {
+      "metric": "erv",
+      "label": "Erv",
+      "value": "£1.4 million per annum",
+      "unit": null,
+      "status": null,
+      "source": {
+       "type": "brochure",
+       "ref": "78102Broadway7SalwayPlaceBrochureFinal.pdf",
+       "page": 2,
+       "pages": [
+        2
+       ],
+       "v7_entity": "01a1d1ea-1ce3-7da8-8b9b-760374741243",
+       "raw": null
+      }
+     },
+     {
+      "metric": "erv_breakdown",
+      "label": "Erv breakdown",
+      "value": "78-102 Broadway: £122,500 per annum (p.a.)\n78-102 Broadway: approximately £1.4 million per annum (p.a.)\n7 Salway Place: £900k per annum (p.a.)\nRetail Unit 2 (78-102 Broadway): £122,500 per annum (p.a.)",
+      "unit": null,
+      "status": null,
+      "source": {
+       "type": "brochure",
+       "ref": "78102Broadway7SalwayPlaceBrochureFinal.pdf",
+       "page": null,
+       "pages": [],
+       "v7_entity": "01a1d1ea-1ce3-7da8-8b9b-760374741243",
+       "raw": null
+      }
+     },
+     {
+      "metric": "gia_sqft",
+      "label": "Gia sqft",
+      "value": "161,826 sq ft",
+      "unit": null,
+      "status": null,
+      "source": {
+       "type": "brochure",
+       "ref": "78102Broadway7SalwayPlaceBrochureFinal.pdf",
+       "page": 2,
+       "pages": [
+        2
+       ],
+       "v7_entity": "01a1d1ea-1ce3-7da8-8b9b-760374741243",
+       "raw": null
+      }
+     },
+     {
+      "metric": "net_initial_yield",
+      "label": "Net initial yield",
+      "value": "not stated",
+      "unit": null,
+      "status": null,
+      "source": {
+       "type": "brochure",
+       "ref": "78102Broadway7SalwayPlaceBrochureFinal.pdf",
+       "page": null,
+       "pages": [],
+       "v7_entity": "01a1d1ea-1ce3-7da8-8b9b-760374741243",
+       "raw": null
+      }
+     },
+     {
+      "metric": "passing_rent",
+      "label": "Passing rent",
+      "value": "£122,500",
+      "unit": null,
+      "status": null,
+      "source": {
+       "type": "brochure",
+       "ref": "78102Broadway7SalwayPlaceBrochureFinal.pdf",
+       "page": 10,
+       "pages": [
+        10
+       ],
+       "v7_entity": "01a1d1ea-1ce3-7da8-8b9b-760374741243",
+       "raw": null
+      }
+     },
+     {
+      "metric": "tenants",
+      "label": "Tenants",
+      "value": "Poundstretcher Limited",
+      "unit": null,
+      "status": null,
+      "source": {
+       "type": "brochure",
+       "ref": "78102Broadway7SalwayPlaceBrochureFinal.pdf",
+       "page": 10,
+       "pages": [
+        10
+       ],
+       "v7_entity": "01a1d1ea-1ce3-7da8-8b9b-760374741243",
+       "raw": null
+      }
+     },
+     {
+      "metric": "tenure",
+      "label": "Tenure",
+      "value": "Freehold",
+      "unit": null,
+      "status": null,
+      "source": {
+       "type": "brochure",
+       "ref": "78102Broadway7SalwayPlaceBrochureFinal.pdf",
+       "page": 20,
+       "pages": [
+        20
+       ],
+       "v7_entity": "01a1d1ea-1ce3-7da8-8b9b-760374741243",
+       "raw": null
+      }
+     }
+    ],
+    "room_types": [
+     {
+      "type": "studio",
+      "beds": 240,
+      "weeks": 51,
+      "weekly_rate": {
+       "metric": "studio_rate",
+       "label": "studio rate",
+       "value": 489.0,
+       "unit": "GBP/week",
+       "status": null,
+       "source": {
+        "type": "web",
+        "ref": "median of 4 nearby comps (studio) around University of East London (Stratford): fresh Venti House https://www.thisisfresh.com/london/venti-house/ ; unite Hawthorne House https://www.unitestudents.com/student-accommodation/london/hawthorne-house ; unite Stratford One https://www.unitestudents.com/student-accommodation/london/stratford-one ; prestige Wick Park https://prestigestudentliving.com/student-accommodation/london/wick-park ; prestige ARK Canning Town https://prestigestudentliving.com/student-accommodation/london/ark-canning-town",
+        "page": null
+       }
+      }
+     },
+     {
+      "type": "ensuite",
+      "beds": 400,
+      "weeks": 47,
+      "weekly_rate": {
+       "metric": "ensuite_rate",
+       "label": "ensuite rate",
+       "value": 370.0,
+       "unit": "GBP/week",
+       "status": null,
+       "source": {
+        "type": "web",
+        "ref": "median of 5 nearby comps (ensuite) around University of East London (Stratford): fresh Venti House https://www.thisisfresh.com/london/venti-house/ ; unite Hawthorne House https://www.unitestudents.com/student-accommodation/london/hawthorne-house ; unite Stratford One https://www.unitestudents.com/student-accommodation/london/stratford-one ; prestige Wick Park https://prestigestudentliving.com/student-accommodation/london/wick-park ; prestige ARK Canning Town https://prestigestudentliving.com/student-accommodation/london/ark-canning-town",
+        "page": null
+       }
+      }
+     },
+     {
+      "type": "cluster",
+      "beds": 160,
+      "weeks": 47,
+      "weekly_rate": {
+       "metric": "cluster_rate",
+       "label": "cluster rate",
+       "value": 370.0,
+       "unit": "GBP/week",
+       "status": null,
+       "source": {
+        "type": "web",
+        "ref": "median of 5 nearby comps (ensuite used as proxy) around University of East London (Stratford): fresh Venti House https://www.thisisfresh.com/london/venti-house/ ; unite Hawthorne House https://www.unitestudents.com/student-accommodation/london/hawthorne-house ; unite Stratford One https://www.unitestudents.com/student-accommodation/london/stratford-one ; prestige Wick Park https://prestigestudentliving.com/student-accommodation/london/wick-park ; prestige ARK Canning Town https://prestigestudentliving.com/student-accommodation/london/ark-canning-town",
+        "page": null
+       }
+      }
+     }
+    ],
+    "comps": [
+     {
+      "operator": "fresh",
+      "property_name": "Venti House",
+      "postcode": "E15 1NZ",
+      "city": "London",
+      "address": "Venti House, 8 Grove Crescent Road",
+      "distance_km": 0.47,
+      "academic_year": "2026/27",
+      "rooms": {
+       "studio": {
+        "median_pw": 574.0,
+        "min_pw": 540.0,
+        "max_pw": 660.0,
+        "weeks": 51.0,
+        "size_sqm": 18.0,
+        "n": 12
+       },
+       "other": {
+        "median_pw": 199.0,
+        "min_pw": 199.0,
+        "max_pw": 199.0,
+        "weeks": 39,
+        "size_sqm": null,
+        "n": 1
+       },
+       "ensuite": {
+        "median_pw": 370.0,
+        "min_pw": 320.0,
+        "max_pw": 385.0,
+        "weeks": 51.0,
+        "size_sqm": 13.5,
+        "n": 4
+       }
+      },
+      "url": "https://www.thisisfresh.com/london/venti-house/",
+      "image": "https://resource.rentcafe.com/image/upload/q_auto,f_auto/s3uk/2/82438/venti house (9).png"
+     },
+     {
+      "operator": "unite",
+      "property_name": "Hawthorne House",
+      "postcode": "E15 1LE",
+      "city": "London",
+      "address": "2 Farthingale Walk",
+      "distance_km": 0.87,
+      "academic_year": "2027/28",
+      "rooms": {
+       "studio": {
+        "median_pw": 471.0,
+        "min_pw": 471.0,
+        "max_pw": 471.0,
+        "weeks": 51,
+        "size_sqm": 21.5,
+        "n": 1
+       },
+       "ensuite": {
+        "median_pw": 384.0,
+        "min_pw": 372.0,
+        "max_pw": 387.0,
+        "weeks": 40,
+        "size_sqm": 13.9,
+        "n": 3
+       }
+      },
+      "url": "https://www.unitestudents.com/student-accommodation/london/hawthorne-house",
+      "image": "https://enterprise3.content.tenovos.io/1672221361473/ccd3835e-bb10-4f20-b812-87c41ff76a3f/54dce8c1-cc5a-46b0-9b6d-013505598967-1000x1000.png?token=eyJlbWFpbCI6Imx1Y2Eucm9zZXdlbGxAdW5pdGVzdHVkZW50cy5jb20iLCJleHBpcmVzIjoxODI0NjI2MTA5NjAwLCJ3bSI6MSwiY3VzdG9tZXJJZCI6IjE2NzIyMjEzNjE0NzMiLCJmaWxlSWQiOiJjY2QzODM1ZS1iYjEwLTRmMjAtYjgxMi04N2M0MWZmNzZhM2YiLCJzaWciOiJOTVdpVWhHdDV2MDc3WVhlUHM2QXBzcjNSVnF4YlpCRnYrK0RRQT09In0="
+     },
+     {
+      "operator": "unite",
+      "property_name": "Stratford One",
+      "postcode": "E20 1GS",
+      "city": "London",
+      "address": "1 International Way",
+      "distance_km": 1.51,
+      "academic_year": "2027/28",
+      "rooms": {
+       "studio": {
+        "median_pw": 507.0,
+        "min_pw": 504.0,
+        "max_pw": 512.0,
+        "weeks": 51,
+        "size_sqm": 23.8,
+        "n": 5
+       },
+       "ensuite": {
+        "median_pw": 327.0,
+        "min_pw": 312.0,
+        "max_pw": 337.0,
+        "weeks": 44,
+        "size_sqm": 12.0,
+        "n": 9
+       }
+      },
+      "url": "https://www.unitestudents.com/student-accommodation/london/stratford-one",
+      "image": "https://enterprise3.content.tenovos.io/1672221361473/8077151f-a976-4342-896e-8c41ef51151e/79f8dbe2-466b-4299-b554-9165c435a802-1000x1000.webp?token=eyJlbWFpbCI6ImNoYXJsZXMuc2FydGFpbkB1bml0ZXN0dWRlbnRzLmNvbSIsImV4cGlyZXMiOjE4MTQyNzQ3MjAwMDAsIndtIjowLCJjdXN0b21lcklkIjoiMTY3MjIyMTM2MTQ3MyIsImZpbGVJZCI6IjgwNzcxNTFmLWE5NzYtNDM0Mi04OTZlLThjNDFlZjUxMTUxZSIsInNpZyI6ImtQVzZnb0VlQTFVQitOY1FrNWtDS3QzR3ZRcWdSOVRBRGhJTVJBPT0ifQ=="
+     },
+     {
+      "operator": "prestige",
+      "property_name": "Wick Park",
+      "postcode": "E3 2EQ",
+      "city": "London",
+      "address": "1 Stour Road, E3 2EQ",
+      "distance_km": 2.34,
+      "academic_year": "2026/27",
+      "rooms": {
+       "non_ensuite": {
+        "median_pw": 359.0,
+        "min_pw": 345.0,
+        "max_pw": 389.0,
+        "weeks": 51,
+        "size_sqm": null,
+        "n": 3
+       },
+       "ensuite": {
+        "median_pw": 384.0,
+        "min_pw": 379.0,
+        "max_pw": 389.0,
+        "weeks": 47.5,
+        "size_sqm": null,
+        "n": 4
+       }
+      },
+      "url": "https://prestigestudentliving.com/student-accommodation/london/wick-park",
+      "image": "https://prestigestudentliving.com/cdn-cgi/image/format=auto,quality=75,width=800/https://api.prestigestudentliving.com/wp-content/uploads/2025/09/student-accommodation-london-wick-park-reception-2.png"
+     },
+     {
+      "operator": "prestige",
+      "property_name": "ARK Canning Town",
+      "postcode": "E16 1ZS",
+      "city": "London",
+      "address": "2 Hallsville Road, Canning Town, E16 1ZS",
+      "distance_km": 3.35,
+      "academic_year": "2026/27",
+      "rooms": {
+       "studio": {
+        "median_pw": 376.0,
+        "min_pw": 320.0,
+        "max_pw": 440.0,
+        "weeks": 51.0,
+        "size_sqm": 22.0,
+        "n": 12
+       },
+       "ensuite": {
+        "median_pw": 309.0,
+        "min_pw": 280.0,
+        "max_pw": 339.0,
+        "weeks": 51.0,
+        "size_sqm": 13.0,
+        "n": 8
+       }
+      },
+      "url": "https://prestigestudentliving.com/student-accommodation/london/ark-canning-town",
+      "image": "https://prestigestudentliving.com/cdn-cgi/image/format=auto,quality=75,width=800/https://api.prestigestudentliving.com/wp-content/uploads/2026/04/student-accommodation-london-canning-town-private-dining-area.jpg"
+     }
+    ],
+    "target_university": {
+     "name": "University of East London (Stratford)",
+     "postcode": "E15 4LZ",
+     "russell_group": false,
+     "lat": 51.54344,
+     "lng": 0.009923,
+     "distance_km": 0.57
+    },
+    "location": [
+     {
+      "metric": "students",
+      "label": "Students in London (HESA 2024/25)",
+      "value": 420480,
+      "unit": "students",
+      "status": null,
+      "source": {
+       "type": "web",
+       "ref": "HESA",
+       "page": null
+      }
+     },
+     {
+      "metric": "russell_group_share",
+      "label": "Russell Group share of students",
+      "value": 0.36,
+      "unit": "%",
+      "status": null,
+      "source": {
+       "type": "web",
+       "ref": "HESA",
+       "page": null
+      }
+     },
+     {
+      "metric": "russell_group_universities",
+      "label": "Russell Group universities",
+      "value": "Imperial College of Science, Technology and Medicine ; King's College London ; London School of Economics and Political Science ; Queen Mary University of London ; University College London",
+      "unit": null,
+      "status": null,
+      "source": {
+       "type": "web",
+       "ref": "HESA",
+       "page": null
+      }
+     },
+     {
+      "metric": "pbsa_beds",
+      "label": "PBSA beds in London",
+      "value": 98282.0,
+      "unit": "beds",
+      "status": null,
+      "source": {
+       "type": "web",
+       "ref": "https://docs.planning.org.uk/20250808/54/T0B5KCKB0C900/udwll7wfm6lxlq5m.pdf",
+       "page": null
+      }
+     },
+     {
+      "metric": "students_per_bed",
+      "label": "Students per PBSA bed",
+      "value": 4.28,
+      "unit": "ratio",
+      "status": "green",
+      "source": {
+       "type": "web",
+       "ref": "https://docs.planning.org.uk/20250808/54/T0B5KCKB0C900/udwll7wfm6lxlq5m.pdf",
+       "page": null
+      }
+     },
+     {
+      "metric": "pipeline_beds",
+      "label": "Pipeline beds",
+      "value": 35000.0,
+      "unit": "beds",
+      "status": null,
+      "source": {
+       "type": "web",
+       "ref": "https://docs.planning.org.uk/20250808/54/T0B5KCKB0C900/udwll7wfm6lxlq5m.pdf",
+       "page": null
+      }
+     }
+    ],
+    "web_checks": [],
+    "appraisal": {
+     "max_land_bid": {
+      "metric": "max_land_bid",
+      "label": "Max site bid at 12% IRR",
+      "value": 0,
+      "unit": "GBP",
+      "status": null,
+      "source": {
+       "type": "model",
+       "ref": "Residual land value: site price that leaves a 12% unlevered IRR",
+       "page": null
+      }
+     },
+     "land_used": {
+      "metric": "land_cost",
+      "label": "Site price used",
+      "value": 0,
+      "unit": "GBP",
+      "status": null,
+      "source": {
+       "type": "assumption",
+       "ref": "No asking price: returns shown before site cost",
+       "page": null
+      }
+     },
+     "costs": [
+      {
+       "metric": "hard_cost",
+       "label": "Hard build cost",
+       "value": 112000000,
+       "unit": "GBP",
+       "status": null,
+       "source": {
+        "type": "assumption",
+        "ref": "£140,000/bed",
+        "page": null
+       }
+      },
+      {
+       "metric": "fees",
+       "label": "Professional fees",
+       "value": 13440000,
+       "unit": "GBP",
+       "status": null,
+       "source": {
+        "type": "assumption",
+        "ref": "12% of hard cost",
+        "page": null
+       }
+      },
+      {
+       "metric": "contingency",
+       "label": "Contingency",
+       "value": 5600000,
+       "unit": "GBP",
+       "status": null,
+       "source": {
+        "type": "assumption",
+        "ref": "5% of hard cost",
+        "page": null
+       }
+      },
+      {
+       "metric": "total_dev_cost",
+       "label": "Total development cost (excl. site)",
+       "value": 131040000,
+       "unit": "GBP",
+       "status": null,
+       "source": {
+        "type": "model",
+        "ref": null,
+        "page": null
+       }
+      }
+     ],
+     "sensitivity": {
+      "cost_x_rent": [
+       {
+        "build_cost": -0.1,
+        "rent": -0.1,
+        "irr": 0.1142
+       },
+       {
+        "build_cost": -0.1,
+        "rent": 0.0,
+        "irr": 0.1536
+       },
+       {
+        "build_cost": -0.1,
+        "rent": 0.1,
+        "irr": 0.1903
+       },
+       {
+        "build_cost": 0.0,
+        "rent": -0.1,
+        "irr": 0.0758
+       },
+       {
+        "build_cost": 0.0,
+        "rent": 0.0,
+        "irr": 0.1142
+       },
+       {
+        "build_cost": 0.0,
+        "rent": 0.1,
+        "irr": 0.1498
+       },
+       {
+        "build_cost": 0.1,
+        "rent": -0.1,
+        "irr": 0.042
+       },
+       {
+        "build_cost": 0.1,
+        "rent": 0.0,
+        "irr": 0.0794
+       },
+       {
+        "build_cost": 0.1,
+        "rent": 0.1,
+        "irr": 0.1142
+       }
+      ],
+      "exit_yield": [
+       {
+        "exit_yield": 0.06,
+        "irr": 0.1408
+       },
+       {
+        "exit_yield": 0.065,
+        "irr": 0.1142
+       },
+       {
+        "exit_yield": 0.07,
+        "irr": 0.0901
+       }
+      ]
+     },
+     "debt": [
+      {
+       "metric": "sonia",
+       "label": "SONIA (10 Nov 2026)",
+       "value": 0.03984,
+       "unit": "%",
+       "status": null,
+       "source": {
+        "type": "web",
+        "ref": "Bank of England IADB series IUDSOIA",
+        "page": null
+       }
+      },
+      {
+       "metric": "debt_rate",
+       "label": "Debt cost (SONIA + margin)",
+       "value": 0.0673,
+       "unit": "%",
+       "status": null,
+       "source": {
+        "type": "model",
+        "ref": "SONIA (BoE, proxy for the swap rate) + 2.75% margin assumption",
+        "page": null
+       }
+      },
+      {
+       "metric": "ltc",
+       "label": "Loan to cost",
+       "value": 0.55,
+       "unit": "%",
+       "status": null,
+       "source": {
+        "type": "assumption",
+        "ref": null,
+        "page": null
+       }
+      },
+      {
+       "metric": "arrangement_fee",
+       "label": "Arrangement fee",
+       "value": 0.01,
+       "unit": "% of loan",
+       "status": null,
+       "source": {
+        "type": "assumption",
+        "ref": null,
+        "page": null
+       }
+      },
+      {
+       "metric": "levered_irr",
+       "label": "Levered IRR (before site cost)",
+       "value": 0.1565,
+       "unit": "%",
+       "status": null,
+       "source": {
+        "type": "model",
+        "ref": null,
+        "page": null
+       }
+      },
+      {
+       "metric": "levered_em",
+       "label": "Levered equity multiple",
+       "value": 1.54,
+       "unit": "x",
+       "status": null,
+       "source": {
+        "type": "model",
+        "ref": null,
+        "page": null
+       }
+      }
+     ],
+     "alternatives": {
+      "options": [
+       {
+        "use": "PBSA",
+        "noi": 9913830.68,
+        "cost": 131040000.00000001,
+        "basis": "rents from PBSA comps around the university x room mix, 35% OPEX, build + fees + contingency",
+        "max_land_bid": 0.0,
+        "yield_on_cost": 0.07565499603174602
+       },
+       {
+        "use": "BTR",
+        "noi": 6391125.0,
+        "cost": 114075000.0,
+        "basis": "325 units x £2,300/month, 95% occ, 25% OPEX, £300k/unit + 17% fees and contingency (assumptions)",
+        "max_land_bid": 0.0,
+        "yield_on_cost": 0.056025641025641025
+       },
+       {
+        "use": "Existing (refurbish and re-let)",
+        "noi": 2070000.0,
+        "cost": 16182600.0,
+        "basis": "brochure ERVs £1.40m, £0.90m less 10% costs, refurb £100/sq ft (assumption)",
+        "max_land_bid": 12960066.07591122,
+        "yield_on_cost": 0.1279151681435616
+       }
+      ],
+      "recommended": "Existing (refurbish and re-let)",
+      "metric": "max site bid at 12% IRR",
+      "figures": [
+       {
+        "metric": "bid_pbsa",
+        "label": "Max site bid: PBSA",
+        "value": 0,
+        "unit": "GBP",
+        "status": null,
+        "source": {
+         "type": "model",
+         "ref": "rents from PBSA comps around the university x room mix, 35% OPEX, build + fees + contingency",
+         "page": null
+        }
+       },
+       {
+        "metric": "bid_btr",
+        "label": "Max site bid: BTR",
+        "value": 0,
+        "unit": "GBP",
+        "status": null,
+        "source": {
+         "type": "model",
+         "ref": "325 units x £2,300/month, 95% occ, 25% OPEX, £300k/unit + 17% fees and contingency (assumptions)",
+         "page": null
+        }
+       },
+       {
+        "metric": "bid_existing",
+        "label": "Max site bid: Existing (refurbish and re-let)",
+        "value": 12960066,
+        "unit": "GBP",
+        "status": null,
+        "source": {
+         "type": "model",
+         "ref": "brochure ERVs £1.40m, £0.90m less 10% costs, refurb £100/sq ft (assumption)",
+         "page": null
+        }
+       }
+      ]
+     }
+    },
+    "geo": {
+     "postcode": "E15 1NG",
+     "lat": 51.541846,
+     "lng": 0.002123,
+     "region": "London",
+     "district": "Newham"
+    },
+    "noi": [
+     {
+      "metric": "gross_income",
+      "label": "Gross income",
+      "value": 15252047,
+      "unit": "GBP/yr",
+      "status": null,
+      "source": {
+       "type": "model",
+       "ref": "Σ beds × weekly rate × weeks × 97% occupancy",
+       "page": null
+      }
+     },
+     {
+      "metric": "opex",
+      "label": "OPEX",
+      "value": 5338217,
+      "unit": "GBP/yr",
+      "status": null,
+      "source": {
+       "type": "model",
+       "ref": "35% of gross income",
+       "page": null
+      }
+     },
+     {
+      "metric": "noi",
+      "label": "NOI",
+      "value": 9913831,
+      "unit": "GBP/yr",
+      "status": null,
+      "source": {
+       "type": "model",
+       "ref": "Gross income − OPEX",
+       "page": null
+      }
+     }
+    ],
+    "assumptions": [
+     {
+      "metric": "cost_per_bed",
+      "label": "Hard build cost per bed",
+      "value": 140000,
+      "unit": "GBP",
+      "status": null,
+      "source": {
+       "type": "assumption",
+       "ref": null,
+       "page": null
+      }
+     },
+     {
+      "metric": "room_mix",
+      "label": "Room mix",
+      "value": {
+       "studio": 0.3,
+       "ensuite": 0.5,
+       "cluster": 0.2
+      },
+      "unit": null,
+      "status": null,
+      "source": {
+       "type": "assumption",
+       "ref": null,
+       "page": null
+      }
+     },
+     {
+      "metric": "occupancy",
+      "label": "Stabilised occupancy",
+      "value": 0.97,
+      "unit": "%",
+      "status": null,
+      "source": {
+       "type": "assumption",
+       "ref": null,
+       "page": null
+      }
+     },
+     {
+      "metric": "leaseup",
+      "label": "First operating year",
+      "value": 0.9,
+      "unit": "% of stabilised NOI",
+      "status": null,
+      "source": {
+       "type": "assumption",
+       "ref": null,
+       "page": null
+      }
+     },
+     {
+      "metric": "opex_pct",
+      "label": "OPEX ratio",
+      "value": 0.35,
+      "unit": "% of gross",
+      "status": null,
+      "source": {
+       "type": "assumption",
+       "ref": null,
+       "page": null
+      }
+     }
+    ],
+    "comment": "",
+    "source_file": "78102Broadway7SalwayPlaceBrochureFinal.pdf"
+   }
+  ],
+  "mock": true
+ }
 }

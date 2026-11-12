@@ -30,7 +30,7 @@ def _env():
     os.environ.setdefault("V7_WORKSPACE_ID", "01a1ca22-d3b8-7a84-903e-fc33d57e24bd")
     os.environ.setdefault("V7_PROJECT_ID", "01a1d171-042f-71f8-9e29-ed9a0b6591ba")
     os.environ.setdefault("V7_FILE_PROPERTY", "01a1d171-0491-7554-a5f9-2cfaf158f3ff")
-    os.environ.setdefault("V7_FIELDS", "address,asset_type,tenure,gia_sqft,beds,passing_rent,erv,asking_price,net_initial_yield,tenants")
+    os.environ.setdefault("V7_FIELDS", "address,asset_type,tenure,gia_sqft,beds,passing_rent,erv,erv_breakdown,asking_price,net_initial_yield,tenants")
     return os.environ
 
 
