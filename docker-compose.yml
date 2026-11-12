@@ -1,0 +1,41 @@
+# demo3.ai-vance.de on aivance-cloud (46.224.24.118)
+# The shared Caddy container ("caddy", Docker network "web") does HTTPS and routing:
+#   https://demo3.ai-vance.de/api/*  -> demo3-api:8000  (prefix /api stripped)
+#   https://demo3.ai-vance.de/*      -> demo3-web:3000
+#
+# API only (works now):          docker compose up -d --build
+# API + web UI (once web/ exists): docker compose --profile web up -d --build
+
+services:
+  api:
+    container_name: demo3-api
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    env_file: .env
+    restart: unless-stopped
+    volumes:
+      - api_cache:/app/cache   # uploaded brochures, OSMnx graphs
+    networks: [web]
+
+  web:
+    container_name: demo3-web
+    profiles: ["web"]
+    build:
+      context: ./web
+      dockerfile: ../deploy/web.Dockerfile
+      args:
+        NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+        NEXT_PUBLIC_ELEVENLABS_AGENT_ID: ${NEXT_PUBLIC_ELEVENLABS_AGENT_ID}
+        NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL}
+    env_file: .env
+    restart: unless-stopped
+    networks: [web]
+
+networks:
+  web:
+    external: true
+
+volumes:
+  api_cache: {}

@@ -1,0 +1,21 @@
+# Append to /opt/caddy/Caddyfile on aivance-cloud (see deploy/DEPLOY.md).
+# Hackathon demo: Deal Qualification Agent (Grok Bot Real Estate Hackathon, 12.11.2026)
+# Containers demo3-api (FastAPI) and demo3-web (Next.js), compose in /opt/demo3/app.
+demo3.ai-vance.de {
+	encode zstd gzip
+	request_body {
+		max_size 60MB
+	}
+
+	handle_path /api/* {
+		reverse_proxy demo3-api:8000 {
+			transport http {
+				read_timeout 300s
+			}
+		}
+	}
+
+	handle {
+		reverse_proxy demo3-web:3000
+	}
+}
