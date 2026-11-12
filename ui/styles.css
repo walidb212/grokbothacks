@@ -686,6 +686,102 @@ body.chatting .composer-wrap { padding-top: 18px; background: linear-gradient(to
 .vorb .vorb-sub { color: var(--muted); }
 .vorb .vorb-end { color: var(--ink); border-color: var(--line-strong); background: #fff; }
 
+/* Dot terrain background (ai-vance footer style), behind everything */
+.terrain { position: fixed; left: 0; right: 0; bottom: 0; width: 100%; height: 40vh; min-height: 220px; z-index: 0; pointer-events: none;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 35%); mask-image: linear-gradient(to bottom, transparent, #000 35%);
+  transition: opacity .4s ease; }
+body.chatting .terrain { opacity: .45; }
+@media (max-width: 640px) { .terrain { height: 32vh; } }
+
+/* =====================================================================
+   Black theme with colour: overrides the white theme above. Keep last.
+   ===================================================================== */
+:root {
+  --canvas: #0d0e13;
+  --surface: #12131a;
+  --surface-solid: #12131a;
+  --line: rgba(255,255,255,.08);
+  --line-strong: rgba(255,255,255,.14);
+  --muted: #9a9ba8;
+  --faint: #6c6d79;
+  --ink: #f2f2f5;
+  --amber: #f0a75c;
+  --amber-dark: #e08d3c;
+  --amber-surface: rgba(240,167,92,.14);
+  --amber-line: rgba(240,167,92,.35);
+  --on-amber: #111216;
+  --red: #ff6b5e;
+  --red-surface: rgba(255,107,94,.13);
+  --green: #3ddc84;
+  --glass: rgba(18,19,26,.72);
+  --glass-strong: rgba(18,19,26,.88);
+  --glow: 0 1px 0 rgba(255,255,255,.04) inset, 0 18px 50px -18px rgba(0,0,0,.7);
+  color-scheme: dark;
+}
+body { background: #06070b; color: var(--ink); }
+
+/* Colour: soft glows rising from the bottom, in the dealt orb palette */
+.aurora { background: radial-gradient(90% 55% at 50% -10%, rgba(124,92,255,.16), transparent 70%), #06070b; }
+.aurora .blob { opacity: .5; filter: blur(110px); }
+.aurora .b1 { background: #2f3dff; }
+.aurora .b2 { background: #7c5cff; }
+.aurora .b3 { background: #c9771f; opacity: .55; }
+.aurora .b4 { background: #ff5f8a; opacity: .3; }
+.aurora .grain { opacity: .1; }
+body.chatting .aurora .blob { opacity: .32; }
+.terrain { z-index: 0; }
+body.chatting .terrain { opacity: .55; }
+
+.topbar { background: rgba(6,7,11,.6); }
+.hero h1 { background: linear-gradient(180deg, #ffffff 30%, #b9b6d6); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.wm-dot { background: var(--amber); }
+
+.pill, .announce, .quick-chip { background: rgba(255,255,255,.05); border-color: var(--line-strong); color: var(--ink); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+.pill:hover, .quick-chip:hover, .announce:hover { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.24); }
+.logo-stack img { background: #fff; border-color: rgba(255,255,255,.2); }
+
+.composer { background: var(--glass); border-color: var(--line-strong); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
+.composer:focus-within { border-color: rgba(255,255,255,.26); box-shadow: 0 0 0 4px rgba(124,92,255,.14), var(--glow); }
+.icon-btn { color: #c9cad3; }
+.icon-btn:hover, .icon-btn[aria-expanded="true"] { background: rgba(255,255,255,.08); }
+.send-btn { background: var(--ink); color: #0b0c10; }
+.drop-hint { background: rgba(6,7,11,.92); border-color: var(--line-strong); }
+.conn span { background: rgba(255,255,255,.07); }
+
+.menu, .toast, .cite-pop, .ai-modal { background: #14151c; border-color: var(--line-strong); box-shadow: 0 24px 60px -16px rgba(0,0,0,.8); }
+.menu button:hover { background: rgba(255,255,255,.06); }
+.mi-icon { background: rgba(255,255,255,.05); }
+.mi-badge.on { border-color: rgba(61,220,132,.4); background: rgba(61,220,132,.1); }
+
+.msg.user { background: rgba(255,255,255,.08); }
+.msg.assistant { background: transparent; }
+.md code, .ai-steps code, .ai-tools code { background: rgba(255,255,255,.08); }
+.md a { color: #9db4ff; }
+.typing i { background: #6c6d79; }
+.email, .comp, .report-card { background: rgba(18,19,26,.82); border-color: var(--line); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+.btn-glow { background: var(--ink); color: #0b0c10; }
+.btn-glow:hover { background: #ffffff; }
+.msg.error, .toast.err { border-color: rgba(255,107,94,.4); }
+
+.ai-modal::backdrop { background: rgba(0,0,0,.55); }
+.ai-tabs button { background: rgba(255,255,255,.04); color: var(--ink); }
+.copy-row, .cp-fig, .rc-kpis div { background: rgba(255,255,255,.05); }
+.cite.assumed { text-decoration-color: #6c6d79; }
+.cp-head img { background: #fff; }
+.sb-a { background: rgba(255,255,255,.08) !important; }
+.sb-cortile { background: #2a2b33 !important; }
+.comp-img { background: linear-gradient(135deg, #1a1b23, #23242e); }
+.comp-dist { background: rgba(6,7,11,.8); }
+.report-card .rc-verdict { background: rgba(61,220,132,.12); }
+.rc-photos img { border-color: #12131a; }
+body.chatting .composer-wrap { background: none; }
+.icon-btn:focus-visible, .send-btn:focus-visible, .pill:focus-visible, .quick-chip:focus-visible, .menu button:focus-visible { outline: 2px solid rgba(240,167,92,.7); outline-offset: 2px; }
+
+/* Voice orb back on dark glass */
+.vorb { background: rgba(12,13,20,.78); border-color: rgba(255,255,255,.09); box-shadow: 0 24px 70px rgba(0,0,0,.5); }
+.vorb .vorb-label { color: #f0eff5; }
+.vorb[data-state="speaking"] .vorb-label { color: var(--amber); }
+.vorb .vorb-end { color: #f0eff5; border-color: rgba(255,255,255,.12); background: rgba(255,255,255,.06); }
 
 /* live agent log: which tool is working */
 .steps.live-steps { display: flex; flex-direction: column; gap: 7px; }

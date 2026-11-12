@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>dealt</title>
   <meta name="description" content="Ask about a deal, connect your inbox, get a traced GO / NO-GO. Every figure links back to its source.">
-  <meta name="theme-color" content="#ffffff">
+  <meta name="theme-color" content="#06070b">
   <link rel="icon" type="image/svg+xml" href="brand/dealt-icon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,6 +13,11 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <div class="aurora" aria-hidden="true">
+    <span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span><span class="blob b4"></span>
+    <div class="grain"></div>
+  </div>
+  <canvas class="terrain" id="terrain" aria-hidden="true"></canvas>
 
   <header class="topbar">
     <div class="topbar-inner">
@@ -211,6 +216,7 @@
     </div>
   </section>
 
+  <script src="terrain.js" defer></script>
   <script type="module" src="app.js"></script>
 </body>
 </html>
