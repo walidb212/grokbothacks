@@ -1,4 +1,4 @@
-"""Outlook (Microsoft Graph), Dealroom MCP and the Grok chat agent.
+"""Outlook (Microsoft Graph), Gmail (Gmail API), Dealroom MCP and the Grok chat agent.
 
 Browser sessions are identified by an httpOnly cookie. OAuth tokens never reach the browser:
 they live in TOKEN_FILE (chmod 600) inside the api_cache volume.
@@ -6,13 +6,16 @@ they live in TOKEN_FILE (chmod 600) inside the api_cache volume.
 GET  /integrations                     -> which sources are configured / connected
 GET  /auth/outlook/start               -> redirect to Microsoft sign-in (Mail.Read)
 GET  /auth/outlook/callback
+GET  /auth/gmail/start                 -> redirect to Google sign-in (gmail.readonly)
+GET  /auth/gmail/callback
 GET  /auth/dealroom/start              -> OAuth 2.1 + PKCE + dynamic client registration
 GET  /auth/dealroom/callback
 POST /integrations/{name}/disconnect
 GET  /outlook/deals?days=14            -> recent emails that look like real estate deals
-POST /outlook/messages/{id}/analyze    -> run the deal pipeline on the email's PDF attachments
+POST /outlook/messages/{id}/analyze    -> run the deal pipeline on the email's PDF attachments (Gmail ids are prefixed "g:")
 POST /chat                             -> {"messages": [...]} -> {"reply", "actions"}
 """
+import asyncio
 import base64
 import hashlib
 import json
@@ -38,6 +41,11 @@ MS_TENANT = os.getenv("MS_TENANT", "common")
 MS_AUTHORITY = f"https://login.microsoftonline.com/{MS_TENANT}/oauth2/v2.0"
 MS_SCOPES = "offline_access User.Read Mail.Read"
 GRAPH = "https://graph.microsoft.com/v1.0"
+
+G_AUTH = "https://accounts.google.com/o/oauth2/v2/auth"
+G_TOKEN = "https://oauth2.googleapis.com/token"
+G_SCOPES = "openid email https://www.googleapis.com/auth/gmail.readonly"
+GMAIL = "https://gmail.googleapis.com/gmail/v1/users/me"
 
 DR_MCP = os.getenv("DEALROOM_MCP_URL", "https://mcp.dealroom.co/mcp")
 DR_ISSUER = os.getenv("DEALROOM_OAUTH_ISSUER", "https://mcp.dealroom.co")
@@ -210,6 +218,96 @@ async def outlook_pdfs(sid: str, message_id: str) -> Tuple[str, List[Tuple[str, 
     return msg.json().get("subject") or "", files
 
 
+# ---------------------------------------------------------------- Gmail
+def _g_configured() -> bool:
+    return bool(os.getenv("GOOGLE_CLIENT_ID") and os.getenv("GOOGLE_CLIENT_SECRET"))
+
+
+async def _g_token_request(form: dict) -> dict:
+    form = {**form, "client_id": os.getenv("GOOGLE_CLIENT_ID"), "client_secret": os.getenv("GOOGLE_CLIENT_SECRET")}
+    async with httpx.AsyncClient(timeout=15) as c:
+        r = await c.post(G_TOKEN, data=form)
+    if r.status_code != 200:
+        raise HTTPException(502, f"Google token request failed ({r.status_code})")
+    tok = r.json()
+    tok["expires_at"] = time.time() + int(tok.get("expires_in", 3600)) - 60
+    return tok
+
+
+async def _g_access(sid: str) -> str:
+    tok = _session(sid).get("gmail")
+    if not tok:
+        raise HTTPException(409, "Gmail is not connected")
+    if time.time() > tok.get("expires_at", 0):
+        new = await _g_token_request({"grant_type": "refresh_token", "refresh_token": tok["refresh_token"]})
+        new.setdefault("refresh_token", tok["refresh_token"])
+        new["account"] = tok.get("account")
+        _update_session(sid, "gmail", new)
+        tok = new
+    return tok["access_token"]
+
+
+def _g_parts(payload: dict) -> List[dict]:
+    out, stack = [], [payload or {}]
+    while stack:
+        part = stack.pop()
+        if part.get("filename"):
+            out.append(part)
+        stack += part.get("parts") or []
+    return out
+
+
+async def gmail_deals(sid: str, days: int = 14, limit: int = 12) -> List[dict]:
+    headers = {"Authorization": f"Bearer {await _g_access(sid)}"}
+    async with httpx.AsyncClient(timeout=20) as c:
+        r = await c.get(f"{GMAIL}/messages", params={"q": f"in:inbox newer_than:{max(1, min(days, 90))}d", "maxResults": 40}, headers=headers)
+        if r.status_code != 200:
+            raise HTTPException(502, f"Gmail request failed ({r.status_code})")
+        ids = [m["id"] for m in r.json().get("messages", [])]
+        msgs = await asyncio.gather(*[c.get(f"{GMAIL}/messages/{i}", params={"format": "full"}, headers=headers) for i in ids])
+    out = []
+    for m in (x.json() for x in msgs if x.status_code == 200):
+        h = {k["name"].lower(): k["value"] for k in m.get("payload", {}).get("headers", [])}
+        names = [p["filename"] for p in _g_parts(m.get("payload"))]
+        score, reasons = score_deal_email(h.get("subject", ""), m.get("snippet", ""), h.get("from", ""), names)
+        if score < 25:
+            continue
+        received = datetime.fromtimestamp(int(m.get("internalDate", 0)) / 1000, timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        out.append({
+            "id": f"g:{m['id']}", "subject": h.get("subject") or "(no subject)", "from": re.sub(r"\s*<.*>", "", h.get("from", "")) or h.get("from"),
+            "received": received, "preview": (m.get("snippet") or "")[:240], "source": "gmail",
+            "pdfs": [n for n in names if n.lower().endswith(".pdf")], "score": score, "reasons": reasons,
+            "web_link": f"https://mail.google.com/mail/u/0/#inbox/{m['id']}",
+        })
+    out.sort(key=lambda e: (e["score"], e["received"] or ""), reverse=True)
+    return out[:limit]
+
+
+async def gmail_pdfs(sid: str, message_id: str) -> Tuple[str, List[Tuple[str, bytes]]]:
+    if not re.fullmatch(r"[A-Za-z0-9]{8,64}", message_id):
+        raise HTTPException(400, "Invalid message id")
+    headers = {"Authorization": f"Bearer {await _g_access(sid)}"}
+    async with httpx.AsyncClient(timeout=60) as c:
+        r = await c.get(f"{GMAIL}/messages/{message_id}", params={"format": "full"}, headers=headers)
+        if r.status_code != 200:
+            raise HTTPException(502, "Could not read the email from Gmail")
+        m = r.json()
+        subject = next((k["value"] for k in m.get("payload", {}).get("headers", []) if k["name"].lower() == "subject"), "")
+        files = []
+        for part in _g_parts(m.get("payload")):
+            name = Path(part["filename"]).name
+            if not (name.lower().endswith(".pdf") or part.get("mimeType") == "application/pdf"):
+                continue
+            body = part.get("body") or {}
+            data = body.get("data")
+            if not data and body.get("attachmentId"):
+                a = await c.get(f"{GMAIL}/messages/{message_id}/attachments/{body['attachmentId']}", headers=headers)
+                data = a.json().get("data") if a.status_code == 200 else None
+            if data:
+                files.append((name, base64.urlsafe_b64decode(data + "=" * (-len(data) % 4))))
+    return subject, files
+
+
 # ---------------------------------------------------------------- Dealroom MCP (OAuth 2.1)
 async def _dr_metadata() -> dict:
     data = _load()
@@ -368,7 +466,7 @@ Rules: never invent figures. Every number you state must come from a tool result
 Be concise. Use short markdown: bullet lists, **bold** for the key verdict or number."""
 
 BASE_TOOLS = [
-    {"type": "function", "function": {"name": "check_inbox", "description": "List recent emails in the connected Outlook inbox that look like real estate deals.", "parameters": {"type": "object", "properties": {"days": {"type": "integer", "description": "How many days back, default 14"}}}}},
+    {"type": "function", "function": {"name": "check_inbox", "description": "List recent emails in the connected Outlook and/or Gmail inbox that look like real estate deals.", "parameters": {"type": "object", "properties": {"days": {"type": "integer", "description": "How many days back, default 14"}}}}},
     {"type": "function", "function": {"name": "analyze_email", "description": "Qualify the deal in one email: runs the pipeline on its PDF attachments and opens the report.", "parameters": {"type": "object", "properties": {"message_id": {"type": "string"}}, "required": ["message_id"]}}},
     {"type": "function", "function": {"name": "load_sample_report", "description": "Open the Stratford sample deal report.", "parameters": {"type": "object", "properties": {}}}},
 ]
@@ -391,6 +489,7 @@ def build_router(start_job: StartJob) -> APIRouter:
         sess = _session(sid)
         return {
             "outlook": {"configured": _ms_configured(), "connected": "outlook" in sess, "account": (sess.get("outlook") or {}).get("account")},
+            "gmail": {"configured": _g_configured(), "connected": "gmail" in sess, "account": (sess.get("gmail") or {}).get("account")},
             "dealroom": {"configured": True, "connected": "dealroom" in sess},
             "llm": {"configured": bool(os.getenv("XAI_API_KEY")), "model": XAI_MODEL},
         }
@@ -398,7 +497,7 @@ def build_router(start_job: StartJob) -> APIRouter:
     @router.post("/integrations/{name}/disconnect")
     async def disconnect(name: str, request: Request):
         sid = _sid(request)
-        if name not in ("outlook", "dealroom"):
+        if name not in ("outlook", "gmail", "dealroom"):
             raise HTTPException(404, "Unknown integration")
         if sid:
             _update_session(sid, name, None)
@@ -433,6 +532,36 @@ def build_router(start_job: StartJob) -> APIRouter:
             tok["account"] = me.json().get("mail") or me.json().get("userPrincipalName")
         _update_session(sid, "outlook", tok)
         return _back_to_app(connected="outlook")
+
+    # ----- Gmail OAuth
+    @router.get("/auth/gmail/start")
+    async def gmail_start(request: Request):
+        if not _g_configured():
+            return _back_to_app(error="gmail_not_configured")
+        state, (verifier, challenge) = secrets.token_urlsafe(24), _pkce()
+        resp = RedirectResponse(f"{G_AUTH}?" + urlencode({
+            "client_id": os.getenv("GOOGLE_CLIENT_ID"), "response_type": "code", "redirect_uri": _callback("gmail"),
+            "scope": G_SCOPES, "state": state, "code_challenge": challenge, "code_challenge_method": "S256",
+            "access_type": "offline", "prompt": "consent select_account", "include_granted_scopes": "true",
+        }), status_code=302)
+        sid = _ensure_sid(request, resp)
+        _update_session(sid, "gmail_pending", {"state": state, "verifier": verifier, "at": time.time()})
+        return resp
+
+    @router.get("/auth/gmail/callback")
+    async def gmail_callback(request: Request, code: str = "", state: str = "", error: str = ""):
+        sid = _sid(request)
+        pending = _session(sid).get("gmail_pending") if sid else None
+        if error or not code or not pending or not secrets.compare_digest(state, pending["state"]):
+            return _back_to_app(error="gmail_auth_failed")
+        _update_session(sid, "gmail_pending", None)
+        tok = await _g_token_request({"grant_type": "authorization_code", "code": code, "redirect_uri": _callback("gmail"), "code_verifier": pending["verifier"]})
+        async with httpx.AsyncClient(timeout=10) as c:
+            prof = await c.get(f"{GMAIL}/profile", headers={"Authorization": f"Bearer {tok['access_token']}"})
+        if prof.status_code == 200:
+            tok["account"] = prof.json().get("emailAddress")
+        _update_session(sid, "gmail", tok)
+        return _back_to_app(connected="gmail")
 
     # ----- Dealroom OAuth 2.1
     @router.get("/auth/dealroom/start")
@@ -473,10 +602,11 @@ def build_router(start_job: StartJob) -> APIRouter:
         return {"emails": await outlook_deals(sid, days)}
 
     async def _analyze_email(sid: str, message_id: str) -> dict:
-        subject, files = await outlook_pdfs(sid, message_id)
+        gmail = message_id.startswith("g:")
+        subject, files = await (gmail_pdfs(sid, message_id[2:]) if gmail else outlook_pdfs(sid, message_id))
         if not files:
             return {"error": "This email has no PDF attachment to analyse.", "subject": subject}
-        job_id = await start_job(files, f"From Outlook: {subject}")
+        job_id = await start_job(files, f"From {'Gmail' if gmail else 'Outlook'}: {subject}")
         return {"job_id": job_id, "subject": subject, "files": [f[0] for f in files]}
 
     @router.post("/outlook/messages/{message_id}/analyze")
@@ -499,9 +629,11 @@ def build_router(start_job: StartJob) -> APIRouter:
         async def run_tool(name: str, args: dict) -> str:
             try:
                 if name == "check_inbox":
-                    if "outlook" not in sess:
-                        return "Outlook is not connected. Ask the user to connect it with the + button."
-                    emails = await outlook_deals(sid, int(args.get("days") or 14))
+                    if "outlook" not in sess and "gmail" not in sess:
+                        return "No inbox is connected. Ask the user to connect Outlook or Gmail with the + button."
+                    days = int(args.get("days") or 14)
+                    emails = (await outlook_deals(sid, days) if "outlook" in sess else []) + (await gmail_deals(sid, days) if "gmail" in sess else [])
+                    emails.sort(key=lambda e: (e["score"], e["received"] or ""), reverse=True)
                     actions.append({"type": "emails", "emails": emails})
                     return json.dumps([{k: e[k] for k in ("id", "subject", "from", "received", "pdfs", "score", "preview")} for e in emails])
                 if name == "analyze_email":
@@ -529,7 +661,7 @@ def build_router(start_job: StartJob) -> APIRouter:
                     tools.append({"type": "function", "function": {"name": f"dealroom__{t['name']}", "description": (t.get("description") or "")[:900], "parameters": _clean_schema(t.get("inputSchema"))}})
             except HTTPException:
                 pass
-        connected = [n for n in ("outlook", "dealroom") if n in sess]
+        connected = [n for n in ("outlook", "gmail", "dealroom") if n in sess]
         convo = [{"role": "system", "content": SYSTEM + f"\nConnected sources: {', '.join(connected) or 'none'}."}] + msgs
         async with httpx.AsyncClient(timeout=120) as c:
             for _ in range(6):
@@ -558,8 +690,8 @@ async def _fallback_chat(text: str, sess: dict, run_tool, actions: List[dict]) -
     """Keyword routing when no LLM key is configured, so the demo still works."""
     t = text.lower()
     if re.search(r"inbox|e-?mail|outlook|mail|posteingang", t):
-        if "outlook" not in sess:
-            return {"reply": "Outlook isn't connected yet. Click **+** → **Connect Outlook** and I'll scan your inbox for new deals.", "actions": [{"type": "connect", "name": "outlook"}]}
+        if "outlook" not in sess and "gmail" not in sess:
+            return {"reply": "No inbox is connected yet. Click **+** → **Outlook** or **Gmail** and I'll scan it for new deals.", "actions": [{"type": "connect", "name": "outlook"}, {"type": "connect", "name": "gmail"}]}
         await run_tool("check_inbox", {})
         n = len(actions[-1]["emails"]) if actions else 0
         return {"reply": f"I found **{n}** email{'s' if n != 1 else ''} that look like real estate deals." + (" Pick one to qualify it." if n else ""), "actions": actions}

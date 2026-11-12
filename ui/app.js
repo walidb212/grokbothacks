@@ -54,7 +54,7 @@ const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "
 const hasSource = (f) => f?.source && f.source.type && f.source.type !== "assumption";
 function sourceText(src) {
   if (!src || !src.type || src.type === "assumption") return "Assumption · no source";
-  const type = { brochure: "Brochure", msci: "MSCI RCA", web: "Web", cortile: "Cortile" }[src.type] || src.type;
+  const type = { brochure: "Brochure", msci: "MSCI RCA", web: "Web", cortile: "Cortile", model: "Calculated" }[src.type] || src.type;
   const ref = src.ref ? ` · ${src.ref}` : "";
   const page = src.page ? ` · p. ${src.page}` : "";
   return `${type}${ref}${page}`;
@@ -70,7 +70,20 @@ function collectFigures(asset) {
     for (const f of asset[sec] || []) if (f && f.metric) out.push({ fig: f, section: sec });
   }
   for (const rt of asset.room_types || []) if (rt.weekly_rate?.metric) out.push({ fig: rt.weekly_rate, section: "room_types", room: rt });
+  (asset.comps || []).forEach((c, i) => { if (c && !c.metric) for (const f of compFigures(c, i)) out.push({ fig: f, section: "comps" }); });
   return out;
+}
+
+// Engine comps ({operator, property_name, rooms, url, image}) -> sourced figures, one per room category
+const OPERATORS = { unite: "Unite Students", iq: "iQ Student", fresh: "Fresh", prestige: "Prestige Student Living", student_roost: "Student Roost", yugo: "Yugo", vita: "Vita Student", crm: "CRM Students" };
+const ROOM_LABELS = { studio: "Studio", ensuite: "En-suite", non_ensuite: "Cluster", apartment: "Apartment", twodio: "Twodio", other: "Other" };
+function compFigures(c, i) {
+  return Object.entries(c.rooms || {}).filter(([cat]) => cat !== "other").map(([cat, r]) => ({
+    metric: `comp${i}_${cat}`, label: `${ROOM_LABELS[cat] || cat} at ${c.property_name}`, value: r.median_pw, unit: "GBP/week", status: null,
+    source: { type: "web", ref: c.url, page: null, operator: OPERATORS[c.operator] || c.operator,
+              note: `${c.academic_year || ""} rate${r.weeks ? `, ${r.weeks}-week tenancy` : ""}${r.size_sqm ? `, ${r.size_sqm} m²` : ""}, scraped from the operator's website` },
+    room: { cat, ...r }, comp: c,
+  }));
 }
 
 // ---------- render ----------
@@ -96,6 +109,96 @@ function figButton(f, extra = "") {
     <span class="src">${esc(sourceText(f.source))}</span>
   </button>`;
 }
+
+const fmtDist = (km) => (km >= 1 ? `${fmtNum(km, 1)} km` : `${fmtNum(km * 1000)} m`);
+
+// ---------- investment memo: prose where every number links to its source ----------
+function cite(metric, text) {
+  const e = state.figures.get(metric);
+  if (!e) return null;
+  const f = e.fig;
+  return `<button type="button" class="cite ${hasSource(f) ? "" : "assumed"}" data-metric="${esc(metric)}">${esc(text ?? formatValue(f))}</button>`;
+}
+function memoHtml(a) {
+  const c = (m, t) => cite(m, t);
+  const s = (...parts) => (parts.some((p) => p === null) ? "" : parts.join(""));
+  const comps = (a.comps || []).filter((x) => x && !x.metric);
+  const far = comps.length ? Math.max(...comps.map((x) => x.distance_km || 0)) : null;
+  const near = comps[0];
+  const nearFig = near && ["studio", "ensuite", "non_ensuite"].map((k) => `comp0_${k}`).find((m) => state.figures.has(m));
+  const decision = a.verdict?.decision || "—";
+  const spb = state.figures.get("students_per_bed")?.fig.value;
+  const paras = [
+    s(`We recommend <strong class="memo-d" data-d="${esc(decision)}">${esc(decision)}</strong> on ${esc(a.name || "this asset")}. `,
+      `The scheme returns an unlevered IRR of `, c("irr"), ` and a `, c("equity_multiple"), ` equity multiple. `) +
+      s(`Yield on cost of `, c("entry_yield") ?? c("yield_on_cost"), ` beats the market exit yield of `, c("exit_yield"), c("yield_delta") ? s(` by `, c("yield_delta")) : "", `.`),
+    s(`The site is `, c("station_distance"), ` from Stratford station, with `, c("population_10min"), ` people within a 10-minute drive, growing `, c("population_growth"), `. `) +
+      s(`London has `, c("students", fmtNum(state.figures.get("students")?.fig.value ?? 0)), ` students, `, c("russell_group_share"), ` of them at Russell Group universities, for only `, c("pbsa_beds"), ` in purpose-built halls: `, c("students_per_bed", `${fmtNum(spb ?? 0, 1)} students per bed`), `.`),
+    comps.length ? s(`Rents come from the ${comps.length} nearest operator buildings, all within ${fmtNum(far, 1)} km. `,
+      `They put studios at `, c("studio_rate"), ` and en-suites at `, c("ensuite_rate"), `. `) +
+      (nearFig ? s(`The closest, ${esc(near.property_name)} (${esc(OPERATORS[near.operator] || near.operator)}, ${fmtDist(near.distance_km)} away), lets at `, c(nearFig), `.`) : "") : "",
+    s(`On `, c("pbsa_capacity"), `, gross income is `, c("gross_income"), `, OPEX `, c("opex"), ` and NOI `, c("noi"), `.`),
+  ].filter(Boolean);
+  if (!paras.length) return "";
+  return `<section class="section card memo" data-section="memo">
+    <div class="section-head"><h2>Investment memo</h2><span class="mono-label">Click any number for its source</span></div>
+    ${paras.map((p) => `<p>${p}</p>`).join("")}
+  </section>`;
+}
+function compsHtml(a) {
+  const comps = (a.comps || []).filter((c) => c && !c.metric);
+  if (!comps.length) return `<p class="muted" style="margin:0">No comps yet. The comp scraper fills this section with sourced operator rates.</p>`;
+  return `<div class="comps">${comps.map((c, i) => {
+    const figs = compFigures(c, i);
+    const op = OPERATORS[c.operator] || c.operator;
+    const img = c.image ? encodeURI(decodeURI(c.image)) : "";
+    return `<article class="comp">
+      <a class="comp-img" href="${esc(c.url)}" target="_blank" rel="noopener">${img ? `<img src="${esc(img)}" alt="${esc(c.property_name)}" loading="lazy" onerror="this.remove()">` : ""}<span class="comp-dist">${fmtDist(c.distance_km)}</span></a>
+      <div class="comp-body">
+        <div class="comp-op"><img src="${favicon(c.url)}" alt="" width="14" height="14">${esc(op)}</div>
+        <h3>${esc(c.property_name)}</h3>
+        <p class="comp-meta">${esc([c.postcode, c.academic_year].filter(Boolean).join(" · "))}</p>
+        <ul class="comp-rooms">${figs.map((f) => `<li><span>${esc(ROOM_LABELS[f.room.cat] || f.room.cat)}</span>${cite(f.metric, `£${fmtNum(f.value)}/wk`)}<small>${esc([f.room.weeks && `${f.room.weeks} wks`, f.room.size_sqm && `${f.room.size_sqm} m²`].filter(Boolean).join(" · "))}</small></li>`).join("")}</ul>
+      </div>
+    </article>`;
+  }).join("")}</div>`;
+}
+
+// ---------- source popover ----------
+const hostOf = (u) => { try { return new URL(u).hostname.replace(/^www\./, ""); } catch { return null; } };
+const favicon = (u) => `https://www.google.com/s2/favicons?domain=${encodeURIComponent(hostOf(u) || "example.com")}&sz=64`;
+function sourceBrand(src) {
+  const t = src?.type || "assumption", ref = String(src?.ref || "");
+  if (t === "brochure") return { name: "Sale brochure", logo: `<span class="sb sb-pdf">PDF</span>`, detail: `${ref}${src.page ? ` · page ${src.page}` : ""}` };
+  if (t === "msci") return { name: "MSCI Real Capital Analytics", logo: `<span class="sb sb-msci">MSCI</span>`, detail: ref };
+  if (t === "cortile") return { name: "Cortile", logo: `<span class="sb sb-cortile">C</span>`, detail: ref };
+  if (t === "model") return { name: "Calculated by dealt", logo: `<img src="brand/dealt-icon.svg" alt="">`, detail: ref };
+  if (t === "assumption") return { name: "Assumption", logo: `<span class="sb sb-a">A</span>`, detail: "No source yet. To verify before an offer." };
+  if (/^HESA$/i.test(ref)) return { name: "HESA", logo: `<img src="${favicon("https://www.hesa.ac.uk")}" alt="">`, detail: "Higher Education Student Statistics 2024/25", url: "https://www.hesa.ac.uk/data-and-analysis/students" };
+  const host = hostOf(ref);
+  if (host) return { name: src.operator || host, logo: `<img src="${favicon(ref)}" alt="">`, detail: host, url: ref };
+  return { name: "Nearby comps", logo: `<span class="sb sb-web">W</span>`, detail: ref };
+}
+function showCite(el, metric) {
+  const e = state.figures.get(metric);
+  if (!e) return;
+  const f = e.fig, b = sourceBrand(f.source);
+  const pop = $("cite-pop");
+  pop.innerHTML = `
+    <div class="cp-head">${b.logo}<div><strong>${esc(b.name)}</strong><small>${esc(b.detail || "")}</small></div></div>
+    <div class="cp-fig"><span>${esc(f.label || f.metric)}</span><b>${esc(formatValue(f))}</b></div>
+    ${f.source?.note ? `<p class="cp-note">${esc(f.source.note)}</p>` : ""}
+    <div class="cp-foot">${statusTag(f.status)}${b.url ? `<a href="${esc(b.url)}" target="_blank" rel="noopener">Open source ↗</a>` : ""}</div>`;
+  pop.hidden = false;
+  const r = el.getBoundingClientRect(), w = pop.offsetWidth, h = pop.offsetHeight;
+  const left = Math.max(12, Math.min(r.left + r.width / 2 - w / 2, innerWidth - w - 12));
+  const top = r.bottom + 8 + h > innerHeight ? r.top - h - 8 : r.bottom + 8;
+  pop.style.left = `${left}px`; pop.style.top = `${top}px`;
+}
+function hideCite() { const p = $("cite-pop"); if (p) p.hidden = true; }
+document.addEventListener("click", (e) => { if (!e.target.closest("#cite-pop, [data-metric]")) hideCite(); });
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") hideCite(); });
+document.addEventListener("scroll", (e) => { if (!e.target.closest?.("#cite-pop")) hideCite(); }, true);
 
 function renderReport() {
   const host = $("report");
@@ -144,9 +247,8 @@ function renderReport() {
 
     const comps = `
       <section class="section card" data-section="comps">
-        <div class="section-head"><h2>Rental comps</h2><span class="mono-label">5 nearest assets</span></div>
-        ${(a.comps || []).length ? `<div class="figs">${a.comps.map((f) => figButton(f)).join("")}</div>`
-          : `<p class="muted" style="margin:0">No comps yet. The comp scraper fills this section with sourced operator rates.</p>`}
+        <div class="section-head"><h2>Rental comps</h2><span class="mono-label">${(a.comps || []).length} nearest buildings · operator websites</span></div>
+        ${compsHtml(a)}
       </section>`;
 
     const sourcesList = `
@@ -163,7 +265,7 @@ function renderReport() {
       <button type="button" id="reset-scenario">Reset to base case</button></div>` : "";
 
     return `<article class="asset" data-asset="${ai}">
-      ${state.report.mock ? `<p class="mock-note">Sample data: figures marked A are placeholders until the pipeline verifies them.</p>` : ""}
+      ${state.report.mock && all.length > sourcedCount ? `<p class="mock-note">Sample data: figures marked A are placeholders until the pipeline verifies them.</p>` : ""}
       <div class="card verdict">
         <div><p class="mono-label">Verdict${state.scenario ? " · scenario" : ""}</p><div class="decision${decision.length > 6 ? " long" : ""}" data-d="${esc(decision)}">${esc(decision)}</div></div>
         <div class="verdict-side">
@@ -177,11 +279,11 @@ function renderReport() {
         </div>
       </div>
       ${scenario}
-      ${sections}${rooms}${noi}${comps}${sourcesList}
+      ${memoHtml(a)}${comps}${sections}${rooms}${noi}${sourcesList}
     </article>`;
   }).join("");
 
-  host.querySelectorAll("[data-metric]").forEach((el) => el.addEventListener("click", () => selectFigure(el.dataset.metric, { fromUser: true })));
+  host.querySelectorAll("[data-metric]").forEach((el) => el.addEventListener("click", (ev) => { ev.stopPropagation(); selectFigure(el.dataset.metric, { fromUser: true }); showCite(el, el.dataset.metric); }));
   $("reset-scenario")?.addEventListener("click", () => { resetWhatIf(); notifyAgent("The user reset the scenario to the base case."); });
   if (state.selected) markSelected(state.selected);
 }
@@ -232,10 +334,11 @@ function baseModel(asset) {
   const get = (sec, m) => (asset[sec] || []).find((f) => f.metric === m)?.value;
   const rooms = asset.room_types || [];
   const gross = get("noi", "gross_income"), opex = get("noi", "opex"), noi = get("noi", "noi");
-  const yoc = get("returns", "yield_on_cost"), exit = get("returns", "exit_yield");
+  const yocMetric = (asset.returns || []).some((f) => f.metric === "entry_yield") ? "entry_yield" : "yield_on_cost";  // engine vs older reports
+  const yoc = get("returns", yocMetric), exit = get("returns", "exit_yield");
   if (!rooms.length || !gross || !noi || !yoc) return null;
   const potential = rooms.reduce((s, r) => s + r.beds * (r.weekly_rate?.value || 0) * (r.weeks || 51), 0);
-  return { rooms, occupancy: gross / potential, opexRatio: opex / gross, totalCost: noi / yoc, exit, gross, opex, noi, yoc };
+  return { rooms, occupancy: gross / potential, opexRatio: opex / gross, totalCost: noi / yoc, exit, gross, opex, noi, yoc, yocMetric };
 }
 function decide(yoc, exit) {
   if (!exit) return "GO";
@@ -281,7 +384,7 @@ function runWhatIf(input = {}) {
   changed.gross_income = { from: m.gross, to: gross };
   changed.opex = { from: m.opex, to: opex };
   changed.noi = { from: m.noi, to: noi };
-  changed.yield_on_cost = { from: m.yoc, to: yoc };
+  changed[m.yocMetric] = { from: m.yoc, to: yoc };
   if (c.exit_yield != null) changed.exit_yield = { from: m.exit, to: exit };
   const decision = decide(yoc, exit);
   const result = {
@@ -550,7 +653,7 @@ function ask(text) {
 
 // ---------- chat shell ----------
 const chatLog = [];          // [{role, content}] sent to /api/chat
-let integrations = { outlook: {}, dealroom: {}, llm: {} };
+let integrations = { outlook: {}, gmail: {}, dealroom: {}, llm: {} };
 let busy = false;
 
 // Small, safe markdown: escape first, then add a few inline/block rules.
@@ -630,7 +733,7 @@ function emailsHtml(emails) {
   if (!emails?.length) return "";
   return `<ul class="emails">${emails.map((e) => `
     <li class="email">
-      <span class="subj">${esc(e.subject)}</span>
+      <span class="subj"><img class="mail-src" src="brand/${e.source === "gmail" ? "gmail" : "outlook"}.svg" alt="${e.source === "gmail" ? "Gmail" : "Outlook"}" width="14" height="14">${esc(e.subject)}</span>
       <span class="meta">${esc(e.from || "")} · ${e.received ? new Date(e.received).toLocaleDateString("en-GB", { day: "numeric", month: "short" }) : ""}${e.pdfs?.length ? ` · ${e.pdfs.length} PDF` : ""}</span>
       <span class="prev">${esc(e.preview)}</span>
       <button type="button" class="btn-glow" data-analyze="${esc(e.id)}" data-subject="${esc(e.subject)}" ${e.pdfs?.length ? "" : "disabled title=\"No PDF attached\""}>Qualify</button>
@@ -668,11 +771,11 @@ async function sendPrompt(text) {
     const actions = d.actions || [];
     const tools = actions.filter((a) => a.type === "tool").map((a) => TOOL_LABELS[a.name] || (a.name.startsWith("dealroom__") ? `Dealroom · ${a.name.slice(10).replace(/_/g, " ")}` : a.name));
     const emails = actions.filter((a) => a.type === "emails").flatMap((a) => a.emails);
-    const connect = actions.find((a) => a.type === "connect");
+    const connects = actions.filter((a) => a.type === "connect");
     pending.innerHTML =
       (tools.length ? `<div class="tool-trail">${tools.map((t) => `<span>${esc(t)}</span>`).join("")}</div>` : "") +
       `<div class="md">${renderMarkdown(d.reply || "")}</div>` + emailsHtml(emails) +
-      (connect ? `<div><button type="button" class="btn-glow" data-connect="${esc(connect.name)}">Connect ${connect.name === "outlook" ? "Outlook" : "Dealroom"}</button></div>` : "");
+      (connects.length ? `<div class="connect-row">${connects.map((c) => `<button type="button" class="btn-glow" data-connect="${esc(c.name)}">Connect ${{ outlook: "Outlook", gmail: "Gmail", dealroom: "Dealroom" }[c.name] || c.name}</button>`).join("")}</div>` : "");
     chatLog.push({ role: "assistant", content: d.reply || "" });
     scrollThread();
     for (const a of actions) {
@@ -698,19 +801,26 @@ async function refreshIntegrations() {
   $("outlook-badge").textContent = o.connected ? "Connected" : "Connect";
   $("outlook-badge").classList.toggle("on", !!o.connected);
   $("outlook-state").textContent = o.connected ? (o.account || "Inbox connected") : (o.configured === false ? "Needs Azure app keys on the server" : "Read new deal emails");
+  const g = integrations.gmail || {};
+  document.querySelector('[data-act="gmail"]').hidden = !g.configured && !g.connected;  // hidden until Google OAuth keys are on the server
+  $("gmail-badge").textContent = g.connected ? "Connected" : "Connect";
+  $("gmail-badge").classList.toggle("on", !!g.connected);
+  $("gmail-state").textContent = g.connected ? (g.account || "Inbox connected") : "Read new deal emails";
   $("dealroom-badge").textContent = dr.connected ? "Connected" : "Connect";
   $("dealroom-badge").classList.toggle("on", !!dr.connected);
   $("dealroom-state").textContent = dr.connected ? "Dealroom MCP connected" : "Investors, companies, transactions";
-  $("sources").innerHTML = [o.connected && "Outlook", dr.connected && "Dealroom"].filter(Boolean).map((n) => `<span>${n}</span>`).join("");
+  $("sources").innerHTML = [o.connected && "Outlook", g.connected && "Gmail", dr.connected && "Dealroom"].filter(Boolean).map((n) => `<span>${n}</span>`).join("");
 }
 
 async function toggleIntegration(name) {
   const info = integrations[name] || {};
+  if (name === "gmail" && info.configured === false) return toast("Gmail needs GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET on the server first.", true);
   if (info.connected) {
-    if (!confirm(`Disconnect ${name === "outlook" ? "Outlook" : "Dealroom"}?`)) return;
+    const nice = { outlook: "Outlook", gmail: "Gmail", dealroom: "Dealroom" }[name] || name;
+    if (!confirm(`Disconnect ${nice}?`)) return;
     await fetch(`${API}/integrations/${name}/disconnect`, { method: "POST", credentials: "include" }).catch(() => {});
     await refreshIntegrations();
-    return toast(`${name === "outlook" ? "Outlook" : "Dealroom"} disconnected`);
+    return toast(`${nice} disconnected`);
   }
   if (name === "outlook" && info.configured === false) return toast("Outlook needs MS_CLIENT_ID / MS_CLIENT_SECRET on the server first.", true);
   location.href = `${API}/auth/${name}/start`;
@@ -730,7 +840,8 @@ function initChat() {
   $("composer").addEventListener("submit", (e) => { e.preventDefault(); const v = prompt.value; prompt.value = ""; autosize(); sendPrompt(v); });
 
   $("plus-btn").addEventListener("click", (e) => { e.stopPropagation(); setMenu($("plus-menu").hidden); });
-  $("announce").addEventListener("click", (e) => { e.stopPropagation(); setMenu(true); });
+  $("announce").addEventListener("click", () => openAi());
+  $("open-ai").addEventListener("click", () => openAi());
   document.addEventListener("click", (e) => { if (!e.target.closest(".plus-wrap")) setMenu(false); });
   document.addEventListener("keydown", (e) => {
     if (e.key !== "Escape") return;
@@ -741,7 +852,8 @@ function initChat() {
     setMenu(false);
     if (name === "upload") $("file-input").click();
     else if (name === "sample") { addMessage("user", "Open the Stratford sample"); loadSample(); }
-    else if (name === "outlook" || name === "dealroom") toggleIntegration(name);
+    else if (name === "ai") openAi();
+    else if (name === "outlook" || name === "gmail" || name === "dealroom") toggleIntegration(name);
   };
   document.querySelectorAll("[data-act]").forEach((b) => b.addEventListener("click", () => act(b.dataset.act)));
   document.querySelectorAll(".quick-chip[data-prompt]").forEach((b) => b.addEventListener("click", () => sendPrompt(b.dataset.prompt)));
@@ -770,13 +882,97 @@ function initChat() {
   const connected = params.get("connected"), error = params.get("error");
   if (connected || error) history.replaceState(null, "", location.pathname);
   refreshIntegrations().then(() => {
-    if (connected === "outlook") { toast("Outlook connected"); sendPrompt("Check my inbox for new real estate deals"); }
+    if (connected === "outlook" || connected === "gmail") { toast(`${connected === "gmail" ? "Gmail" : "Outlook"} connected`); sendPrompt("Check my inbox for new real estate deals"); }
     else if (connected === "dealroom") toast("Dealroom connected. Ask about investors, companies or transactions.");
-    else if (error) toast({ outlook_not_configured: "Outlook isn't set up on the server yet (Azure app keys missing).", outlook_auth_failed: "Outlook sign-in was cancelled or failed.", dealroom_auth_failed: "Dealroom sign-in was cancelled or failed.", dealroom_host_not_allowed: "Dealroom hasn't approved this domain for MCP sign-in yet. We've asked them to allowlist it.", dealroom_unavailable: "Dealroom is unreachable right now. Try again in a minute." }[error] || "Sign-in failed.", true);
+    else if (error) toast({ outlook_not_configured: "Outlook isn't set up on the server yet (Azure app keys missing).", outlook_auth_failed: "Outlook sign-in was cancelled or failed.", gmail_not_configured: "Gmail isn't set up on the server yet (Google OAuth client missing).", gmail_auth_failed: "Gmail sign-in was cancelled or failed.", dealroom_auth_failed: "Dealroom sign-in was cancelled or failed.", dealroom_host_not_allowed: "Dealroom hasn't approved this domain for MCP sign-in yet. We've asked them to allowlist it.", dealroom_unavailable: "Dealroom is unreachable right now. Try again in a minute." }[error] || "Sign-in failed.", true);
   });
   if (params.get("sample") === "1") loadSample();
+  const shared = params.get("report");  // link handed out by the MCP server (Claude / Grok / ChatGPT)
+  const focusHash = () => {  // ?report=…#irr opens the source popover of that figure
+    const el = location.hash && document.querySelector(`#report [data-metric="${CSS.escape(decodeURIComponent(location.hash.slice(1)))}"]`);
+    if (el) { el.scrollIntoView({ block: "center" }); setTimeout(() => el.click(), 350); }
+  };
+  if (shared === "demo-stratford") loadSample().then(openReport).then(focusHash);
+  else if (shared) trackJob(shared, "the shared deal").then(openReport).then(focusHash).catch(() => toast("This report link has expired.", true));
   prompt.focus();
 }
+
+// ---------- connect dealt (MCP) to Claude / Grok / ChatGPT ----------
+const MCP_URL = params.get("mcp") || new URL(`${API}/mcp`, location.href).href;
+const MCP_TOOLS = [
+  ["qualify_brochure", "Qualify a deal from a brochure PDF link: GO / NO-GO"],
+  ["get_report", "Memo where every number links to its source + link to this report"],
+  ["get_room_comps", "5 nearest PBSA buildings: rate per room type, weeks, photo, page"],
+  ["get_city_demand", "HESA students, Russell Group share, beds per student"],
+  ["build_noi", "NOI build-up: gross rent × occupancy − OPEX"],
+  ["compute_returns", "IRR, equity multiple, entry vs exit yield"],
+  ["deal_verdict", "GO / NO-GO with reasons"],
+  ["ask_deal_memory", "Ask across every deal analysed so far (cognee)"],
+  ["get_sample_report", "Full sourced report for the Stratford deal"],
+];
+const AI_GUIDES = {
+  claude: {
+    name: "Claude",
+    steps: [
+      "Open <strong>claude.ai</strong> → <strong>Settings</strong> → <strong>Connectors</strong>.",
+      "Click <strong>Add custom connector</strong>, name it <code>dealt</code> and paste the server URL.",
+      "In a chat, enable <strong>dealt</strong> from the tools menu, then ask: <em>“Qualify the Stratford brochure”</em>.",
+    ],
+    snippetLabel: "Claude Code",
+    snippet: () => `claude mcp add --transport http dealt ${MCP_URL}`,
+  },
+  grok: {
+    name: "Grok",
+    steps: [
+      "In <strong>Grok Bot</strong> (or its Cursor), open the MCP settings and add a remote server with the URL above.",
+      "From code, pass dealt to Grok as a remote MCP tool in the xAI API (snippet below).",
+      "Ask: <em>“Check my inbox for new deals and give me a GO / NO-GO”</em>.",
+    ],
+    snippetLabel: "xAI API",
+    snippet: () => `"tools": [{ "type": "mcp", "server_label": "dealt", "server_url": "${MCP_URL}" }]`,
+  },
+  chatgpt: {
+    name: "ChatGPT",
+    steps: [
+      "Open <strong>ChatGPT</strong> → <strong>Settings</strong> → <strong>Apps &amp; Connectors</strong> → <strong>Advanced</strong>, turn on <strong>Developer mode</strong>.",
+      "Click <strong>Create</strong>, name it <code>dealt</code>, paste the server URL, authentication <strong>None</strong>.",
+      "In a chat, pick <strong>dealt</strong> under <strong>+</strong> → <strong>More</strong>, then ask about a deal.",
+    ],
+    snippetLabel: "OpenAI API",
+    snippet: () => `"tools": [{ "type": "mcp", "server_label": "dealt", "server_url": "${MCP_URL}", "require_approval": "never" }]`,
+  },
+};
+
+function renderAi(key) {
+  const g = AI_GUIDES[key];
+  document.querySelectorAll(".ai-tabs [data-ai]").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.ai === key)));
+  $("ai-body").innerHTML = `
+    <div class="ai-field">
+      <p class="mono-label">Server URL</p>
+      <div class="copy-row"><code>${esc(MCP_URL)}</code><button type="button" class="pill" data-copy="${esc(MCP_URL)}">Copy</button></div>
+    </div>
+    <div class="ai-field">
+      <p class="mono-label">How to connect ${esc(g.name)}</p>
+      <ol class="ai-steps">${g.steps.map((t) => `<li>${t}</li>`).join("")}</ol>
+    </div>
+    <div class="ai-field">
+      <p class="mono-label">${esc(g.snippetLabel)}</p>
+      <div class="copy-row"><code>${esc(g.snippet())}</code><button type="button" class="pill" data-copy="${esc(g.snippet())}">Copy</button></div>
+    </div>
+    <div class="ai-field">
+      <p class="mono-label">Tools exposed</p>
+      <ul class="ai-tools">${MCP_TOOLS.map(([n, d]) => `<li><code>${n}</code><span>${d}</span></li>`).join("")}</ul>
+    </div>`;
+}
+function openAi(key = "claude") { setMenu(false); renderAi(key); $("ai-modal").showModal(); }
+$("ai-close").addEventListener("click", () => $("ai-modal").close());
+$("ai-modal").addEventListener("click", (e) => {
+  if (e.target === $("ai-modal")) return $("ai-modal").close();
+  const tab = e.target.closest("[data-ai]");
+  if (tab) return renderAi(tab.dataset.ai);
+  const copy = e.target.closest("[data-copy]");
+  if (copy) navigator.clipboard?.writeText(copy.dataset.copy).then(() => { copy.textContent = "Copied"; setTimeout(() => (copy.textContent = "Copy"), 1400); });
+});
 
 // ---------- wire up ----------
 $("voice-toggle").addEventListener("click", () => (conversation ? stopVoice() : startVoice()));

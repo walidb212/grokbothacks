@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>dealt</title>
   <meta name="description" content="Ask about a deal, connect your inbox, get a traced GO / NO-GO. Every figure links back to its source.">
-  <meta name="theme-color" content="#07080d">
+  <meta name="theme-color" content="#ffffff">
   <link rel="icon" type="image/svg+xml" href="brand/dealt-icon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,17 +13,16 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="aurora" aria-hidden="true">
-    <span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span><span class="blob b4"></span>
-    <div class="horizon"></div>
-    <div class="grain"></div>
-  </div>
 
   <header class="topbar">
     <div class="topbar-inner">
       <button class="brand" id="home-btn" type="button" aria-label="dealt home"><span class="wordmark" aria-hidden="true">dealt<i class="wm-dot"></i></span></button>
       <div class="topbar-actions">
         <button class="pill" id="open-report" type="button" hidden>Open report</button>
+        <button class="pill pill-ai" id="open-ai" type="button" aria-haspopup="dialog">
+          <span class="logo-stack" aria-hidden="true"><img src="brand/claude.svg" alt=""><img src="brand/grok.svg" alt=""><img src="brand/openai.svg" alt=""></span>
+          Connect to AI
+        </button>
         <button class="pill" id="new-chat" type="button">New chat</button>
       </div>
     </div>
@@ -31,11 +30,9 @@
 
   <main class="stage" id="stage">
     <section class="hero" id="hero">
-      <button class="announce" id="announce" type="button">
-        <span class="announce-icons" aria-hidden="true">
-          <span class="ai-dot outlook">O</span><span class="ai-dot dealroom" data-feature="dealroom" hidden>D</span><span class="ai-dot grok">G</span>
-        </span>
-        <span>Connect Outlook</span>
+      <button class="announce" id="announce" type="button" aria-haspopup="dialog">
+        <span class="logo-stack" aria-hidden="true"><img src="brand/claude.svg" alt=""><img src="brand/grok.svg" alt=""><img src="brand/openai.svg" alt=""></span>
+        <span>Use dealt inside Claude, Grok or ChatGPT</span>
         <span aria-hidden="true">→</span>
       </button>
       <span class="wordmark wordmark-hero" aria-hidden="true">dealt<i class="wm-dot"></i></span>
@@ -63,11 +60,19 @@
               </button>
               <div class="menu-sep" role="separator"></div>
               <button type="button" role="menuitem" data-act="outlook">
-                <span class="mi-icon brand-outlook" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" width="18" height="18"><rect x="3" y="5" width="18" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 7l8.5 6 8.5-6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
-                </span>
+                <span class="mi-icon" aria-hidden="true"><img src="brand/outlook.svg" alt="" width="20" height="20"></span>
                 <span class="mi-text"><strong>Outlook</strong><small id="outlook-state">Read new deal emails</small></span>
                 <span class="mi-badge" id="outlook-badge">Connect</span>
+              </button>
+              <button type="button" role="menuitem" data-act="gmail">
+                <span class="mi-icon" aria-hidden="true"><img src="brand/gmail.svg" alt="" width="18" height="18"></span>
+                <span class="mi-text"><strong>Gmail</strong><small id="gmail-state">Read new deal emails</small></span>
+                <span class="mi-badge" id="gmail-badge">Connect</span>
+              </button>
+              <div class="menu-sep" role="separator"></div>
+              <button type="button" role="menuitem" data-act="ai">
+                <span class="mi-icon" aria-hidden="true"><img src="brand/claude.svg" alt="" width="18" height="18"></span>
+                <span class="mi-text"><strong>Use in Claude, Grok, ChatGPT</strong><small>dealt MCP server</small></span>
               </button>
               <button type="button" role="menuitem" data-act="dealroom" data-feature="dealroom" hidden>
                 <span class="mi-icon brand-dealroom" aria-hidden="true">
@@ -113,6 +118,27 @@
   </main>
 
   <div class="toast" id="toast" role="status" hidden></div>
+  <div class="cite-pop" id="cite-pop" role="dialog" aria-label="Source" hidden></div>
+
+  <!-- Connect dealt (MCP server) to Claude / Grok / ChatGPT -->
+  <dialog class="ai-modal" id="ai-modal" aria-labelledby="ai-title">
+    <div class="ai-head">
+      <div>
+        <p class="mono-label">MCP server</p>
+        <h2 id="ai-title">Use dealt inside your AI</h2>
+        <p class="ai-sub">Same tools as this chat: brochure extraction, PBSA comps, NOI, returns, GO / NO-GO and deal memory. Every figure keeps its source.</p>
+      </div>
+      <button class="icon-btn" id="ai-close" type="button" aria-label="Close">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="ai-tabs" role="tablist">
+      <button type="button" role="tab" data-ai="claude" aria-selected="true"><img src="brand/claude.svg" alt="">Claude</button>
+      <button type="button" role="tab" data-ai="grok" aria-selected="false"><img src="brand/grok.svg" alt="">Grok</button>
+      <button type="button" role="tab" data-ai="chatgpt" aria-selected="false"><img src="brand/openai.svg" alt="">ChatGPT</button>
+    </div>
+    <div class="ai-body" id="ai-body"></div>
+  </dialog>
 
   <!-- Report workspace: opens over the chat when a deal report is ready -->
   <section class="workspace" id="workspace" aria-label="Deal report" hidden>

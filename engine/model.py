@@ -17,9 +17,10 @@ def build_noi(rooms, a=None):
     gross = sum(r["beds"] * r["weekly_rate"] * r.get("weeks", a["weeks"]) for r in rooms) * a["occupancy"]
     opex = gross * a["opex_pct"]
     return {"gross": gross, "opex": opex, "noi": gross - opex,
-            "figures": [fig("gross_income", "Gross income", round(gross), "GBP/yr"),
-                        fig("opex", "OPEX", round(opex), "GBP/yr"),
-                        fig("noi", "NOI", round(gross - opex), "GBP/yr")]}
+            "figures": [fig("gross_income", "Gross income", round(gross), "GBP/yr", "model",
+                            f"Σ beds × weekly rate × weeks × {a['occupancy']:.0%} occupancy"),
+                        fig("opex", "OPEX", round(opex), "GBP/yr", "model", f"{a['opex_pct']:.0%} of gross income"),
+                        fig("noi", "NOI", round(gross - opex), "GBP/yr", "model", "Gross income − OPEX")]}
 
 
 def _irr(cf):
@@ -50,11 +51,13 @@ def compute_returns(noi, total_cost, exit_yield, a=None, entry_price=None):
     irr = _irr(cf)
     em = sum(c for c in cf if c > 0) / -sum(c for c in cf if c < 0)
     return {"irr": irr, "equity_multiple": em, "entry_yield": entry_yield, "exit_yield": exit_yield,
-            "figures": [fig("irr", "IRR (unlevered)", round(irr, 4), "%"),
-                        fig("equity_multiple", "Equity multiple", round(em, 2), "x"),
-                        fig("entry_yield", "Entry / yield on cost", round(entry_yield, 4), "%"),
+            "figures": [fig("irr", "IRR (unlevered)", round(irr, 4), "%", "model",
+                            f"Cash flows: cost, NOI growing {g:.0%} a year, exit at the market yield"),
+                        fig("equity_multiple", "Equity multiple", round(em, 2), "x", "model", "Cash returned ÷ cash invested"),
+                        fig("entry_yield", "Entry / yield on cost", round(entry_yield, 4), "%", "model", "NOI ÷ total cost"),
                         fig("exit_yield", "Exit yield", exit_yield, "%", source="msci"),
-                        fig("yield_delta", "Entry minus exit yield", round(entry_yield - exit_yield, 4), "%")]}
+                        fig("yield_delta", "Entry minus exit yield", round(entry_yield - exit_yield, 4), "%", "model",
+                            "Yield on cost − market exit yield")]}
 
 
 def verdict(returns, hurdle_irr=0.12):

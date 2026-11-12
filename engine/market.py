@@ -1,10 +1,12 @@
 """Market evidence from the team's scrapers (market/*.csv): PBSA rent comps near the asset + city demand (HESA)."""
-import csv, math, pathlib, re, statistics
+import csv, json, math, pathlib, re, statistics
+from collections import Counter
 import requests
 from engine.model import fig
 
 M = pathlib.Path(__file__).resolve().parents[1] / "market"
 PC = re.compile(r"\b([A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2})\b", re.I)
+MIN_WEEKS = 38  # academic-year tenancies only
 CATS = {"studio": ["studio"], "ensuite": ["ensuite"], "cluster": ["non_ensuite", "ensuite"]}
 
 
@@ -31,26 +33,43 @@ def _km(a, b, c, d):
     return 12742 * math.asin(math.sqrt(h))
 
 
-def comps(lat, lng, k=5):
-    """k nearest scraped PBSA buildings with priced rooms; per room category: median weekly rate + weeks."""
+def _images():
+    p = M / "property_images.json"  # property_url -> og:image, built from the operators' pages
+    return json.loads(p.read_text(encoding="utf-8")) if p.exists() else {}
+
+
+def comps(lat, lng, k=5, year="2026/27"):
+    """k nearest scraped PBSA buildings with priced rooms; per room category: median weekly rate + weeks.
+    One academic year per building (the requested one if scraped, else its latest) so years never mix."""
     props = {}
     for r in _rows("competitors.csv"):
         if not (r["price_per_week_gbp"] and r["lat"] and r["lng"]):
             continue
-        key = (r["operator"], r["property_name"])
-        props.setdefault(key, []).append(r)
+        if r["tenancy_weeks"] and float(r["tenancy_weeks"]) < MIN_WEEKS:
+            continue  # summer / short lets would drag the academic-year rate down
+        props.setdefault((r["operator"], r["property_name"]), []).append(r)
     ranked = sorted(props.items(), key=lambda kv: _km(lat, lng, float(kv[1][0]["lat"]), float(kv[1][0]["lng"])))[:k]
+    images = _images()
     out = []
     for (op, name), rows in ranked:
+        years = Counter(r["academic_year"] for r in rows if r["academic_year"])
+        yr = year if year in years else (years.most_common(1)[0][0] if years else "")
+        rows = [r for r in rows if r["academic_year"] == yr] or rows
         d = _km(lat, lng, float(rows[0]["lat"]), float(rows[0]["lng"]))
         rooms = {}
         for cat in {r["room_category"] for r in rows}:
             rr = [r for r in rows if r["room_category"] == cat]
+            prices = [float(r["price_per_week_gbp"]) for r in rr]
             weeks = [int(float(r["tenancy_weeks"])) for r in rr if r["tenancy_weeks"]]
-            rooms[cat] = {"median_pw": statistics.median(float(r["price_per_week_gbp"]) for r in rr),
-                          "weeks": statistics.median(weeks) if weeks else None}
-        out.append({"operator": op, "property_name": name, "postcode": rows[0]["postcode"], "distance_km": round(d, 2),
-                    "rooms": rooms, "url": rows[0]["property_url"]})
+            sizes = [float(r["size_sqm"]) for r in rr if r.get("size_sqm")]
+            rooms[cat] = {"median_pw": statistics.median(prices), "min_pw": min(prices), "max_pw": max(prices),
+                          "weeks": statistics.median(weeks) if weeks else None,
+                          "size_sqm": round(statistics.median(sizes), 1) if sizes else None, "n": len(rr)}
+        url = rows[0]["property_url"]
+        img = images.get(url)
+        out.append({"operator": op, "property_name": name, "postcode": rows[0]["postcode"], "city": rows[0]["city"],
+                    "address": rows[0]["address"], "distance_km": round(d, 2), "academic_year": yr,
+                    "rooms": rooms, "url": url, "image": img if str(img).startswith("http") else None})
     return out
 
 
