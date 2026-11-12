@@ -10,7 +10,7 @@ Setup in V7 Go (UI, 5 min):
   V7_API_KEY=...  V7_WORKSPACE_ID=...  V7_PROJECT_ID=...
   V7_FILE_PROPERTY=brochure   V7_FIELDS=address,beds,passing_rent,...   V7_HOST=https://go.v7labs.com
 """
-import os, pathlib, time
+import os, pathlib, re, time
 import requests
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -80,8 +80,11 @@ def extract(pdf_path, timeout=180):
         if slug in (file_prop, file_slug, "ai") or (fields and slug not in fields):
             continue
         val = (v.get("manual_value") or {}).get("value") or (v.get("tool_value") or {}).get("value")
-        out.append({"metric": slug, "label": slug.replace("_", " ").capitalize(), "value": val, "unit": None,
+        pages = sorted({int(x) for x in re.findall(r"p\.?\s*(\d+)", str(val or ""))})
+        clean = re.sub(r"\s*\((?:p\.?\s*\d+[,;\s]*)+\)", "", str(val)).strip() if val is not None else None
+        out.append({"metric": slug, "label": slug.replace("_", " ").capitalize(), "value": clean, "unit": None,
                     "status": None,
-                    "source": {"type": "brochure", "ref": pdf.name, "page": None, "v7_entity": eid,
+                    "source": {"type": "brochure", "ref": pdf.name, "page": pages[0] if pages else None, "pages": pages,
+                               "v7_entity": eid,
                                "raw": (v.get("tool_value") or {}).get("raw_text")}})
     return {"source_file": pdf.name, "v7_entity": eid, "facts": out, "mock": False}

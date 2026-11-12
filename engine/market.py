@@ -85,3 +85,78 @@ def demand(city="London"):
                     status="green" if float(b["students_per_bed_calc"]) >= 3 else "amber"),
                 fig("pipeline_beds", "Pipeline beds", float(b["pipeline_beds"] or 0), "beds", "web", ref=b["source_url"].split(" ; ")[0])]
     return out
+
+
+def local_demand(lat, lng, radius_km=3.0):
+    """Universities cited near PBSA buildings within radius_km of the asset + their HESA students."""
+    unis = set()
+    for r in _rows("competitors.csv"):
+        if r["lat"] and r["lng"] and r.get("university_nearby") and _km(lat, lng, float(r["lat"]), float(r["lng"])) <= radius_km:
+            unis |= {u.strip() for u in r["university_nearby"].split(";") if u.strip()}
+    prov = {p["provider"].lower(): p for p in _rows("hesa_provider_city.csv")}
+    matched = []
+    for u in sorted(unis):
+        p = prov.get(u.lower()) or next((v for k, v in prov.items() if u.lower() in k or k in u.lower()), None)
+        if p:
+            matched.append({"university": p["provider"], "students": int(p["students"]), "russell_group": p["russell_group"] == "1"})
+    total = sum(m["students"] for m in matched)
+    beds_near = sum(1 for _ in [])
+    return {"universities": matched, "students": total,
+            "figures": [fig("local_students", f"Students at universities within {radius_km:g} km", total, "students", "web",
+                            ref="HESA 2024/25 + universities cited by nearby PBSA operators"),
+                        fig("local_universities", "Universities nearby", ", ".join(m["university"] for m in matched) or "none found",
+                            None, "web", ref="Operator listings (scraped)")]}
+
+
+_GEO = {}
+
+
+def geocode_university(name):
+    """OpenStreetMap Nominatim (no key). Cached."""
+    if name in _GEO:
+        return _GEO[name]
+    try:
+        r = requests.get("https://nominatim.openstreetmap.org/search",
+                         params={"q": name + ", United Kingdom", "format": "json", "limit": 1},
+                         headers={"User-Agent": "dealt-hackathon/1.0"}, timeout=15).json()
+        _GEO[name] = (float(r[0]["lat"]), float(r[0]["lon"])) if r else None
+    except Exception:
+        _GEO[name] = None
+    return _GEO[name]
+
+
+# Main London campuses (postcode -> geocoded by postcodes.io). RG = Russell Group.
+CAMPUSES = [
+    ("University of East London (Stratford)", "E15 4LZ", False), ("UCL East", "E20 2AE", True),
+    ("Queen Mary University of London (Mile End)", "E1 4NS", True), ("UCL (Bloomsbury)", "WC1E 6BT", True),
+    ("King's College London (Strand)", "WC2R 2LS", True), ("Imperial College London (South Kensington)", "SW7 2AZ", True),
+    ("London School of Economics", "WC2A 2AE", True), ("City St George's (Northampton Square)", "EC1V 0HB", False),
+    ("University of Greenwich", "SE10 9LS", False), ("London Metropolitan University", "N7 8DB", False),
+    ("University of Westminster", "W1B 2HW", False), ("Goldsmiths", "SE14 6NW", False), ("SOAS", "WC1H 0XG", False),
+    ("UAL Central Saint Martins", "N1C 4AA", False), ("London South Bank University", "SE1 0AA", False),
+    ("Middlesex University", "NW4 4BT", False), ("Brunel University London", "UB8 3PH", False),
+]
+_CAMPUS_GEO = None
+
+
+def _campuses():
+    global _CAMPUS_GEO
+    if _CAMPUS_GEO is None:
+        try:
+            r = requests.post("https://api.postcodes.io/postcodes", json={"postcodes": [c[1] for c in CAMPUSES]}, timeout=20).json()
+            geo = {x["query"]: x["result"] for x in r["result"]}
+            _CAMPUS_GEO = [{"name": n, "postcode": pc, "russell_group": rg, "lat": geo[pc]["latitude"], "lng": geo[pc]["longitude"]}
+                           for n, pc, rg in CAMPUSES if geo.get(pc)]
+        except Exception:
+            _CAMPUS_GEO = []
+    return _CAMPUS_GEO
+
+
+def target_university(lat, lng, max_km=5.0):
+    """The university campus the asset serves = nearest main campus (London)."""
+    best = None
+    for c in _campuses():
+        d = _km(lat, lng, c["lat"], c["lng"])
+        if d <= max_km and (best is None or d < best["distance_km"]):
+            best = {**c, "distance_km": round(d, 2)}
+    return best

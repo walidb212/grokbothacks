@@ -76,7 +76,7 @@ def compare(opex_total, beds, city="London"):
     ours = opex_total / beds
     ratio = ours / bm["median_per_unit"]
     ref = f"Cortile API, {bm['n']} {bm['scope']} buildings, latest FY service-charge actuals"
-    return [fig("opex_per_bed", "Our OPEX per bed", round(ours), "GBP/yr", "assumption"),
+    return [fig("opex_per_bed", "Our OPEX per bed", round(ours), "GBP/yr", "calc", ref="35% OPEX ratio assumption"),
             fig("cortile_service_charge_per_unit", f"Cortile median service charge per unit ({bm['scope']})",
                 round(bm["median_per_unit"]), "GBP/yr", "cortile", ref=ref),
             fig("opex_vs_cortile", "Our OPEX vs Cortile benchmark", round(ratio, 2), "x", "cortile", ref=ref,

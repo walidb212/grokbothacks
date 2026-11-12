@@ -2,7 +2,7 @@
 Every output figure follows the shared format: metric/label/value/unit/status/source."""
 
 
-def fig(metric, label, value, unit, source="assumption", ref=None, page=None, status=None):
+def fig(metric, label, value, unit, source="calc", ref=None, page=None, status=None):
     return {"metric": metric, "label": label, "value": value, "unit": unit, "status": status,
             "source": {"type": source, "ref": ref, "page": page}}
 
@@ -68,3 +68,54 @@ def verdict(returns, hurdle_irr=0.12):
     else:
         reasons.append(f"IRR clears {hurdle_irr:.0%} hurdle")
     return {"decision": "GO" if ok else "NO-GO", "reasons": reasons}
+
+
+# ---------- development appraisal extras ----------
+
+def dev_cashflows(noi, build_cost, exit_yield, land=0.0, a=None):
+    a = {**DEFAULTS, **(a or {})}
+    g, n = a["rent_growth"], a["build_years"]
+    cf = [-build_cost / n] * n
+    cf[0] -= land
+    cf += [noi * (1 + g) ** i for i in range(a["hold_years_stabilised"] - 1)]
+    last = noi * (1 + g) ** (a["hold_years_stabilised"] - 1)
+    cf.append(last + last * (1 + g) / exit_yield)
+    return cf
+
+
+def residual_land_value(noi, build_cost, exit_yield, target_irr=0.12, a=None):
+    """Max price payable for the site so that the unlevered IRR hits target_irr."""
+    lo, hi = 0.0, build_cost * 3
+    if _irr(dev_cashflows(noi, build_cost, exit_yield, 0, a)) < target_irr:
+        return 0.0
+    for _ in range(100):
+        m = (lo + hi) / 2
+        lo, hi = (m, hi) if _irr(dev_cashflows(noi, build_cost, exit_yield, m, a)) > target_irr else (lo, m)
+    return lo
+
+
+def sensitivity(noi, build_cost, exit_yield, land=0.0, a=None):
+    """IRR grid: build cost x rent (-10%/base/+10%) and exit yield +/-50bp."""
+    steps = (-0.10, 0.0, 0.10)
+    grid = [{"build_cost": c, "rent": r,
+             "irr": round(_irr(dev_cashflows(noi * (1 + r), build_cost * (1 + c), exit_yield, land, a)), 4)}
+            for c in steps for r in steps]
+    yields = [{"exit_yield": round(exit_yield + d, 4),
+               "irr": round(_irr(dev_cashflows(noi, build_cost, exit_yield + d, land, a)), 4)}
+              for d in (-0.005, 0.0, 0.005)]
+    return {"cost_x_rent": grid, "exit_yield": yields}
+
+
+def levered(noi, build_cost, exit_yield, land, rate, ltc=0.55, a=None):
+    """Interest-only debt = LTC x total cost, drawn with costs, repaid at sale. Returns levered IRR / multiple."""
+    cf = dev_cashflows(noi, build_cost, exit_yield, land, a)
+    debt_cf, bal = [], 0.0
+    for i, c in enumerate(cf):
+        draw = -c * ltc if c < 0 else 0.0
+        interest = bal * rate
+        bal += draw
+        repay = bal if i == len(cf) - 1 else 0.0
+        debt_cf.append(c + draw - interest - repay)
+    irr = _irr(debt_cf)
+    em = sum(x for x in debt_cf if x > 0) / -sum(x for x in debt_cf if x < 0)
+    return {"irr": irr, "equity_multiple": em, "loan": bal, "rate": rate, "ltc": ltc}
