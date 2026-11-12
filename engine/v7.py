@@ -23,6 +23,14 @@ def _env():
             if "=" in line and not line.lstrip().startswith("#"):
                 k, v = line.split("=", 1)
                 os.environ.setdefault(k.strip(), v.strip())
+    # server .env uses V7_GO_* names; non-secret defaults for this hackathon workflow
+    for a, b in (("V7_API_KEY", "V7_GO_API_KEY"), ("V7_WORKSPACE_ID", "V7_GO_WORKSPACE_ID"), ("V7_PROJECT_ID", "V7_GO_PROJECT_ID")):
+        if not os.environ.get(a) and os.environ.get(b):
+            os.environ[a] = os.environ[b]
+    os.environ.setdefault("V7_WORKSPACE_ID", "01a1ca22-d3b8-7a84-903e-fc33d57e24bd")
+    os.environ.setdefault("V7_PROJECT_ID", "01a1d171-042f-71f8-9e29-ed9a0b6591ba")
+    os.environ.setdefault("V7_FILE_PROPERTY", "01a1d171-0491-7554-a5f9-2cfaf158f3ff")
+    os.environ.setdefault("V7_FIELDS", "address,asset_type,tenure,gia_sqft,beds,passing_rent,erv,asking_price,net_initial_yield,tenants")
     return os.environ
 
 
