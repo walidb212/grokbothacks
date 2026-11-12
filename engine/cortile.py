@@ -87,6 +87,6 @@ def compare(opex_total, beds, city="London"):
     return [fig("opex_per_bed", "Our OPEX per bed", round(ours), "GBP/yr", "calc", ref="35% OPEX ratio assumption"),
             fig("cortile_service_charge_per_unit", f"Cortile median service charge per unit ({bm['scope']})",
                 round(bm["median_per_unit"]), "GBP/yr", "cortile", ref=ref),
-            fig("opex_vs_cortile", "Our OPEX vs Cortile benchmark", round(ratio, 2), "x", "cortile", ref=ref,
-                status="green" if ratio >= 1 else "amber"),
+            fig("opex_vs_cortile", "Our OPEX vs Cortile benchmark", round(ratio, 2), "x", "cortile",
+                ref=ref + " | Not like-for-like: block service charges exclude PBSA staffing, utilities, marketing, lifecycle"),
             fig("cortile_by_category", "Cortile cost lines per unit (median)", bm["by_category"], "GBP/yr", "cortile", ref=ref)]

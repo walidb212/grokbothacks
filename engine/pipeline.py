@@ -83,6 +83,11 @@ def analyze(paths, comment="", step=print, exit_yield=None, exit_yield_ref=None)
             land = asking or 0.0
             ret = model.compute_returns(noi["noi"], build_cost + land, exit_y)
             ret["figures"][3] = exit_fig
+            if not asking:  # no price in the brochure: these returns exclude the site, say so
+                for f in ret["figures"]:
+                    if f["metric"] in ("irr", "equity_multiple", "entry_yield", "yield_delta"):
+                        f["label"] += " (before site cost)"
+                        f["source"]["ref"] = (f["source"].get("ref") or "") + " | No asking price: site cost excluded; see max site bid."
             step("Max land bid at 12% IRR")
             max_bid = model.residual_land_value(noi["noi"], build_cost, exit_y, 0.12)
             step("Sensitivity")
