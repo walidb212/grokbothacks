@@ -114,6 +114,22 @@
 
   <div class="toast" id="toast" role="status" hidden></div>
 
+  <!-- Voice orb: visible while a voice session is active -->
+  <div class="vorb" id="vorb" data-state="off" hidden>
+    <div class="vorb-orb" aria-hidden="true">
+      <span class="vo-glow"></span>
+      <span class="vo-ring"></span><span class="vo-ring r2"></span>
+      <span class="vo-core"><i></i><i></i><i></i><b></b></span>
+    </div>
+    <div class="vorb-meta">
+      <span class="vorb-label" id="vorb-label" role="status">Connecting…</span>
+      <span class="vorb-sub">dealt voice analyst</span>
+    </div>
+    <button type="button" class="vorb-end" id="vorb-end" title="End conversation" aria-label="End conversation">
+      <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+
   <!-- Report workspace: opens over the chat when a deal report is ready -->
   <section class="workspace" id="workspace" aria-label="Deal report" hidden>
     <div class="workspace-bar">

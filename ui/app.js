@@ -447,6 +447,11 @@ function setVoiceState(s, label) {
   $("voice-status").dataset.state = s;
   $("voice-status-text").textContent = label;
   $("meter").className = `meter ${s}`;
+  const orb = $("vorb");
+  orb.hidden = s === "disconnected";
+  orb.dataset.state = s;
+  $("vorb-label").textContent = s === "speaking" ? "Speaking" : s === "listening" ? "Listening" : s === "connecting" ? "Connecting…" : "";
+  if (s !== "speaking" && s !== "listening") orb.style.setProperty("--lvl", "0");
 }
 function addLine(role, text) {
   const li = document.createElement("li");
@@ -527,13 +532,20 @@ async function stopVoice() {
 
 function startMeter() {
   const bars = [...$("meter").children];
+  const orb = $("vorb");
+  let lvl = 0;
   const tick = async () => {
     if (!conversation) return;
     let v = 0;
+    const speaking = $("voice-status").dataset.state === "speaking";
     try {
-      v = $("voice-status").dataset.state === "speaking" ? await conversation.getOutputVolume() : await conversation.getInputVolume();
+      v = speaking ? await conversation.getOutputVolume() : await conversation.getInputVolume();
     } catch { v = 0; }
     bars.forEach((b, i) => { const h = 4 + Math.min(24, v * 60 * (0.6 + ((i * 37) % 5) / 6)); b.style.height = `${h}px`; });
+    // Orb: fast attack, slow release; the user's own voice moves it less than the agent's
+    const target = Math.min(1, (v || 0) * (speaking ? 2.2 : 1.1));
+    lvl += (target - lvl) * (target > lvl ? 0.45 : 0.12);
+    orb.style.setProperty("--lvl", lvl.toFixed(3));
     meterRaf = requestAnimationFrame(tick);
   };
   meterRaf = requestAnimationFrame(tick);
@@ -761,6 +773,7 @@ function initChat() {
   comp.addEventListener("drop", (e) => e.dataTransfer?.files?.length && analyse(e.dataTransfer.files));
 
   $("mic-btn").addEventListener("click", () => (conversation ? stopVoice() : startVoice()));
+  $("vorb-end").addEventListener("click", () => stopVoice());
   $("open-report").addEventListener("click", openReport);
   $("close-report").addEventListener("click", closeReport);
   $("new-chat").addEventListener("click", () => location.assign(location.pathname));
