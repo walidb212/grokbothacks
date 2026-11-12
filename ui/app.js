@@ -802,6 +802,7 @@ async function refreshIntegrations() {
   $("outlook-badge").classList.toggle("on", !!o.connected);
   $("outlook-state").textContent = o.connected ? (o.account || "Inbox connected") : (o.configured === false ? "Needs Azure app keys on the server" : "Read new deal emails");
   const g = integrations.gmail || {};
+  document.querySelector('[data-act="gmail"]').hidden = !g.configured && !g.connected;  // hidden until Google OAuth keys are on the server
   $("gmail-badge").textContent = g.connected ? "Connected" : "Connect";
   $("gmail-badge").classList.toggle("on", !!g.connected);
   $("gmail-state").textContent = g.connected ? (g.account || "Inbox connected") : "Read new deal emails";
