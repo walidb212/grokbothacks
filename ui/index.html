@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Deal Qualification Agent</title>
+  <meta name="description" content="Ask about a deal, connect your inbox, get a traced GO / NO-GO. Every figure links back to its source.">
+  <meta name="theme-color" content="#07080d">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Cdefs%3E%3ClinearGradient id=%27g%27 x1=%270%27 y1=%270%27 x2=%271%27 y2=%271%27%3E%3Cstop offset=%270%27 stop-color=%27%233b5bff%27/%3E%3Cstop offset=%27.55%27 stop-color=%27%23c03cff%27/%3E%3Cstop offset=%271%27 stop-color=%27%23ff8a4c%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%2732%27 height=%2732%27 rx=%279%27 fill=%27url(%23g)%27/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="aurora" aria-hidden="true">
+    <span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span><span class="blob b4"></span>
+    <div class="horizon"></div>
+    <div class="grain"></div>
+  </div>
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <button class="brand" id="home-btn" type="button"><span class="brand-mark" aria-hidden="true"></span>Deal Qualification Agent</button>
+      <div class="topbar-actions">
+        <button class="pill" id="open-report" type="button" hidden>Open report</button>
+        <button class="pill" id="new-chat" type="button">New chat</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="stage" id="stage">
+    <section class="hero" id="hero">
+      <button class="announce" id="announce" type="button">
+        <span class="announce-icons" aria-hidden="true">
+          <span class="ai-dot outlook">O</span><span class="ai-dot dealroom" data-feature="dealroom" hidden>D</span><span class="ai-dot grok">G</span>
+        </span>
+        <span>Connect Outlook</span>
+        <span aria-hidden="true">→</span>
+      </button>
+      <h1>Which deal are we qualifying today?</h1>
+      <p class="hero-sub">Brochures from your inbox, checked against market data, with a traced GO / NO-GO. Every figure has a source.</p>
+    </section>
+
+    <ol class="thread" id="thread" aria-live="polite"></ol>
+
+    <div class="composer-wrap">
+      <form class="composer" id="composer" autocomplete="off">
+        <label for="prompt" class="visually-hidden">Message the deal agent</label>
+        <textarea id="prompt" rows="1" placeholder="Ask the agent to check your inbox for new deals…"></textarea>
+        <div class="composer-row">
+          <div class="plus-wrap">
+            <button type="button" class="icon-btn" id="plus-btn" aria-haspopup="menu" aria-expanded="false" aria-controls="plus-menu" title="Add files and connect sources">
+              <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </button>
+            <div class="menu" id="plus-menu" role="menu" hidden>
+              <button type="button" role="menuitem" data-act="upload">
+                <span class="mi-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" width="18" height="18"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z M14 3v5h5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+                </span>
+                <span class="mi-text"><strong>Upload brochure</strong><small>PDF · several files = portfolio</small></span>
+              </button>
+              <div class="menu-sep" role="separator"></div>
+              <button type="button" role="menuitem" data-act="outlook">
+                <span class="mi-icon brand-outlook" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" width="18" height="18"><rect x="3" y="5" width="18" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 7l8.5 6 8.5-6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+                </span>
+                <span class="mi-text"><strong>Outlook</strong><small id="outlook-state">Read new deal emails</small></span>
+                <span class="mi-badge" id="outlook-badge">Connect</span>
+              </button>
+              <button type="button" role="menuitem" data-act="dealroom" data-feature="dealroom" hidden>
+                <span class="mi-icon brand-dealroom" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" width="18" height="18"><path d="M5 19V5h6.5a7 7 0 0 1 0 14z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+                </span>
+                <span class="mi-text"><strong>Dealroom</strong><small id="dealroom-state">Investors, companies, transactions</small></span>
+                <span class="mi-badge" id="dealroom-badge">Connect</span>
+              </button>
+            </div>
+          </div>
+          <div class="conn" id="sources" aria-label="Connected sources"></div>
+          <span class="spacer"></span>
+          <button type="button" class="icon-btn mic" id="mic-btn" title="Talk to the voice analyst" aria-pressed="false">
+            <svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          </button>
+          <button type="submit" class="send-btn" id="send-btn" title="Send" disabled>
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+        <input id="file-input" type="file" accept="application/pdf" multiple hidden>
+        <div class="drop-hint" aria-hidden="true">Drop brochure PDFs to qualify them</div>
+      </form>
+
+      <div class="quick" id="quick">
+        <button type="button" class="quick-chip" data-prompt="Check my inbox for new real estate deals">
+          <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 7l8.5 6 8.5-6" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+          Check inbox for deals
+        </button>
+        <button type="button" class="quick-chip" data-act="upload">
+          <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5M5 20h14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Qualify a brochure
+        </button>
+        <button type="button" class="quick-chip" data-feature="dealroom" hidden data-prompt="Who are the most active investors in UK hotel and student housing deals? Use Dealroom.">
+          <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M16 16l4.5 4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          Find buyers on Dealroom
+        </button>
+        <button type="button" class="quick-chip" data-act="sample">
+          <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M4 20V10l8-6 8 6v10h-5v-6H9v6z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          Open Stratford sample
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <div class="toast" id="toast" role="status" hidden></div>
+
+  <!-- Report workspace: opens over the chat when a deal report is ready -->
+  <section class="workspace" id="workspace" aria-label="Deal report" hidden>
+    <div class="workspace-bar">
+      <button class="pill" id="close-report" type="button">← Back to chat</button>
+      <span class="mono-label">No number without a source</span>
+    </div>
+    <div class="layout">
+      <section class="col-main">
+        <div id="report" aria-live="polite"></div>
+      </section>
+
+      <aside class="col-side" aria-label="Source inspector and voice analyst">
+        <div class="card inspector" id="inspector">
+          <p class="mono-label">Source chain</p>
+          <div id="inspector-body" class="inspector-empty">
+            <p>Click any figure to see where it came from.</p>
+          </div>
+        </div>
+
+        <div class="card voice" id="voice">
+          <div class="voice-head">
+            <div>
+              <p class="mono-label">Voice analyst</p>
+              <p class="voice-sub">Ask about the deal. Answers cite their source.</p>
+            </div>
+            <span class="voice-status mono-label" id="voice-status" data-state="disconnected">
+              <span class="dot" aria-hidden="true"></span><span id="voice-status-text">Offline</span>
+            </span>
+          </div>
+
+          <div class="meter" id="meter" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+
+          <button class="btn btn-primary btn-block" id="voice-toggle" type="button">Start voice analyst</button>
+          <p class="error" id="voice-error" hidden></p>
+
+          <div class="suggestions" id="suggestions">
+            <button type="button" class="chip" data-q="Why is this deal a GO?">Why is this deal a GO?</button>
+            <button type="button" class="chip" data-q="Where does the NOI come from?">Where does the NOI come from?</button>
+            <button type="button" class="chip" data-q="What if occupancy drops to 90 percent?">What if occupancy drops to 90%?</button>
+            <button type="button" class="chip" data-q="Which figures are not verified yet?">Which figures are not verified?</button>
+          </div>
+
+          <ol class="transcript" id="transcript" aria-live="polite"></ol>
+
+          <form class="ask" id="ask-form" autocomplete="off">
+            <label for="ask-input" class="visually-hidden">Type a question</label>
+            <input id="ask-input" type="text" placeholder="Type a question (works during a session)">
+            <button class="btn btn-ghost" type="submit">Send</button>
+          </form>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

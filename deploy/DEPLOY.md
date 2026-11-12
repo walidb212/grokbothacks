@@ -5,7 +5,7 @@ Server: aivance-cloud (46.224.24.118). The shared Caddy container (`caddy`, Dock
 | Container | What | URL |
 |---|---|---|
 | `demo3-api` | FastAPI, contract from README (`/analyze`, `/analysis/{job_id}`) | `https://demo3.ai-vance.de/api/...` |
-| `demo3-web` | Next.js UI in `web/` (profile `web`, once it exists) | `https://demo3.ai-vance.de/` |
+| `demo3-web` | Static UI from `ui/` (nginx), incl. the ElevenLabs voice analyst | `https://demo3.ai-vance.de/` |
 
 Until the real pipeline is wired in, the API returns `mock/report.json` with `"mock": true`.
 
@@ -24,8 +24,7 @@ ssh root@46.224.24.118
 cd /opt/demo3/app
 docker builder prune -f                       # disk is at 86 %, frees build cache only
 cp .env.example .env && nano .env && chmod 600 .env
-docker compose up -d --build                  # API only
-# once web/ exists:  docker compose --profile web up -d --build
+docker compose up -d --build                  # api + web
 docker compose ps
 ```
 
@@ -48,7 +47,7 @@ curl https://demo3.ai-vance.de/api/health                    # {"ok":true}
 curl https://demo3.ai-vance.de/api/analysis/demo-stratford   # mock report
 ```
 
-The root URL returns 502 until `demo3-web` runs. That is expected.
+Open https://demo3.ai-vance.de: the Stratford sample loads automatically. Voice needs `ELEVENLABS_API_KEY` and `ELEVENLABS_AGENT_ID` in `.env` (see `voice/README.md`).
 
 ## Redeploy
 
@@ -56,14 +55,13 @@ The root URL returns 502 until `demo3-web` runs. That is expected.
 # Mac
 cd ~/grokbothacks && rsync -avz --exclude node_modules --exclude .next --exclude .env --exclude .git --exclude __pycache__ ./ root@46.224.24.118:/opt/demo3/app/
 # Server
-cd /opt/demo3/app && docker compose up -d --build            # add --profile web once the UI exists
+cd /opt/demo3/app && docker compose up -d --build
 ```
 
-## Web UI requirements
+## Switching to a Next.js UI later
 
-- `web/` is a Next.js app with `output: "standalone"` in `next.config.*`.
-- Call the API at `process.env.NEXT_PUBLIC_API_BASE_URL` (`https://demo3.ai-vance.de/api`).
+`deploy/web.Dockerfile` builds a Next.js app from `web/` (needs `output: "standalone"`). Point the `web` service in `docker-compose.yml` at it; keep container name `demo3-web` and port 3000.
 
 ## After the event
 
-Remove the demo3 block from `/opt/caddy/Caddyfile`, validate, reload; `docker compose --profile web down`; rotate keys and the root password.
+Remove the demo3 block from `/opt/caddy/Caddyfile`, validate, reload; `docker compose down`; rotate keys and the root password.
