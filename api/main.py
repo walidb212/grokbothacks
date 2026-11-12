@@ -164,3 +164,11 @@ def what_if(payload: dict):
 
 
 app.include_router(build_router(start_job))
+
+
+
+@app.get("/memory")
+def ask_memory(q: str):
+    """Ask a question across every deal analysed so far (cognee knowledge graph)."""
+    from engine import memory
+    return {"question": q, "answers": memory.ask(q)}
