@@ -1011,7 +1011,8 @@ function initChat() {
 }
 
 // ---------- connect dealt (MCP) to Claude / Grok / ChatGPT ----------
-const MCP_URL = params.get("mcp") || new URL(`${API}/mcp`, location.href).href;
+// Always the public endpoint: the AI clients (Claude, Grok, ChatGPT) cannot reach a localhost URL.
+const MCP_URL = params.get("mcp") || "https://demo3.ai-vance.de/api/mcp";
 const MCP_TOOLS = [
   ["qualify_brochure", "Qualify a deal from a brochure PDF link: GO / NO-GO"],
   ["get_report", "Memo where every number links to its source + link to this report"],
