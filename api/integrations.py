@@ -363,7 +363,7 @@ Tools:
 - check_inbox: scan the user's connected Outlook inbox for new real estate deal emails.
 - analyze_email: run the full qualification pipeline on the PDF brochure(s) attached to one email. The report opens on screen.
 - load_sample_report: open the 78-102 Broadway, Stratford sample report.
-- dealroom__*: Dealroom.co data (companies, investors, transactions, fundings). Use it to look up buyers, investors, operators, tenants and comparable transactions.
+- dealroom__*: Dealroom.co data (companies, investors, transactions, fundings). Only available when Dealroom is listed under connected sources; otherwise never mention Dealroom.
 Rules: never invent figures. Every number you state must come from a tool result; say where it came from. If a source is not connected, tell the user to connect it with the + button.
 Be concise. Use short markdown: bullet lists, **bold** for the key verdict or number."""
 
